@@ -1,0 +1,6 @@
+{application, piqi,
+ [{description, "Fake .app file to make rebar happy"},
+  {vsn, git},
+  {modules, []},
+  {applications, [kernel, stdlib]},
+  {env, []}]}.

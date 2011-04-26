@@ -1,0 +1,10 @@
+# a fake makefile with two empty targets
+
+.PHONY: all clean
+
+all:
+
+clean:
+
+
+# vim:ft=make

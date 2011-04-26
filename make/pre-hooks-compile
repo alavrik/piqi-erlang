@@ -1,0 +1,41 @@
+#!/bin/sh
+
+set -e
+#set -x
+
+
+if [ -d deps ]
+then
+        DEPS=deps
+elif [ -d ../../deps ]
+then
+        DEPS=../../deps
+else
+        echo "can't find 'deps' directory around `pwd`" 1>&2
+        exit 1
+fi
+
+
+ARCH_SUFFIX="`uname -s`-`uname -m`"
+
+
+if [ ! -x bin/piqi-$ARCH_SUFFIX -o ! -x bin/piqic-$ARCH_SUFFIX ]
+then
+    # build Piqi
+    cd $DEPS/piqi_src
+    . ./setenv.sh
+    make distclean
+    make deps
+    make
+    cd -
+
+    # install the binaries
+    mkdir -p bin
+
+    cp $DEPS/piqi_src/piqic/piqic bin/piqic-$ARCH_SUFFIX
+    strip bin/piqic-$ARCH_SUFFIX
+
+    cp $DEPS/piqi_src/piqi-tools/piqi bin/piqi-$ARCH_SUFFIX
+    strip bin/piqi-$ARCH_SUFFIX
+fi
+

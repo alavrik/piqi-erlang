@@ -1,0 +1,23 @@
+#!/bin/sh
+
+set -e
+#set -x
+
+
+if [ -d deps ]
+then
+        DEPS=deps
+elif [ -d ../../deps ]
+then
+        DEPS=../../deps
+else
+        echo "can't find 'deps' directory around `pwd`" 1>&2
+        exit 1
+fi
+
+rm -f src
+ln -sf $DEPS/piqi_src/piqi-erlang/src
+
+rm -f include
+ln -sf $DEPS/piqi_src/piqi-erlang/include
+
