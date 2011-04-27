@@ -17,9 +17,10 @@ fi
 
 
 ARCH_SUFFIX="`uname -s`-`uname -m`"
+BINDIR=priv/bin-$ARCH_SUFFIX
 
 
-if [ ! -x bin/piqi-$ARCH_SUFFIX -o ! -x bin/piqic-$ARCH_SUFFIX ]
+if [ ! -x $BINDIR/piqi -o ! -x $BINDIR/piqic ]
 then
     # build Piqi
     cd $DEPS/piqi_src
@@ -30,12 +31,12 @@ then
     cd -
 
     # install the binaries
-    mkdir -p bin
+    mkdir -p $BINDIR
 
-    cp $DEPS/piqi_src/piqic/piqic bin/piqic-$ARCH_SUFFIX
-    strip bin/piqic-$ARCH_SUFFIX
+    cp $DEPS/piqi_src/piqic/piqic $BINDIR/piqic
+    strip $BINDIR/piqic
 
-    cp $DEPS/piqi_src/piqi-tools/piqi bin/piqi-$ARCH_SUFFIX
-    strip bin/piqi-$ARCH_SUFFIX
+    cp $DEPS/piqi_src/piqi-tools/piqi $BINDIR/piqi
+    strip $BINDIR/piqi
 fi
 
