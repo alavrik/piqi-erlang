@@ -4,16 +4,21 @@ set -e
 #set -x
 
 
-if [ -d deps ]
+if [ -n "$REBAR_DEPS_DIR" ]
 then
-        DEPS=deps
+        true
+elif [ -d deps ]
+then
+        REBAR_DEPS_DIR=deps
 elif [ -d ../../deps ]
 then
-        DEPS=../../deps
+        REBAR_DEPS_DIR=../../deps
 else
-        echo "can't find 'deps' directory around `pwd`" 1>&2
+        echo "can't find rebar 'deps' directory around `pwd`" 1>&2
         exit 1
 fi
+
+export REBAR_DEPS_DIR
 
 
 ARCH_SUFFIX="`uname -s`-`uname -m`"
@@ -23,7 +28,7 @@ BINDIR=priv/bin-$ARCH_SUFFIX
 if [ ! -x $BINDIR/piqi -o ! -x $BINDIR/piqic ]
 then
     # build Piqi
-    cd $DEPS/piqi_src
+    cd $REBAR_DEPS_DIR/piqi_src
     . ./setenv.sh
     make distclean
     make deps
@@ -33,10 +38,10 @@ then
     # install the binaries
     mkdir -p $BINDIR
 
-    cp $DEPS/piqi_src/piqic/piqic $BINDIR/piqic
+    cp $REBAR_DEPS_DIR/piqi_src/piqic/piqic $BINDIR/piqic
     strip $BINDIR/piqic
 
-    cp $DEPS/piqi_src/piqi-tools/piqi $BINDIR/piqi
+    cp $REBAR_DEPS_DIR/piqi_src/piqi-tools/piqi $BINDIR/piqi
     strip $BINDIR/piqi
 fi
 

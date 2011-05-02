@@ -4,20 +4,26 @@ set -e
 #set -x
 
 
-if [ -d deps ]
+if [ -n "$REBAR_DEPS_DIR" ]
 then
-        DEPS=deps
+        true
+elif [ -d deps ]
+then
+        REBAR_DEPS_DIR=deps
 elif [ -d ../../deps ]
 then
-        DEPS=../../deps
+        REBAR_DEPS_DIR=../../deps
 else
-        echo "can't find 'deps' directory around `pwd`" 1>&2
+        echo "can't find rebar 'deps' directory around `pwd`" 1>&2
         exit 1
 fi
 
+export REBAR_DEPS_DIR
+
+
 rm -f src
-ln -sf $DEPS/piqi_src/piqi-erlang/src
+ln -sf $REBAR_DEPS_DIR/piqi_src/piqi-erlang/src
 
 rm -f include
-ln -sf $DEPS/piqi_src/piqi-erlang/include
+ln -sf $REBAR_DEPS_DIR/piqi_src/piqi-erlang/include
 

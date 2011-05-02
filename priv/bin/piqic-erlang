@@ -1,0 +1,13 @@
+#!/bin/sh
+
+if [ -z "$REBAR_DEPS_DIR" ]
+then
+	echo "\$REBAR_DEPS_DIR variable is not defined. Upgrade to the latest rebar" 1>&2
+	exit 1
+fi
+
+
+set -e
+
+$REBAR_DEPS_DIR/piqi/priv/bin-"`uname -s`-`uname -m`"/piqic erlang $@
+

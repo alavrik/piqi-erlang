@@ -1,0 +1,8 @@
+#!/usr/bin/env escript
+%%! -noshell -noinput
+
+main(Args) ->
+    piqic_erlang_ext:main(Args).
+
+
+% vim:ft=erlang
