@@ -28,6 +28,23 @@ BINDIR=priv/bin-$ARCH_SUFFIX
 if [ ! -x $BINDIR/piqi -o ! -x $BINDIR/piqic ]
 then
     # build Piqi
+
+	if [ ! `which ocaml` ] ; then
+		echo "You need to install ocaml to build piqi"
+		exit 1
+	fi
+	if [ ! `which protoc` ] ; then
+		echo "You need to install protoc (google protocol buffers) to build piqi"
+		exit 1
+	fi
+	if [ ! `which ocamlfind` ] ; then
+		echo "You need to install ocaml-findlib to build piqi"
+		exit 1
+	fi
+	if [ ! `which camlp4orf` ] ; then
+		echo "You need to install ocaml-camlp4-devel to build piqi"
+		exit 1
+	fi
     cd $REBAR_DEPS_DIR/piqi_src
     . ./setenv.sh
     make distclean
