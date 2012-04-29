@@ -2,7 +2,8 @@ Piqi is a multi-format data serialization system for Erlang. It provides a
 uniform interface for serializing Erlang data to JSON, XML and Protocol Buffers
 formats.
 
-This is a rebar[1] package for the "piqi" Erlang application.
+This is a [rebar](https://github.com/basho/rebar) package for the "piqi" Erlang
+application.
 
 
 The primary Piqi project repository is located here: 
@@ -24,5 +25,3 @@ Examples of how to use Piqi with rebar:
 
         https://github.com/alavrik/piqi-erlang-examples
 
-
-[1] https://github.com/basho/rebar
