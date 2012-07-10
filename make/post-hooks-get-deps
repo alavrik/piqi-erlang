@@ -22,8 +22,8 @@ export REBAR_DEPS_DIR
 
 
 rm -f src
-ln -sf $REBAR_DEPS_DIR/piqi_src/piqi-erlang/src
+ln -sf "$REBAR_DEPS_DIR/piqi_src/piqi-erlang/src"
 
 rm -f include
-ln -sf $REBAR_DEPS_DIR/piqi_src/piqi-erlang/include
+ln -sf "$REBAR_DEPS_DIR/piqi_src/piqi-erlang/include"
 

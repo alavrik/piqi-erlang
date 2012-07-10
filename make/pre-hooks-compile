@@ -28,7 +28,7 @@ BINDIR=priv/bin-$ARCH_SUFFIX
 if [ ! -x $BINDIR/piqi -o ! -x $BINDIR/piqic ]
 then
     # build Piqi
-    cd $REBAR_DEPS_DIR/piqi_src
+    cd "$REBAR_DEPS_DIR/piqi_src"
     . ./setenv.sh
     make distclean
     make deps
@@ -38,10 +38,10 @@ then
     # install the binaries
     mkdir -p $BINDIR
 
-    cp $REBAR_DEPS_DIR/piqi_src/piqic/piqic $BINDIR/piqic
+    cp "$REBAR_DEPS_DIR/piqi_src/piqic/piqic" $BINDIR/piqic
     strip $BINDIR/piqic
 
-    cp $REBAR_DEPS_DIR/piqi_src/piqi-tools/piqi $BINDIR/piqi
+    cp "$REBAR_DEPS_DIR/piqi_src/piqi-tools/piqi" $BINDIR/piqi
     strip $BINDIR/piqi
 fi
 
