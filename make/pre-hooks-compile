@@ -29,8 +29,8 @@ if [ ! -x $BINDIR/piqi -o ! -x $BINDIR/piqic ]
 then
     # build Piqi
     cd "$REBAR_DEPS_DIR/piqi_src"
-    . ./setenv.sh
     make distclean
+    ./configure
     make deps
     make
     cd -
