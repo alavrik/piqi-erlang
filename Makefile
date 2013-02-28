@@ -1,5 +1,15 @@
-include ../Makefile.config
-include $(PIQI_ROOT)/make/Makefile.dirs
+all:
+	rebar compile
 
-DIRS = src piqic-erlang-ext
+
+deps:
+	rebar get-deps
+
+
+clean:
+	rebar clean
+
+
+distclean: clean
+	rm -rf ebin deps
 

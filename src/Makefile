@@ -1,20 +1,11 @@
-include ../../Makefile.config
 
-ERL_SOURCES = \
-	$(PIQI_ERL_FILES) \
-	piqirun.erl \
-	piqirun_ext.erl \
-	\
-	piqi.erl \
-	piqi_app.erl \
-	piqi_sup.erl \
-	\
-	piqi_tools.erl \
-	\
-	piqic_erlang_ext.erl \
-	\
-	piqirun_tests.erl \
-	piqirun_props.erl
+all:
+	cd ..; rebar compile skip_deps=true
+
+
+clean:
+	cd ..; rebar clean skip_deps=true
+
 
 
 ERL_TESTS = piqirun
@@ -42,8 +33,6 @@ VSN = $(shell cat $(PIQI_ROOT)/VERSION)
 ERL_APP_FILE = piqi.app
 
 
-all:  ebin
-
 
 test: beams
 	for i in $(ERL_TESTS); do \
@@ -66,11 +55,4 @@ proper:
 	touch piqirun_props.erl
 	$(MAKE) ERLC_FLAGS='-D PROPER'
 	$(ERL) -pa $(EBIN_DIR) -noshell -eval 'proper:module(piqirun_props, 10000)' -s init stop
-
-
-clean::
-	rm -f $(ERL_APP_FILE) $(PIQI_ERL_FILES) $(PIQI_HRL_FILES)
-
-
-include $(PIQI_ROOT)/make/Makefile.erlang
 
