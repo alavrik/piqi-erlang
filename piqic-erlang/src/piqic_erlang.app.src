@@ -1,0 +1,11 @@
+{application, piqic_erlang, [
+    {description, "Piqi Compiler for Erlang"},
+    {vsn, git},
+    {modules, []},
+    {registered, []},
+    {applications, [kernel, stdlib]},
+    {env, [
+    ]}
+]}.
+
+% ex: sw=4 ts=4 et ft=erlang
