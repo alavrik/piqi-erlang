@@ -1,4 +1,5 @@
 all:
+	$(MAKE) -C piqic-erlang
 	rebar compile
 
 
@@ -7,6 +8,7 @@ deps:
 
 
 clean:
+	$(MAKE) -C piqic-erlang clean
 	rebar clean
 
 
