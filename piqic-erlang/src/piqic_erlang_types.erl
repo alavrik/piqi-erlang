@@ -45,18 +45,19 @@ gen_imports(Context, Imports) ->
                 % because definitions from it can conflict with the compiled
                 % module's local definitions; just copy-pasting the piqi_any()
                 % definition here
-                "\n"
-                "-type(piqi_any() :: #piqi_any{})."
-                "-record(piqi_any, {"
-                "    type :: string() | binary(),"
-                "    protobuf :: binary(),"
-                "    json :: string() | binary(),"
-                "    xml :: string() | binary()"
-                "}).";
+                iod("\n", [
+                    "-type(piqi_any() :: #piqi_any{}).",
+                    "-record(piqi_any, {",
+                    "    type :: string() | binary(),",
+                    "    protobuf :: binary(),",
+                    "    json :: string() | binary(),",
+                    "    xml :: string() | binary()",
+                    "})."
+                ]);
             false ->
                 []
         end,
-    iod("\n", Includes ++ PiqiAny).
+    iod("\n", Includes ++ [PiqiAny]).
 
 
 gen_import(Context, Import) ->

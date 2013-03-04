@@ -12,10 +12,8 @@
 %% See the License for the specific language governing permissions and
 %% limitations under the License.
 
-%% Piqi compiler for Erlang
-%%
-%% This module also defines common functions reused by code generators
-%% implemented in piqic_erlang_*.erl
+%% Piqi compiler for Erlang: top-level module and Escript entry point (see
+%% main/1)
 
 -module(piqic_erlang).
 -compile(export_all).
@@ -24,20 +22,26 @@
 -include("piqic.hrl").
 
 
-% TODO: check that the version of this plugin and "piqic version" are exactly
-% the same
-
-
 % Escript entry point
 main(Args) ->
-    % call piqic_erlangwith command-line arguments and ?MODULE as the
-    % callback module.
-    piqic_erlang(?MODULE, Args).
+    % call piqic_erlang with command-line arguments and ?MODULE as the callback
+    % module
+    case piqic_erlang(?MODULE, Args) of
+        ok ->
+            ok;
+        {error, ErrorStr} ->
+            print_error(ErrorStr),
+            erlang:halt(1)
+    end.
 
 
+% TODO: -v
 usage() ->
+    usage(standard_io).
+
+usage(IoDevice) ->
     ScriptName = escript:script_name(),
-    io:format(
+    io:format(IoDevice, "~s", [
 "Usage: " ++ ScriptName ++ " [options] <.piqi file>\n"
 "Options:
   -I <dir> add directory to the list of imported .piqi search paths
@@ -49,22 +53,30 @@ usage() ->
   --strict treat unknown and duplicate fields as errors
   -e <name> try including extension <name> for all loaded modules (can be used several times)
   --normalize-names turn CamlCase-style names into \"camel-case\" (lowercase & separate words with dashes)
-  --gen-defaults generate default value constructors for generated types
   -h, --help  Display this list of options
 "
-    ).
+    ]).
 
 
-args_error(Error) ->
-    % TODO: print to stderr
-    io:format("Error: ~s~n", [Error]),
-    usage(),
+print_error(ErrorStr) ->
+    print_error(ErrorStr, []).
+
+print_error(Format, Args) ->
+    io:format(standard_error, "Error: " ++ Format ++ "\n", Args).
+
+
+args_error(ErrorStr) ->
+    print_error(ErrorStr),
+    usage(standard_error),
     erlang:halt(1).
 
+
+-define(FLAG_TRACE, piqic_erlang_trace).
 -record(args, {
-    output_dir,  % -C
-    input_file,  % 1st positional arguments
-    other = []    % arguments to be passed to "piqi compile"
+    output_dir,         % -C
+    trace = false,      % --trace
+    input_file,         % last positional argument
+    other = []          % arguments to be passed to "piqi compile"
 }).
 
 
@@ -92,6 +104,13 @@ parse_args(["-C", Odir |T], Args) ->
     },
     parse_args(T, NewArgs);
 
+parse_args([A = "--trace" |T], Args) ->
+    NewArgs = Args#args{
+        trace = true,
+        other = [A | Args#args.other]  % pass through
+    },
+    parse_args(T, NewArgs);
+
 parse_args([A|T], Args) ->
     NewArgs = Args#args{
         other = [A | Args#args.other]
@@ -112,11 +131,6 @@ escape_arg(X) ->
     end.
 
 
-set_cwd('undefined') -> ok;
-set_cwd(Dir) ->
-    ok = file:set_cwd(Dir).
-
-
 % `Mod` parameter is the name of the Erlang module that exports two callback
 % functions:
 %
@@ -128,24 +142,36 @@ piqic_erlang(_Mod, Args) ->
     #args{
         input_file = Filename,
         output_dir = Odir,
+        trace = Trace,
         other = OtherArgs
     } = parse_args(Args),
 
+    % use process dictionary instead of carrying it through the stack
+    put(?FLAG_TRACE, Trace),
+
+    % TODO: send self-spec to "piqic compile" stdin instead of writing it to a
+    % file
     SelfSpec = "piqi.piqi.pb",
-    % FIXME
     piqic:write_file(SelfSpec, piqi_piqi:piqi()),
-    CompiledPiqi = Filename ++ ".pb",
+
+    % NOTE: it would be more better to read it from stdout, but it is not
+    % possible to capture both stdout and sterr (which we need for warnings)
+    % separately using Erlang standard library (so, we are capturing
+    CompiledPiqi = Filename ++ ".pib",
+
+    % capture the original Cwd so that we could restore it later
+    Cwd = get_cwd(Odir),
     try
-        % call the base compiler "piqi compile"
+        % call "piqi compile"
         PiqiCompile = lists:concat([
-            %piqi:get_command("piqi"), " compile",
-            "piqi compile",
+            find_piqi_executable(), " compile",
             " --self-spec ", SelfSpec,
             " -o ", CompiledPiqi,
             " -t pb",
+            " -e erlang",  % automatically load .erlang.piqi extensions
             " ", join_args(OtherArgs)
         ]),
-        command(PiqiCompile),
+        run_piqi_compile(PiqiCompile),
 
         % read the compiled Piqi bundle: it is just a list containing the module
         % being compiled prepended by its import dependencies (if any)
@@ -154,23 +180,113 @@ piqic_erlang(_Mod, Args) ->
 
         % generate the code for the last module in the list 
         set_cwd(Odir),
-        generate_code(PiqiList)
+        generate_code(PiqiList),
+        ok
+    catch
+        {error, _} = Error -> Error
     after
-        file:delete(CompiledPiqi),
-        % FIXME
-        file:delete(SelfSpec)
+        set_cwd(Cwd),  % restore the original CWD
+        file:delete(SelfSpec),
+        file:delete(CompiledPiqi)
     end.
 
 
-command(Cmd) ->
-    %os:cmd(Cmd).
+set_cwd('undefined') ->ok;
+set_cwd(Dir) ->
+    ok = file:set_cwd(Dir).
+
+
+get_cwd('undefined') -> 'undefined';
+get_cwd(_NewCwd) ->
+    {ok, Cwd} = file:get_cwd(),
+    Cwd.
+
+
+% TODO: windows support
+% XXX: check for version compatibility
+find_piqi_executable() ->
+    KernelName = os:cmd("uname -s") -- "\n",
+    Machine = os:cmd("uname -m") -- "\n",
+    BinDir = lists:concat(["bin-", KernelName, "-", Machine]),
+    % path to "piqi" executable within "piqi" application directory
+    AppPath = filename:join(["priv", BinDir, "piqi"]),
+    try
+        case os:getenv("REBAR_DEPS_DIR") of
+            false ->
+                ok;
+            RebarDepsDir ->
+                file_exists(filename:join([RebarDepsDir, "piqi", AppPath]))
+        end,
+        case code:lib_dir(piqi) of
+            {error, _Error} ->
+                ok;
+            PiqiLibPath ->
+                file_exists(filename:join(PiqiLibPath, AppPath))
+        end,
+        case catch escript:script_name() of
+            EscriptName = [H|_] ->
+                case filename:dirname(EscriptName) of
+                    "." when H =/= $. ->  % ignore if there is no directory path
+                        ok;
+                    _EscriptDirName ->
+                        % try looking for "piqi" next to EscriptName (assuming
+                        % current directory layout when "piqic-erlang" and
+                        % "piqi" are located next to each other in the same
+                        % directory)
+
+                        % TODO: disabling until bug in "piqi compile" is fixed
+                        %file_exists(filename:join([EscriptDirName, "..", BinDir, "piqi"]))
+                        ok
+                end;
+            _ ->
+                % tolerate failure in non-escript mode
+                ok
+        end,
+        case os:find_executable("piqi") of
+            false ->
+                throw_error("can't find \"piqi\" executable");
+            Filename ->
+                file_exists(Filename)
+        end
+    catch
+        {return, X} -> X
+    end.
+
+
+% check if the file exists and do a non-local return if it does
+file_exists(Name) ->
+    trace("checking existence of \"~s\"~n", [Name]),
+    case filelib:is_regular(Name) of
+        true ->
+            throw_return(Name);
+        false ->
+            ok
+    end.
+
+
+throw_return(X) -> throw({return, X}).
+throw_error(X) -> throw({error, X}).
+
+
+trace(Format, Args) ->
+    case get(?FLAG_TRACE) of
+        true ->
+            io:format(standard_error, Format, Args);
+        _ ->
+            ok
+    end.
+
+
+run_piqi_compile(Cmd) ->
+    trace("running: ~s~n", [Cmd]),
     case eunit_lib:command(Cmd) of
-        {0, X} ->
-            io:put_chars(X),
+        {0, Output} ->
+            % repeat "piqi compile" warnings and traces on stderr (the way we
+            % call it, "piqi compile" shouldn't produce anything on stdout)
+            io:put_chars(standard_error, Output),
             ok;
         {_Code, Error} ->
-            io:format("command \"~s\" failed with error: ~s~n", [Cmd, Error]),
-            erlang:halt(1)
+            throw_error("command \"" ++ Cmd ++ "\" failed with error: " ++ Error)
     end.
 
 
@@ -181,7 +297,7 @@ read_piqi_bundle(Filename) ->
 
 
 % generate code for the last module in the list; the preceding modules (if any)
-% are imported dependencies
+% represent imported dependencies
 generate_code(PiqiList) ->
     Context = piqic:init_context(PiqiList),
     gen_hrl(Context),

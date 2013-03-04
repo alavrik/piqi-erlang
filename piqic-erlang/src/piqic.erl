@@ -12,7 +12,7 @@
 %% See the License for the specific language governing permissions and
 %% limitations under the License.
 
-%% This module also defines common functions used by piqic_erlang*.erl (and,
+%% This module defines common functions used by piqic_erlang*.erl (and,
 %% potentially, other piqi compilers)
 
 -module(piqic).
@@ -46,9 +46,21 @@ typedef_erlname({alias, X}) -> X#alias.erlang_name;
 typedef_erlname({piqi_list, X}) -> X#piqi_list.erlang_name.
 
 
-% check whether the piqi module is a self-specification, i.e. piqi.piqi
+% check whether the piqi module is a self-specification, i.e. piqi.piqi or
+% piqi.X.piqi
+%
+% XXX: this check is an approximation of the orignal criteria that says a module
+% is a self-spec if it is named piqi or includes a module named piqi. We can't
+% know this for sure, because information about included modules is, by design,
+% not preserved in "piqi compile" output
 is_self_spec(Piqi) ->
-    basename(Piqi#piqi.module) =:= "piqi".
+    Basename = basename(Piqi#piqi.module),
+    case string:tokens(Basename, ".") of
+        ["piqi"|_] ->
+            true;
+        _ ->
+            false
+    end.
 
 
 % check whther the piqi module depends on "piqi-any" type (i.e. one of its
