@@ -1,7 +1,7 @@
 -module(piqi_piqi).
 -compile(export_all).
 
--include("piqirun.hrl").
+-include_lib("piqi/include/piqirun.hrl").
 -include("piqi_piqi.hrl").
 
 
