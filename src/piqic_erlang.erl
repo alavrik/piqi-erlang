@@ -131,14 +131,12 @@ escape_arg(X) ->
     end.
 
 
-% `Mod` parameter is the name of the Erlang module that exports two callback
-% functions:
+% `CallbackMod` parameter is the name of the Erlang module that exports the
+% following callback functions:
 %
-%       gen_piqi(Piqi)
+%       generate(Context = #context{})
 %
-%       custom_args()
-%
-piqic_erlang(_Mod, Args) ->
+piqic_erlang(CallbackMod, Args) ->
     #args{
         input_file = Filename,
         output_dir = Odir,
@@ -178,9 +176,13 @@ piqic_erlang(_Mod, Args) ->
         PiqiBundle = read_piqi_bundle(CompiledPiqi),
         PiqiList = PiqiBundle#piqi_bundle.piqi,
 
-        % generate the code for the last module in the list 
+        % change CWD to output directory if it is defined
         set_cwd(Odir),
-        generate_code(PiqiList),
+
+        % finally, generate code for the last module in the list; the preceding
+        % modules (if any) represent imported dependencies
+        Context = piqic:init_context(PiqiList),
+        CallbackMod:generate(Context),
         ok
     catch
         {error, _} = Error -> Error
@@ -296,10 +298,7 @@ read_piqi_bundle(Filename) ->
     piqi_piqi:parse_piqi_bundle(Buf).
 
 
-% generate code for the last module in the list; the preceding modules (if any)
-% represent imported dependencies
-generate_code(PiqiList) ->
-    Context = piqic:init_context(PiqiList),
+generate(Context) ->
     gen_hrl(Context),
     gen_erl(Context),
     ok.

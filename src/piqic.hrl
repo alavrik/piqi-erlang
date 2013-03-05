@@ -16,7 +16,7 @@
 -define(__PIQIC_HRL__, 1).
 
 
--include("piqi_piqi.hrl").
+-include_lib("piqi/include/piqi_piqi.hrl").
 
 
 -ifndef(__PIQIC_ERL__).
