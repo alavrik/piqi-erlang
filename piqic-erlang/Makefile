@@ -1,6 +1,6 @@
 
 all:
-	rebar compile escriptize
+	rebar compile
 
 
 clean:
