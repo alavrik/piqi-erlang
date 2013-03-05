@@ -1,10 +1,25 @@
 
+#PIQI = ../priv/bin/piqi
+PIQI = piqi
+#PIQIC = ../piqic-erlang/piqic-erlang
+PIQIC = ERL_FLAGS="-pa ../piqic-erlang/ebin" ../priv/bin/piqic-erlang
+PIQIC_FLAGS = #--trace
+
+
 all:
 	cd ..; rebar compile skip_deps=true
 
 
 clean:
 	cd ..; rebar clean skip_deps=true
+	rm -f piqi.piqi
+
+
+# recompile piqi self-spec into piqi_piqi.{erl,hrl}
+reboot: all
+	$(PIQI) cc -o piqi.piqi
+	$(PIQIC) $(PIQIC_FLAGS) piqi.piqi
+
 
 
 

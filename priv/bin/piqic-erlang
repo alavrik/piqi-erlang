@@ -1,1 +1,8 @@
-../../piqic-erlang/piqic-erlang
+#!/usr/bin/env escript
+%%! -noshell -noinput
+
+main(Args) ->
+    piqic_erlang:main(Args).
+
+
+% ex: ft=erlang

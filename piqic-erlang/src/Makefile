@@ -1,6 +1,6 @@
 
 all:
-	cd ..; rebar compile skip_deps=true
+	cd ..; rebar compile escriptize skip_deps=true
 
 
 clean:

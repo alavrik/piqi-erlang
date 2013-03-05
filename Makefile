@@ -1,17 +1,17 @@
+REBAR ?= rebar
+
+
 all:
-	rebar compile
-
-
-reboot: all
-	cp src/piqi_piqi.erl src/piqi_piqi.hrl piqic-erlang/src
+	$(REBAR) compile
+	$(MAKE) -C piqic-erlang
 
 
 deps:
-	rebar get-deps
+	$(REBAR) get-deps
 
 
 clean:
-	rebar clean
+	$(REBAR) clean
 
 
 distclean: clean

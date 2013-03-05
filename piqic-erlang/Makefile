@@ -1,8 +1,10 @@
+REBAR ?= rebar
+
 
 all:
-	rebar compile
+	$(REBAR) compile escriptize
 
 
 clean:
-	rebar clean
+	$(REBAR) clean
 

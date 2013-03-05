@@ -1,7 +1,7 @@
 .PHONY: all clean
 
 
-PIQI_FILES = piqi_rpc.piqi piqi_tools.piqi piqi.piqi
+PIQI_FILES = piqi_rpc.piqi piqi_tools.piqi
 
 
 PIQI_ERL_FILES = $(PIQI_FILES:%.piqi=%_piqi.erl)
@@ -10,19 +10,12 @@ PIQI_HRL_FILES = $(PIQI_FILES:%.piqi=%_piqi.hrl)
 PIQI_ERLANG_FILES = $(PIQI_ERL_FILES) $(PIQI_HRL_FILES)
 
 
-#PIQI = ../priv/bin/piqi
-PIQI = piqi
-
-PIQIC = ../priv/bin/piqic-erlang
+#PIQIC = ../piqic-erlang/piqic-erlang
+PIQIC = ERL_FLAGS="-pa ../piqic-erlang/ebin" ../priv/bin/piqic-erlang
 PIQIC_FLAGS = #--trace
 
 
-all: piqi.piqi $(PIQI_ERLANG_FILES)
-
-
-# print Piqi self-spec
-piqi.piqi:
-	$(PIQI) cc -o piqi.piqi
+all: $(PIQI_ERLANG_FILES)
 
 
 $(PIQI_ERLANG_FILES): $(PIQI_FILES)
@@ -33,7 +26,7 @@ $(PIQI_ERLANG_FILES): $(PIQI_FILES)
 
 
 clean:
-	rm -f piqi.piqi $(PIQI_ERLANG_FILES)
+	rm -f $(PIQI_ERLANG_FILES)
 
 
 # ex: ft=make
