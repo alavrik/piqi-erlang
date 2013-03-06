@@ -19,7 +19,7 @@
 
 -export([start/0, stop/0]).
 % utilities
--export([get_command/1]).
+-export([find_piqi/0]).
 
 
 % @doc start Piqi application
@@ -36,26 +36,26 @@ stop() ->
 % Utilities
 %
 
-
--ifndef(PIQI_CROSS_PLATFORM).
-get_command(Name) -> Name.
--else.
-get_command(Name) ->
-    PiqiDir =
-        case code:lib_dir(piqi) of
-            {error, Error} ->
-                erlang:error({"can't locate Piqi application: ", Error});
-            X -> X
-        end,
-    KernelName = os:cmd("uname -s") -- "\n",
-    Machine = os:cmd("uname -m") -- "\n",
-    BinDir = lists:concat(["bin-", KernelName, "-", Machine]),
-    FullName = filename:join([PiqiDir, "priv", BinDir, Name]),
-    case filelib:is_file(FullName) of
-        false ->
-            erlang:error({"can't locate Piqi command: ", FullName});
-        true ->
-            FullName
+find_piqi() ->
+    case code:lib_dir(piqi) of
+        {error, _Error} ->
+            case os:find_executable("piqi") of
+                false ->
+                    erlang:error("can't find piqi Erlang application or \"piqi\" executable");
+                Filename ->
+                    Filename
+            end;
+        PiqiDir ->
+            KernelName = os:cmd("uname -s") -- "\n",
+            Machine = os:cmd("uname -m") -- "\n",
+            BinDir = lists:concat(["bin-", KernelName, "-", Machine]),
+            % path to "piqi" executable within "piqi" application directory
+            FullName = filename:join([PiqiDir, "priv", BinDir, "piqi"]),
+            case filelib:is_regular(FullName) of
+                true ->
+                    FullName;
+                false ->
+                    erlang:error("can't find \"piqi\" executable at " ++ FullName)
+            end
     end.
--endif.
 

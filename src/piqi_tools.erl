@@ -102,7 +102,7 @@ start_link() ->
 
 %% @private
 init([]) ->
-    Piqi = piqi:get_command("piqi"),
+    Piqi = piqi:find_piqi(),
     Command = Piqi ++ " server" ++ ?PIQI_FLAGS,
     %Command = "tee ilog | piqi server --trace | tee olog",
 

@@ -205,6 +205,7 @@ get_cwd(_NewCwd) ->
 
 
 % TODO: windows support
+% TODO: this is almost exact copy of piqi:find_piqi()
 % XXX: check for version compatibility
 find_piqi_executable() ->
     KernelName = os:cmd("uname -s") -- "\n",
@@ -224,25 +225,6 @@ find_piqi_executable() ->
                 ok;
             PiqiLibPath ->
                 file_exists(filename:join(PiqiLibPath, AppPath))
-        end,
-        case catch escript:script_name() of
-            EscriptName = [H|_] ->
-                case filename:dirname(EscriptName) of
-                    "." when H =/= $. ->  % ignore if there is no directory path
-                        ok;
-                    _EscriptDirName ->
-                        % try looking for "piqi" next to EscriptName (assuming
-                        % current directory layout when "piqic-erlang" and
-                        % "piqi" are located next to each other in the same
-                        % directory)
-
-                        % TODO: disabling until bug in "piqi compile" is fixed
-                        %file_exists(filename:join([EscriptDirName, "..", BinDir, "piqi"]))
-                        ok
-                end;
-            _ ->
-                % tolerate failure in non-escript mode
-                ok
         end,
         case os:find_executable("piqi") of
             false ->
