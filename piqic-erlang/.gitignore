@@ -1,2 +1,4 @@
 /ebin
-/piqic-erlang
+/.eunit
+
+piqic-erlang

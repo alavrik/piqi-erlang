@@ -14,11 +14,10 @@
 
 %%
 %% Unit-tests for Piqi Erlang Runtime library
-%% 
+%%
 -module(piqirun_tests).
 
--ifndef(DIALYZER).
-
+-ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
 
 

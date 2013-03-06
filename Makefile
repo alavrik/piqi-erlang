@@ -10,6 +10,14 @@ deps:
 	$(REBAR) get-deps
 
 
+test: all
+	$(REBAR) eunit
+
+
+dialyzer: all
+	dialyzer ./ebin
+
+
 clean:
 	$(REBAR) clean
 

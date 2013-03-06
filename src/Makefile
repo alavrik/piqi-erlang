@@ -23,26 +23,18 @@ reboot: all
 	$(PIQIC) $(PIQIC_FLAGS) piqi.piqi
 
 
-# various tests
+# piqirun tests
 #
-# TODO,XXX: move them to conventional ../test location
-
-ERL = erl
-EBIN_DIR = ../ebin
-
-ERL_TESTS = piqirun
-ERLC_FLAGS += -I ../include
-
+# TODO: move them to piqriun.erl or to ../test/
 
 test:
-	set -e; \
-	for i in $(ERL_TESTS); do \
-	    $(ERL) -pa $(EBIN_DIR) -noshell -s eunit test $$i -s init stop; \
-	done
+	touch piqirun_tests.erl
+	cd ..; rebar -D TEST compile skip_deps=true
+	erl -pa ../ebin -noshell -s eunit test piqirun -s init stop
 
 
 proper:
 	touch piqirun_props.erl
 	cd ..; rebar -D PROPER compile skip_deps=true
-	$(ERL) -pa $(EBIN_DIR) -noshell -eval 'proper:module(piqirun_props, 10000)' -s init stop
+	erl -pa ../ebin -noshell -eval 'proper:module(piqirun_props, 10000)' -s init stop
 

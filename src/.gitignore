@@ -5,7 +5,3 @@ piqi_rpc_piqi.hrl
 
 piqi_tools_piqi.erl
 piqi_tools_piqi.hrl
-
-dialyzer_plt
-dialyzer.log
-
