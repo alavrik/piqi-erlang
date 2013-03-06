@@ -251,7 +251,7 @@ resolve_type_name(Context, TypeName) ->
             % NOTE: this will also resolve built-in types
             resolve_local_type_name(Context#context.index, Name);
         [ImportName, Name] ->  % imported type
-            Import = fetch(Index#index.import, ImportName),
+            Import = fetch(ImportName, Index#index.import),
             ImportedIndex = resolve_import(Context, Import),
             resolve_local_type_name(ImportedIndex, Name)
     end.
@@ -266,7 +266,7 @@ resolve_local_type_name(Index, Name) ->
 
 % resolve import to the imported module's index
 resolve_import(Context, Import) ->
-    _ImportedIndex = fetch(Context#context.module_index, Import#import.module).
+    _ImportedIndex = fetch(Import#import.module, Context#context.module_index).
 
 
 scoped_name(Context, Name) ->
