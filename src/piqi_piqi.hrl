@@ -2,11 +2,11 @@
 -define(__PIQI_PIQI_HRL__, 1).
 
 
--type piq_format() :: 
+-type piq_format() ::
       word
     | text.
 
--type protobuf_wire_type() :: 
+-type protobuf_wire_type() ::
       varint
     | zigzag_varint
     | fixed32
@@ -20,14 +20,14 @@
 
 -type name() :: word().
 
--type typedef() :: 
+-type typedef() ::
       {piqi_record, piqi_record()}
     | {variant, variant()}
     | {enum, enum()}
     | {alias, alias()}
     | {piqi_list, piqi_list()}.
 
--type piqi_type() :: 
+-type piqi_type() ::
       int
     | float
     | bool
@@ -62,7 +62,7 @@
     erlang_name :: string() | binary()
 }).
 
--type field_mode() :: 
+-type field_mode() ::
       required
     | optional
     | repeated.
@@ -159,7 +159,7 @@
     piqi = [] :: [piqi()]
 }).
 
--type erlang_string_type() :: 
+-type erlang_string_type() ::
       binary
     | list.
 

@@ -105,14 +105,14 @@ gen_typedef(Context, {Type, X}) ->
 
 gen_alias(Context, X) ->
     TypeExpr = gen_out_type(Context, X#alias.type, X#alias.erlang_type),
-    make_typedef(Context, X#alias.erlang_name, TypeExpr).
+    make_typedef_1(Context, X#alias.erlang_name, TypeExpr).
 
 
 gen_list(Context, X) ->
     TypeExpr = [
         "[", gen_out_type(Context, X#piqi_list.type), "]"
     ],
-    make_typedef(Context, X#piqi_list.erlang_name, TypeExpr).
+    make_typedef_1(Context, X#piqi_list.erlang_name, TypeExpr).
 
 
 gen_enum(Context, X) ->
@@ -156,13 +156,18 @@ gen_option(Context, X) ->
 
 gen_record_type(Context, X) ->
     Name = X#piqi_record.erlang_name,
-    make_typedef(Context, Name, ["#", scoped_name(Context, Name), "{}"]).
+    make_typedef_1(Context, Name, ["#", scoped_name(Context, Name), "{}"]).
 
 
 make_typedef(Context, Name, TypeExpr) ->
     [
-        "-type ", scoped_name(Context, Name), "() :: ", TypeExpr, ".\n"
+        "-type ", scoped_name(Context, Name), "() ::", TypeExpr, ".\n"
     ].
+
+
+% fit it on one line
+make_typedef_1(Context, Name, TypeExpr) ->
+    make_typedef(Context, Name, [" ", TypeExpr]).
 
 
 gen_record(Context, X) ->
