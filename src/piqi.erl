@@ -36,15 +36,13 @@ stop() ->
 % Utilities
 %
 
+-spec find_piqi() -> string().
+
+% find the location of "piqi" executable
 find_piqi() ->
     case code:lib_dir(piqi) of
         {error, _Error} ->
-            case os:find_executable("piqi") of
-                false ->
-                    erlang:error("can't find piqi Erlang application or \"piqi\" executable");
-                Filename ->
-                    Filename
-            end;
+            find_piqi_in_path();
         PiqiDir ->
             KernelName = os:cmd("uname -s") -- "\n",
             Machine = os:cmd("uname -m") -- "\n",
@@ -55,7 +53,18 @@ find_piqi() ->
                 true ->
                     FullName;
                 false ->
-                    erlang:error("can't find \"piqi\" executable at " ++ FullName)
+                    error_logger:warning_msg("can't find 'piqi' executable at ~s~n", [FullName]),
+                    find_piqi_in_path()
             end
+    end.
+
+
+% try looking for "piqi" executable in $PATH
+find_piqi_in_path() ->
+    case os:find_executable("piqi") of
+        false ->
+            erlang:error("failed to find 'piqi' executable");
+        Filename ->
+            Filename
     end.
 
