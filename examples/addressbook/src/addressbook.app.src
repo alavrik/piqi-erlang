@@ -1,0 +1,10 @@
+{application, addressbook, [
+    {description, "Piqi addressbook example"},
+    {vsn, git},
+    {modules, []},
+    {applications, [kernel, stdlib, piqi]},
+    {env, []}
+]}.
+
+
+% ex: ft=erlang
