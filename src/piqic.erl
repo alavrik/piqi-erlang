@@ -150,10 +150,16 @@ is_builtin_alias(X) ->
     X#alias.piqi_type =/= 'undefined'.
 
 
+get_used_builtin_typedefs([], _BuiltinsIndex) ->
+    [];
 get_used_builtin_typedefs(Typedefs, BuiltinsIndex) ->
     L = [get_used_builtin_names(X, BuiltinsIndex) || X <- Typedefs],
     BuiltinNames = lists:usort(lists:append(L)),
-    [fetch(N, BuiltinsIndex) || N <- BuiltinNames].
+    BuiltinTypedefs = [fetch(N, BuiltinsIndex) || N <- BuiltinNames],
+    % get built-in types' dependencies (that are also built-in types) -- usually
+    % no more than 2-3 recursion steps is needed
+    Res = get_used_builtin_typedefs(BuiltinTypedefs, BuiltinsIndex) ++ BuiltinTypedefs,
+    lists:usort(Res).
 
 
 get_used_builtin_names(_Typedef = {Type, X}, BuiltinsIndex) ->
@@ -164,7 +170,12 @@ get_used_builtin_names(_Typedef = {Type, X}, BuiltinsIndex) ->
             variant ->
                 [O#option.type || O <- X#variant.option];
             alias ->
-                [X#alias.type];
+                case X#alias.type of
+                    'undefined' ->  % it is undefined for lowest-level built-in types
+                        [];
+                    _ ->
+                        [X#alias.type]
+                end;
             list ->
                 [X#piqi_list.type];
             enum ->
