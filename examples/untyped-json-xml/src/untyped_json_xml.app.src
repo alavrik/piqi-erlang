@@ -1,0 +1,10 @@
+{application, untyped_json_xml, [
+    {description, "Piqi untyped JSON and XML usage example"},
+    {vsn, git},
+    {modules, []},
+    {applications, [kernel, stdlib, piqi]},
+    {env, []}
+]}.
+
+
+% ex: ft=erlang

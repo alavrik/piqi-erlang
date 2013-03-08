@@ -1,0 +1,10 @@
+{application, custom_types, [
+    {description, "Piqi custom types example"},
+    {vsn, git},
+    {modules, []},
+    {applications, [kernel, stdlib, piqi]},
+    {env, []}
+]}.
+
+
+% ex: ft=erlang

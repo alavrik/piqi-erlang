@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -ex
+
+
+ERL_PATH="-pa ebin -pa deps/piqi/ebin"
+
+erl $ERL_PATH -noshell -s piqi start -run test run person.piq -s erlang halt
+erl $ERL_PATH -noshell -s piqi start -run test run person-xml.piq -s erlang halt
+erl $ERL_PATH -s piqi start < test.escript
+
