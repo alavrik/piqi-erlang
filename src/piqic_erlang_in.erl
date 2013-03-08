@@ -125,8 +125,9 @@ gen_input_type_name(Context, Typedef) ->
 
 unalias_input_typedef(Context, {alias, A})
         when A#alias.erlang_type =:= 'undefined' andalso A#alias.type =/= 'undefined' ->
-    {_Piqi, Typedef} = resolve_type_name(Context, A#alias.type),
-    unalias_input_typedef(Context, Typedef);
+    {ParentPiqi, Typedef} = resolve_type_name(Context, A#alias.type),
+    ParentContext = piqic:switch_context(Context, ParentPiqi),
+    unalias_input_typedef(ParentContext, Typedef);
 
 unalias_input_typedef(_Context, Typedef) ->
     typedef_name(Typedef).
@@ -290,7 +291,7 @@ gen_record(Context, X) ->
         end,
     Name = X#piqi_record.erlang_name,
     [
-        "parse_", Name, "(X) -> \n",
+        "parse_", Name, "(X) ->\n",
         "    ", "R0 = piqirun:parse_record(X),\n",
         ParsersCode,
         "    ", "piqirun:check_unparsed_fields(", record_variable(length(Fields)), "),\n",
@@ -392,12 +393,13 @@ gen_alias_type(Context, Alias, WireType, IsPacked) ->
                 Alias#alias.erlang_type,
                 WireType, IsPacked);
         TypeName ->
-            {_ParentPiqi, Typedef} = resolve_type_name(Context, TypeName),
+            {ParentPiqi, Typedef} = resolve_type_name(Context, TypeName),
             case Typedef of
                 {alias, A} when WireType =/= 'undefined' ->
                     % need special handing in case when higher-level alias
                     % overrides protobuf_wire_type
-                    gen_alias_type(Context, A, WireType, IsPacked);
+                    ParentContext = piqic:switch_context(Context, ParentPiqi),
+                    gen_alias_type(ParentContext, A, WireType, IsPacked);
                 _ ->
                     gen_type(Context, TypeName, IsPacked)
             end

@@ -255,7 +255,7 @@ gen_option(Context, X, OuterOption) ->
         'undefined' ->
             case OuterOption =/= 'undefined' of
                 true ->
-                    gen_inner_option(Context, Name, OuterOption);
+                    gen_inner_option(Name, OuterOption);
                 false ->
                     Clause = [
                         Name, " -> ", "piqirun:gen_bool_field(", Code, ", true)"
@@ -263,7 +263,7 @@ gen_option(Context, X, OuterOption) ->
                     [Clause]
             end;
         TypeName ->
-            {_Piqi, Typedef} = resolve_type_name(Context, TypeName),
+            {ParentPiqi, Typedef} = resolve_type_name(Context, TypeName),
             case Typedef of
                 {Type, Y} when X#option.erlang_name =:= 'undefined', (Type =:= variant orelse Type =:= enum) ->
                     % handle variant and enum subtyping cases by lifting their
@@ -275,15 +275,16 @@ gen_option(Context, X, OuterOption) ->
                         end,
                     % recursively generate cases from "included" variants and
                     % enums
-                    OuterOption2 = ?choose_defined(OuterOption, X),
-                    L = [gen_option(Context, O, OuterOption2) || O <- Options],
+                    OuterOption2 = ?choose_defined(OuterOption, {Context, X}),
+                    ParentContext = piqic:switch_context(Context, ParentPiqi),
+                    L = [gen_option(ParentContext, O, OuterOption2) || O <- Options],
                     lists:append(L);  % flatten
                 _ ->
                     % general case
                     case OuterOption =/= 'undefined' of
                         true ->
                             Pattern = ["{", Name, ", _}"],
-                            gen_inner_option(Context, Pattern, OuterOption);
+                            gen_inner_option(Pattern, OuterOption);
                         false ->
                             Res = [
                                 "{", Name, ", Y} -> ",
@@ -295,7 +296,7 @@ gen_option(Context, X, OuterOption) ->
     end.
 
 
-gen_inner_option(Context, Pattern, X) ->
+gen_inner_option(Pattern, {Context, X}) ->
     Code = gen_code(X#option.code),
     Clause = [
         Pattern, " -> ", gen_type(Context, X#option.type), "(", Code, ", X)"
@@ -382,12 +383,13 @@ gen_alias_type(Context, Alias, WireType, IsPacked) ->
                 Alias#alias.erlang_type,
                 WireType, IsPacked);
         TypeName ->
-            {_ParentPiqi, Typedef} = resolve_type_name(Context, TypeName),
+            {ParentPiqi, Typedef} = resolve_type_name(Context, TypeName),
             case Typedef of
                 {alias, A} when WireType =/= 'undefined' ->
                     % need special handing in case when higher-level alias
                     % overrides protobuf_wire_type
-                    gen_alias_type(Context, A, WireType, IsPacked);
+                    ParentContext = piqic:switch_context(Context, ParentPiqi),
+                    gen_alias_type(ParentContext, A, WireType, IsPacked);
                 _ ->
                     gen_type(Context, TypeName, IsPacked)
             end

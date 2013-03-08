@@ -121,17 +121,14 @@ init_context(PiqiList) ->
         end,
     BuiltinsIndex = index_typedefs(BuiltinTypedefs),
 
-    % get the list of  built-in typedefs are actually referenced by the module
-    UsedBuiltinTypedefs = get_used_builtin_typedefs(Piqi#piqi.typedef, BuiltinsIndex),
-    % change the module as if the built-ins were defined locally
-    Piqi2 = Piqi#piqi{
-        typedef = UsedBuiltinTypedefs ++ Piqi#piqi.typedef
-    },
+    Piqi2 = add_builtin_typedefs(Piqi, BuiltinsIndex),
+    Imports2 = [add_builtin_typedefs(X, BuiltinsIndex) || X <- Imports],
+
     % index the compiled module's contents
     Index = index_module(Piqi2),
 
     % index imported modules
-    ModIndex = make_module_index(Imports),
+    ModIndex = make_module_index(Imports2),
 
     #context{
         piqi = Piqi2,
@@ -141,6 +138,31 @@ init_context(PiqiList) ->
 
         modules = PiqiList,
         module_index = ModIndex
+    }.
+
+
+switch_context(Context, Piqi) ->
+    CurrentPiqi = Context#context.piqi,
+    % efficient way to check whether we are dealing with the current module
+    case CurrentPiqi#piqi.module =:= Piqi#piqi.module of
+        true ->
+            Context;
+        false ->
+            Index = fetch(Piqi#piqi.module, Context#context.module_index),
+            Context#context{
+                piqi = Piqi,
+                index = Index
+            }
+    end.
+
+
+add_builtin_typedefs(Piqi, BuiltinsIndex) ->
+    % get the list of built-in typedefs that are actually referenced by the
+    % module
+    UsedBuiltinTypedefs = get_used_builtin_typedefs(Piqi#piqi.typedef, BuiltinsIndex),
+    % change the module as if the built-ins were defined locally
+    Piqi#piqi{
+        typedef = UsedBuiltinTypedefs ++ Piqi#piqi.typedef
     }.
 
 
@@ -226,8 +248,17 @@ index_module(Piqi) ->
 
 % index imports by name
 index_imports(L) ->
-    L2 = [{X#import.name, X} || X <- L],
+    L2 = [{make_import_name(X), X} || X <- L],
     orddict:from_list(L2).
+
+
+make_import_name(X) ->
+    case X#import.name of
+        'undefined' ->
+            X#import.module;
+        Name ->
+            Name
+    end.
 
 
 % index typedefs by name
@@ -255,6 +286,7 @@ find(Key, Orddict) ->
 
 % resolve type name to its type definition and the module where it was defined
 resolve_type_name(Context, TypeName) ->
+    %?PRINT({resolve_type_name, Context#context.piqi#piqi.module, TypeName}),
     S = to_string(TypeName),
     Index = Context#context.index,
     case string:tokens(S, "/") of
@@ -422,8 +454,9 @@ is_localname(X) ->
 
 
 can_be_protobuf_packed(Context, TypeName) when is_list(TypeName); is_binary(TypeName) ->
-    {_Piqi, Typedef} = resolve_type_name(Context, TypeName),
-    can_be_protobuf_packed(Context, Typedef);
+    {ParentPiqi, Typedef} = resolve_type_name(Context, TypeName),
+    ParentContext = switch_context(Context, ParentPiqi),
+    can_be_protobuf_packed(ParentContext, Typedef);
 
 can_be_protobuf_packed(Context, Typedef) ->
     case unalias(Context, Typedef) of
@@ -440,8 +473,9 @@ can_be_protobuf_packed(Context, Typedef) ->
 % unwind aliases to the lowest-level non-alias typedef or one of the built-in
 % primitive Piqi types
 unalias(Context, {alias, A}) when A#alias.type =/= 'undefined' ->
-    {_Piqi, AliasedTypedef} = resolve_type_name(Context, A#alias.type),
-    unalias(Context, AliasedTypedef);
+    {ParentPiqi, AliasedTypedef} = resolve_type_name(Context, A#alias.type),
+    ParentContext = switch_context(Context, ParentPiqi),
+    unalias(ParentContext, AliasedTypedef);
 
 unalias(_Context, {alias, A}) -> % when A#alias.piqi_type =/= 'undefined'
     A#alias.piqi_type;
