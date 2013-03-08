@@ -109,10 +109,19 @@ gen_option(Context, X) ->
 gen_record(Context, X) ->
     Name = X#piqi_record.erlang_name,
     Fields = [gen_field(Context, F) || F <- X#piqi_record.field],
+    ConstructorsCode =
+        case Fields of
+            [] ->
+                "";
+            _ ->
+                [
+                    "        ", iod(",\n        ", Fields), "\n"
+                ]
+        end,
     [
         "default_", Name, "() ->\n",
         "    ", "#", scoped_name(Context, Name), "{\n",
-        "        ", iod(",\n        ", Fields), "\n",
+        ConstructorsCode,
         "    ", "}.\n"
     ].
 

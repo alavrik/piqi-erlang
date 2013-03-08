@@ -274,7 +274,9 @@ gen_record(Context, X) ->
                 "";
             _ ->
                 FieldConstructors = [gen_field_constructor(Context, F) || F <- Fields],
-                iod(",\n        ", FieldConstructors)
+                [
+                    "        ", iod(",\n        ", FieldConstructors), "\n"
+                ]
         end,
     ParsersCode =
         case Fields of
@@ -282,16 +284,18 @@ gen_record(Context, X) ->
                 "";
             _ ->
                 FieldParsers = gen_field_parsers(Context, Fields),
-                iod(",\n    ", FieldParsers)
+                [
+                    "    ", iod(",\n    ", FieldParsers), ",\n"
+                ]
         end,
     Name = X#piqi_record.erlang_name,
     [
         "parse_", Name, "(X) -> \n",
         "    ", "R0 = piqirun:parse_record(X),\n",
-        "    ", ParsersCode, ",\n"
+        ParsersCode,
         "    ", "piqirun:check_unparsed_fields(", record_variable(length(Fields)), "),\n",
         "    ", "#", scoped_name(Context, Name), "{\n",
-        "        ", ConstructorsCode, "\n",
+        ConstructorsCode,
         "    ", "}.\n"
     ].
 

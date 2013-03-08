@@ -173,11 +173,19 @@ make_typedef_1(Context, Name, TypeExpr) ->
 gen_record(Context, X) ->
     Name = X#piqi_record.erlang_name,
     Fields = [gen_field(Context, F) || F <- X#piqi_record.field],
+    FieldsCode =
+        case Fields of
+            [] ->
+                "";
+            _ ->
+                [
+                    "\n    ", iod(",\n    ", Fields), "\n"
+                ]
+        end,
     [
         "-record(", scoped_name(Context, Name), ", {",
-        "\n    ",
-        iod(",\n    ", Fields),
-        "\n}).\n"
+        FieldsCode,
+        "}).\n"
     ].
 
 
