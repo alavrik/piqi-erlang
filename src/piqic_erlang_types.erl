@@ -46,13 +46,13 @@ gen_imports(Context, Imports) ->
                 % module's local definitions; just copy-pasting the piqi_any()
                 % definition here
                 iod("\n", [
-                    "-type(piqi_any() :: #piqi_any{}).",
                     "-record(piqi_any, {",
                     "    type :: string() | binary(),",
                     "    protobuf :: binary(),",
                     "    json :: string() | binary(),",
                     "    xml :: string() | binary()",
-                    "})."
+                    "}).",
+                    "-type(piqi_any() :: #piqi_any{})."
                 ]);
             false ->
                 []
