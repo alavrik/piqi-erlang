@@ -24,7 +24,7 @@ dialyzer: all
 
 
 clean:
-	$(REBAR) clean
+	$(REBAR) clean skip_deps=true
 	rm -f addressbook.piq.pb addressbook.pb.piq l1 l2
 
 

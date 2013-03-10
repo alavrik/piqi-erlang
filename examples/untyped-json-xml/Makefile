@@ -17,7 +17,7 @@ dialyzer: all
 
 
 clean:
-	$(REBAR) clean
+	$(REBAR) clean skip_deps=true
 
 
 distclean: clean

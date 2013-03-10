@@ -8,12 +8,15 @@ all:
 	$(REBAR) compile
 
 
+test:
+
+
 dialyzer: all
 	dialyzer deps/piqi/ebin ./ebin
 
 
 clean:
-	$(REBAR) clean
+	$(REBAR) clean skip_deps=true
 
 
 distclean: clean
