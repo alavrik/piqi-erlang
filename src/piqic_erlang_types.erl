@@ -252,7 +252,8 @@ gen_type(Context, TypeName) ->
     {ParentPiqi, Typedef} = resolve_type_name(Context, TypeName),
     case Typedef of
         {alias, X} ->
-            gen_alias_type(Context, ParentPiqi, X);
+            ParentContext = piqic:switch_context(Context, ParentPiqi),
+            gen_alias_type(ParentContext, X);
         _ -> % piqi_record | variant | list | enum
             LocalName = typedef_erlname(Typedef),
             % make scoped name based on the parent module's type prefix
@@ -260,12 +261,12 @@ gen_type(Context, TypeName) ->
     end.
 
         
-gen_alias_type(Context, ParentPiqi, Alias) ->
+gen_alias_type(Context, Alias) ->
     case Alias#alias.type =:= 'undefined' andalso Alias#alias.erlang_type =:= 'undefined' of
         true ->
             % this is an alias for a built-in type (piqi_type field must be
             % defined when neither of type and erlang_type fields are present)
-            gen_builtin_type(ParentPiqi, Alias#alias.piqi_type);
+            gen_builtin_type(Context, Alias#alias.piqi_type);
         false ->
             case piqic:is_builtin_alias(Alias) of
                 true ->
@@ -275,19 +276,19 @@ gen_alias_type(Context, ParentPiqi, Alias) ->
                 false ->
                     % for non-builtin types, we just use the name of already
                     % generated -type
-                    _ScopedName = ParentPiqi#piqi.erlang_type_prefix ++ Alias#alias.erlang_name
+                    Piqi = Context#context.piqi,
+                    _ScopedName = Piqi#piqi.erlang_type_prefix ++ Alias#alias.erlang_name
             end
     end.
 
 
-gen_builtin_type(ParentPiqi, PiqiType) ->
+gen_builtin_type(Context, PiqiType) ->
     case PiqiType of
         any ->
-            case piqic:is_self_spec(ParentPiqi) of
+            Piqi = Context#context.piqi,
+            case piqic:is_self_spec(Piqi) of
                 true ->
-                    % we can't know upfront if this self-spec uses prefixes or
-                    % not
-                    _ScopedName = ParentPiqi#piqi.erlang_type_prefix ++ "piqi_any";
+                    _ScopedName = Piqi#piqi.erlang_type_prefix ++ "any";
                 false ->
                     % but the default piqi_piqi.erl definitely doesn't have type
                     % prefixes, therefore we can use the standard Erlang name
