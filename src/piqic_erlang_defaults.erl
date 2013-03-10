@@ -46,7 +46,7 @@ gen_typedef(Context, _Typedef = {Type, X}) ->
             gen_record(Context, X);
         variant ->
             gen_variant(Context, X);
-        list ->
+        piqi_list ->
             gen_list(X);
         enum ->
             gen_enum(X);

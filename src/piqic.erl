@@ -77,7 +77,7 @@ typedef_depends_on_piqi_any(_Typedef = {Type, X}) ->
             lists:any(fun (O) -> is_piqi_any(O#option.type) end, X#variant.option);
         alias ->
             is_piqi_any(X#alias.type);
-        list ->
+        piqi_list ->
             is_piqi_any(X#piqi_list.type);
         enum ->
             false
@@ -198,7 +198,7 @@ get_used_builtin_names(_Typedef = {Type, X}, BuiltinsIndex) ->
                     _ ->
                         [X#alias.type]
                 end;
-            list ->
+            piqi_list ->
                 [X#piqi_list.type];
             enum ->
                 []
@@ -352,7 +352,7 @@ erlname_typedef({Type, X}) ->
             variant -> erlname_variant(X);
             enum -> erlname_enum(X);
             alias -> erlname_alias(X);
-            list -> erlname_list(X)
+            piqi_list -> erlname_list(X)
         end,
     {Type, X2}.
 

@@ -82,7 +82,7 @@ gen_typedef(Context, {Type, X}) ->
             gen_record(Context, X);
         variant ->
             gen_variant(Context, X);
-        list ->
+        piqi_list ->
             gen_list(Context, X);
         enum ->
             gen_enum(Context, X);
