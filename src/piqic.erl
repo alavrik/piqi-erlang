@@ -156,10 +156,15 @@ switch_context(Context, Piqi) ->
     end.
 
 
+% get the list of built-in typedefs that are actually referenced by the module
 add_builtin_typedefs(Piqi, BuiltinsIndex) ->
-    % get the list of built-in typedefs that are actually referenced by the
-    % module
-    UsedBuiltinTypedefs = get_used_builtin_typedefs(Piqi#piqi.typedef, BuiltinsIndex),
+    % exclude builtin typedefs that are masked by the local typedefs
+    TypedefNames = [typedef_name(X) || X <- Piqi#piqi.typedef],
+    BuiltinsIndex2 = orddict:filter(
+        fun(Name, _) -> not lists:member(Name, TypedefNames) end,
+        BuiltinsIndex
+    ),
+    UsedBuiltinTypedefs = get_used_builtin_typedefs(Piqi#piqi.typedef, BuiltinsIndex2),
     % change the module as if the built-ins were defined locally
     Piqi#piqi{
         typedef = UsedBuiltinTypedefs ++ Piqi#piqi.typedef
