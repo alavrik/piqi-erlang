@@ -400,8 +400,10 @@ gen_builtin_type(Context, PiqiType, ErlType, WireType, IsPacked) ->
     case PiqiType of
         any ->
             case Context#context.is_self_spec of
+                true when ErlType =/= 'undefined' ->
+                    ["field_gen_", ErlType];
                 true ->
-                    "field_gen_piqi_any";
+                    "field_gen_any";
                 false ->
                     "piqi_piqi:field_gen_piqi_any"
             end;

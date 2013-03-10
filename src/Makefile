@@ -18,7 +18,7 @@ clean:
 
 
 # recompile piqi self-spec into piqi_piqi.{erl,hrl}
-reboot: all
+reboot:
 	$(PIQI) cc -o piqi.piqi
 	$(PIQIC) $(PIQIC_FLAGS) piqi.piqi
 

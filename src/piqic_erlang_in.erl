@@ -410,8 +410,10 @@ gen_builtin_type(Context, PiqiType, ErlType, WireType, IsPacked) ->
     case PiqiType of
         any ->
             case Context#context.is_self_spec of
+                true when ErlType =/= 'undefined' ->
+                    ["parse_", ErlType];
                 true ->
-                    "parse_piqi_any";
+                    "parse_any";
                 false ->
                     "piqi_piqi:parse_piqi_any"
             end;
