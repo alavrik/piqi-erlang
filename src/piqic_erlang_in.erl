@@ -104,12 +104,12 @@ gen_spec(Context, Typedef) ->
 gen_input_type_name(Context, Typedef) ->
     % un-alias to avoid Dialyzer complaints like this one: "... states that the
     % function might also return string() but the inferred return is binary()"
-    AliasedTypeName = unalias_input_typedef(Context, Typedef),
-    T = piqic_erlang_types:gen_type(Context, AliasedTypeName),
+    {Context2, AliasedTypeName} = unalias_input_typedef(Context, Typedef),
+    T = piqic_erlang_types:gen_type(Context2, AliasedTypeName),
 
     % strings can be parsed either as lists or as binaries depending on the
     % "erlang-string-type" per-module setting
-    Piqi = Context#context.piqi,
+    Piqi = Context2#context.piqi,
     case to_string(T) of
         "string" ->
             case Piqi#piqi.erlang_string_type of
@@ -129,8 +129,8 @@ unalias_input_typedef(Context, {alias, A})
     ParentContext = piqic:switch_context(Context, ParentPiqi),
     unalias_input_typedef(ParentContext, Typedef);
 
-unalias_input_typedef(_Context, Typedef) ->
-    typedef_name(Typedef).
+unalias_input_typedef(Context, Typedef) ->
+    {Context, typedef_name(Typedef)}.
 
 
 gen_alias(Context, X) ->
