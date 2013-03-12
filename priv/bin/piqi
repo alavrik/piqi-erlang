@@ -1,0 +1,6 @@
+#!/bin/sh
+
+PIQI=`ERL_CRASH_DUMP="" erl -noshell -kernel error_logger silent -eval 'io:format("~s", [piqi:find_piqi()]), halt().'`
+
+"$PIQI" $@
+
