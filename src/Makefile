@@ -1,7 +1,6 @@
 
-# TODO: uncomment this once the the new (fixed) version of piqi is released
-#PIQI = ../priv/bin-"`uname -s`-`uname -m`"/piqi
-PIQI = piqi
+#PIQI = piqi
+PIQI = ../priv/piqi-binary/"`uname -s`-`uname -m`"/piqi
 
 #PIQIC = ../piqic-erlang/piqic-erlang
 PIQIC = ERL_FLAGS="-pa ../piqic-erlang/ebin" ../priv/bin/piqic-erlang

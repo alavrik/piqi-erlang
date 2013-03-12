@@ -23,6 +23,7 @@ clean:
 
 
 distclean: clean
+	$(REBAR) delete-deps
 	rm -rf ebin deps
 
 

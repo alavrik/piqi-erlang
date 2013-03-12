@@ -210,9 +210,9 @@ get_cwd(_NewCwd) ->
 find_piqi_executable() ->
     KernelName = os:cmd("uname -s") -- "\n",
     Machine = os:cmd("uname -m") -- "\n",
-    BinDir = lists:concat(["bin-", KernelName, "-", Machine]),
+    Arch = lists:concat([KernelName, "-", Machine]),
     % path to "piqi" executable within "piqi" application directory
-    AppPath = filename:join(["priv", BinDir, "piqi"]),
+    AppPath = filename:join(["priv", "piqi-binary", Arch, "piqi"]),
     try
         case os:getenv("REBAR_DEPS_DIR") of
             false ->

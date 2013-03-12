@@ -1,5 +1,9 @@
 /ebin
 /.eunit
+/deps
+
+# created by get-deps
+/priv/piqi-binary
 
 # vim
 *.swp

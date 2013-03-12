@@ -46,9 +46,9 @@ find_piqi() ->
         PiqiDir ->
             KernelName = os:cmd("uname -s") -- "\n",
             Machine = os:cmd("uname -m") -- "\n",
-            BinDir = lists:concat(["bin-", KernelName, "-", Machine]),
+            Arch = lists:concat([KernelName, "-", Machine]),
             % path to "piqi" executable within "piqi" application directory
-            FullName = filename:join([PiqiDir, "priv", BinDir, "piqi"]),
+            FullName = filename:join([PiqiDir, "priv", "piqi-binary", Arch, "piqi"]),
             case filelib:is_regular(FullName) of
                 true ->
                     FullName;
