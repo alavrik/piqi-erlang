@@ -2,7 +2,7 @@
 ERL_SOURCES = \
 	$(PIQI_ERL_FILES) \
 
-PIQI_FILES = first.piqi second.piqi
+PIQI_FILES = first.piqi second.piqi person.piqi addressbook.piqi
 
 PRE_TARGET = $(PIQI_ERLANG_FILES)
 
