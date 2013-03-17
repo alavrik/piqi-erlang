@@ -15,6 +15,9 @@ Documentation
 
 Piqi Erlang documentation is available at http://piqi.org/doc/erlang/
 
+The master copy is located in the repository:
+[doc/piqi-erlang.md](doc/piqi-erlang.md)
+
 
 Bugs
 ----
