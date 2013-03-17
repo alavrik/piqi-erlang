@@ -1,6 +1,6 @@
 
 ifndef PIQI
-export PIQI = ../priv/piqi-binary/"`uname -s`-`uname -m`"/piqi
+export PIQI = $(shell echo ../priv/piqi-binary/"`uname -s`-`uname -m`"/piqi)
 endif
 
 #PIQIC = ../piqic-erlang/piqic-erlang
