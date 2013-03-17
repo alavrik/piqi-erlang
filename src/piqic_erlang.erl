@@ -52,7 +52,7 @@ usage(IoDevice) ->
   -C <output directory> specify output directory
   --strict treat unknown and duplicate fields as errors
   -e <name> try including extension <name> for all loaded modules (can be used several times)
-  --normalize-names turn CamlCase-style names into \"camel-case\" (lowercase & separate words with dashes)
+  --normalize-names true|false turn CamlCase-style names into \"camel-case\" (default = true)
   -h, --help  Display this list of options
 "
     ]).
@@ -67,7 +67,6 @@ print_error(Format, Args) ->
 
 args_error(ErrorStr) ->
     print_error(ErrorStr),
-    usage(standard_error),
     erlang:halt(1).
 
 
@@ -76,21 +75,22 @@ args_error(ErrorStr) ->
     output_dir,         % -C
     trace = false,      % --trace
     input_file,         % last positional argument
-    other = []          % arguments to be passed to "piqi compile"
+    other = [],          % arguments to be passed to "piqi compile"
+    normalize_names = true
 }).
 
 
 % extract filename (last argument) and output directory (argument following -C)
-parse_args([]) ->
-    args_error("missing name of the input .piqi file");
-
-parse_args([X]) when X == "-h" orelse X == "--help" ->
-    usage(),
-    erlang:halt(0);
-
 parse_args(Args) ->
     parse_args(Args, #args{}).
 
+
+parse_args([], _Args) ->
+    args_error("missing name of the input .piqi file");
+
+parse_args([X|_], _Args) when X == "-h" orelse X == "--help" ->
+    usage(),
+    erlang:halt(0);
 
 parse_args([Filename], Args) ->
     Args#args{
@@ -101,6 +101,18 @@ parse_args([Filename], Args) ->
 parse_args(["-C", Odir |T], Args) ->
     NewArgs = Args#args{
         output_dir = Odir
+    },
+    parse_args(T, NewArgs);
+
+parse_args(["--normalize-names" , Value |T], Args) ->
+    Bool =
+        case Value of
+            "true" -> true;
+            "false" -> false;
+            _ -> args_error("true or false are expected as values for --normalize-names")
+        end,
+    NewArgs = Args#args{
+        normalize_names = Bool
     },
     parse_args(T, NewArgs);
 
@@ -141,6 +153,7 @@ piqic_erlang(CallbackMod, Args) ->
         input_file = Filename,
         output_dir = Odir,
         trace = Trace,
+        normalize_names = NormalizeNames,
         other = OtherArgs
     } = parse_args(Args),
 
@@ -161,12 +174,20 @@ piqic_erlang(CallbackMod, Args) ->
     Cwd = get_cwd(Odir),
     try
         % call "piqi compile"
+        NormalizeNamesOpt =
+            case NormalizeNames of
+                true ->
+                    " --normalize-names";
+                false ->
+                    ""
+            end,
         PiqiCompile = lists:concat([
             find_piqi_executable(), " compile",
             " --self-spec ", SelfSpec,
             " -o ", CompiledPiqi,
             " -t pb",
             " -e erlang",  % automatically load .erlang.piqi extensions
+            NormalizeNamesOpt,
             " ", join_args(OtherArgs)
         ]),
         run_piqi_compile(PiqiCompile),
