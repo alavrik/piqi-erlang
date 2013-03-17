@@ -26,7 +26,7 @@ ERL_MODULES = $(ERL_SOURCES:%.erl=%)
 #ERL_PA = $(ERL_APP_PATH:%=-pa %*/ebin)
 #ERL_PA = $(ERL_APP_PATH:%=-pa %*/)
 #ERL_INCLUDES = $(ERL_APP_PATH:%=-I %*/)
-ERL_LIBS = ..
+export ERL_LIBS = ..
 
 ERLC_FLAGS += $(ERL_PA)
 
