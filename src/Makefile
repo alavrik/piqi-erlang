@@ -1,6 +1,7 @@
 
-#PIQI = piqi
-PIQI = ../priv/piqi-binary/"`uname -s`-`uname -m`"/piqi
+ifndef PIQI
+export PIQI = ../priv/piqi-binary/"`uname -s`-`uname -m`"/piqi
+endif
 
 #PIQIC = ../piqic-erlang/piqic-erlang
 PIQIC = ERL_FLAGS="-pa ../piqic-erlang/ebin" ../priv/bin/piqic-erlang

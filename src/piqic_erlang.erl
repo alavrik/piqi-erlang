@@ -235,6 +235,12 @@ find_piqi_executable() ->
     % path to "piqi" executable within "piqi" application directory
     AppPath = filename:join(["priv", "piqi-binary", Arch, "piqi"]),
     try
+        case os:getenv("PIQI") of
+            false ->
+                ok;
+            PiqiName ->
+                throw_return(PiqiName)
+        end,
         case os:getenv("REBAR_DEPS_DIR") of
             false ->
                 ok;
