@@ -40,6 +40,15 @@ stop() ->
 
 % find the location of "piqi" executable
 find_piqi() ->
+    case os:getenv("PIQI") of
+        false ->
+            find_piqi_1();
+        PiqiName ->
+            PiqiName
+    end.
+
+
+find_piqi_1() ->
     case code:lib_dir(piqi) of
         {error, _Error} ->
             find_piqi_in_path();
