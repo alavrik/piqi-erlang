@@ -1,4 +1,8 @@
 
+ifndef PIQI
+PIQI = ../../priv/bin/piqi
+endif
+
 #PIQIC = $(REBAR_DEPS_DIR)/piqi/priv/bin/piqic-erlang
 #PIQIC = ../../piqic-erlang/piqic-erlang
 PIQIC = ERL_FLAGS="-pa ../../piqic-erlang/ebin" ../../priv/bin/piqic-erlang

@@ -10,17 +10,17 @@ all: piqi_obj.piqi ebin
 
 
 piqi_obj.piqi:
-	piqi cc | sed -e 's/\.module .*//;s/\.code .*//' >$@
+	$(PIQI) cc | sed -e 's/\.module .*//;s/\.code .*//' >$@
 
 
 test:
-	piqi convert -t pb addressbook.piq
+	$(PIQI) convert -t pb addressbook.piq
 
 	echo ":piqi_obj/piqi [" > piqi.piq
 	cat piqi_obj.piqi >> piqi.piq
 	echo "]" >> piqi.piq
 
-	piqi convert --add-defaults -t pb --no-warnings piqi.piq
+	$(PIQI) convert --add-defaults -t pb --no-warnings piqi.piq
 	./test 1 1
 
 

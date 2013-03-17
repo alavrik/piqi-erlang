@@ -2,8 +2,15 @@
 
 set -ex
 
+
+if [ -z "$PIQI" ]
+then
+	PIQI=../../priv/piqi-binary/"`uname -s`-`uname -m`"/piqi
+fi
+
+
 # create a binary representation of the addressbook by converting it from piq
-piqi convert -t pb addressbook.piq
+$PIQI convert -t pb addressbook.piq
 
 # create another copy of addressbook records using ocaml program
 ./add_person addressbook.pb <<!
@@ -54,7 +61,7 @@ cmp l1 l2
 
 # check that the addressbook binary file created by "add_person" is readable by
 # "piqi convert"
-piqi convert --type addressbook/address-book addressbook.pb > addressbook.pb.piq
+$PIQI convert --type addressbook/address-book addressbook.pb > addressbook.pb.piq
 
 rm addressbook.pb
 

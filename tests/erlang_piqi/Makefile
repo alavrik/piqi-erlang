@@ -10,11 +10,11 @@ all: piqi.piqi ebin
 
 
 piqi.piqi:
-	piqi cc > piqi.piqi
+	$(PIQI) cc > piqi.piqi
 
 
 test:
-	piqi convert --add-defaults -t pb piqi.piqi
+	$(PIQI) convert --add-defaults -t pb piqi.piqi
 	./test
 	cmp *.pb
 

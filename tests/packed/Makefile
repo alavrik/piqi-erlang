@@ -13,12 +13,12 @@ test:
 	cat packed.piqi | sed -e 's/\.protobuf-packed//' > unpacked.piqi
 	cat test-all.piq | sed -e 's/:packed/:unpacked/' > test-all-unpacked.piq
 
-	piqi convert -t pb test-all.piq
+	$(PIQI) convert -t pb test-all.piq
 	./test
 	cmp test-all.piq.pb test-all.piq.pb.pb
 
 	cp test-all.piq.pb test-all.piq.pb.orig
-	piqi convert -t pb -o test-all.piq.pb test-all-unpacked.piq
+	$(PIQI) convert -t pb -o test-all.piq.pb test-all-unpacked.piq
 	./test
 	cmp test-all.piq.pb.orig test-all.piq.pb.pb
 
