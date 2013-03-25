@@ -3,6 +3,53 @@ uniform interface for serializing Erlang data structures to JSON, XML and
 Protocol Buffers formats.
 
 
+A typical Piqi usage scenario involves the following steps:
+
+**1. Include Piqi as a rebar depedency** -- add this entry to your
+`rebar.config` file:
+
+    {deps, [
+        ...
+        {piqi, "", {git, "git://github.com/alavrik/piqi-erlang.git", {branch, "master"}}},
+        ...
+    ]}.
+
+
+**2. Describe data structures using the Piqi data definition language or
+Protocol Buffers `.proto` files**
+
+The [Piqi](http://piqi.org/doc/piqi/) data definition language can describe many
+Erlang types, both primitive and user-defined. This includes integers, floats,
+booleans, strings, binaries, lists, records and variants (i.e. `{tag, Value}`
+tuples).
+
+`.piqi` modules can be converted to and from Protocol Buffers `.proto` files:
+
+    piqi to-proto X.piqi
+    piqi of-proto X.proto
+
+
+**3. Call the Piqi compiler to generate Erlang type definitions and
+serialization code**
+
+
+**4. Use generated serializes/deserializers in a user's program** -- the desired
+serialization format can be specified at runtime. For
+[examples](examples/addressbook/src/io_json_xml_pb.erl):
+
+    % deserialize a data structure from Protocol Buffers
+    AddressBook = addressbook_piqi:parse_address_book(Bytes, 'pb'),
+
+    % serialize it as JSON
+    Json = addressbook_piqi:gen_address_book(AddressBook, 'json'),
+
+    % serialize it as pretty-printed JSON
+    JsonPretty = addressbook_piqi:gen_address_book(AddressBook, 'json_pretty'),
+
+    % serialize it as XML
+    Xml = addressbook_piqi:gen_address_book(AddressBook, 'xml').
+
+
 Examples
 --------
 

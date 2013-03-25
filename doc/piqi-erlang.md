@@ -31,9 +31,8 @@ A typical Piqi usage scenario involves the following steps:
 **3. Call the Piqi compiler to generate Erlang type definitions and serialization code**
 :   See the next section for detailed description.
 
-**4. Use generated serializes/deserializers/printers in a user's program**
-:   When multi-format serialization mode is used, one can specify a desired
-    input and output format at runtime.
+**4. Use generated serializes/deserializers in a user's program**
+:   the desired serialization format can be specified at runtime.
 
 The [Examples](#examples) section contains links to several sample Erlang
 projects that use Piqi for data serialization and demonstrate steps 2--4.
