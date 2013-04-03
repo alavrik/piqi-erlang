@@ -1,0 +1,16 @@
+-ifndef(__DEFAULTS_PIQI_HRL__).
+-define(__DEFAULTS_PIQI_HRL__, 1).
+
+
+-record(defaults_r, {
+    i = -1 :: integer(),
+    s = <<"foo">> :: string() | binary(),
+    bin = <<"foo">> :: binary(),
+    b = true :: boolean(),
+    f = 1.0 :: number()
+}).
+
+-type defaults_r() :: #defaults_r{}.
+
+
+-endif.

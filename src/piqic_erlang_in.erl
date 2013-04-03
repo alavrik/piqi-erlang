@@ -360,7 +360,8 @@ gen_field_parser(Context, {X, I}) ->
     ].
 
 
-% XXX: precompute (known) defaults of primitive types?
+% TODO: precompute defaults of primitive and enum types -- see
+% piqic_erlang_types:gen_field_default
 gen_default('undefined') ->
     [];
 
@@ -438,7 +439,7 @@ gen_builtin_type_name(Context, PiqiType, ErlType) ->
                 list ->
                     "list_string"
             end;
-        _ ->
-            TypeName
+        X ->
+            X
     end.
 

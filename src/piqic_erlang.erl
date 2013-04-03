@@ -303,8 +303,7 @@ run_piqi_compile(Cmd) ->
 
 read_piqi_bundle(Filename) ->
     {ok, Bytes} = file:read_file(Filename),
-    Buf = piqirun:init_from_binary(Bytes),
-    piqi_piqi:parse_piqi_bundle(Buf).
+    piqi_piqi:parse_piqi_bundle(Bytes).
 
 
 generate(Context) ->

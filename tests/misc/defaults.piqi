@@ -1,0 +1,37 @@
+.record [
+    .name r
+    .field [
+        .name i
+        .type int
+        .optional
+        .default -1
+    ]
+
+    .field [
+        .name s
+        .type string
+        .optional
+        .default "foo"
+    ]
+
+    .field [
+        .name bin
+        .type binary
+        .optional
+        .default "foo"
+    ]
+
+    .field [
+        .name b
+        .type bool
+        .optional
+        .default true
+    ]
+
+    .field [
+        .name f
+        .type float
+        .optional
+        .default 1.0
+    ]
+]

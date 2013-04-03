@@ -49,13 +49,13 @@
 -record(field, {
     name :: name(),
     type :: type(),
-    mode :: field_mode(),
+    mode = required :: field_mode(),
     default :: piqi_any(),
-    deprecated :: boolean(),
+    deprecated = false :: boolean(),
     piq_format :: piq_format(),
     protobuf_name :: string() | binary(),
     code :: integer(),
-    protobuf_packed :: boolean(),
+    protobuf_packed = false :: boolean(),
     json_name :: string() | binary(),
     getopt_letter :: word(),
     getopt_doc :: string() | binary(),
@@ -79,7 +79,7 @@
 -record(option, {
     name :: name(),
     type :: type(),
-    deprecated :: boolean(),
+    deprecated = false :: boolean(),
     piq_format :: piq_format(),
     protobuf_name :: string() | binary(),
     code :: integer(),
@@ -118,7 +118,7 @@
     piq_format :: piq_format(),
     protobuf_name :: string() | binary(),
     protobuf_custom = [] :: [string() | binary()],
-    protobuf_packed :: boolean(),
+    protobuf_packed = false :: boolean(),
     json_name :: string() | binary(),
     erlang_name :: string() | binary()
 }).
@@ -132,7 +132,7 @@
     protobuf_package :: string() | binary(),
     erlang_module :: string() | binary(),
     erlang_type_prefix :: string() | binary(),
-    erlang_string_type :: erlang_string_type()
+    erlang_string_type = binary :: erlang_string_type()
 }).
 
 -record(import, {
