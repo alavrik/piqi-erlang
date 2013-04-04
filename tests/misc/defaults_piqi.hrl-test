@@ -3,11 +3,11 @@
 
 
 -record(defaults_r, {
-    i = -1 :: integer(),
-    s = <<"foo">> :: string() | binary(),
-    bin = <<"foo">> :: binary(),
-    b = true :: boolean(),
-    f = 1.0 :: number()
+    i = -1 :: integer() | 'undefined',
+    s = <<"foo">> :: string() | binary() | 'undefined',
+    bin = <<"foo">> :: binary() | 'undefined',
+    b = true :: boolean() | 'undefined',
+    f = 1.0 :: number() | 'undefined'
 }).
 
 -type defaults_r() :: #defaults_r{}.

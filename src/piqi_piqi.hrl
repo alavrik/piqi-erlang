@@ -49,7 +49,7 @@
 -record(field, {
     name :: name(),
     type :: type(),
-    mode = required :: field_mode(),
+    mode = required :: field_mode() | 'undefined',
     default :: piqi_any(),
     deprecated = false :: boolean(),
     piq_format :: piq_format(),
@@ -132,7 +132,7 @@
     protobuf_package :: string() | binary(),
     erlang_module :: string() | binary(),
     erlang_type_prefix :: string() | binary(),
-    erlang_string_type = binary :: erlang_string_type()
+    erlang_string_type = binary :: erlang_string_type() | 'undefined'
 }).
 
 -record(import, {
