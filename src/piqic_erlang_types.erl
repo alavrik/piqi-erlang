@@ -223,20 +223,20 @@ gen_field_default(Context, TypeName, Default, WireType) ->
     {ParentPiqi, Typedef} = resolve_type_name(Context, TypeName),
     case Typedef of
         {alias, A} ->
+            % handing protobuf_wire_type override by a higher-level alias
+            WireType2 = ?choose_defined(WireType, A#alias.protobuf_wire_type),
             case A#alias.type of
                 'undefined' ->  % we are dealing with built-in type
                     gen_field_default_builtin_value(Context,
                         A#alias.piqi_type, % must be defined when type is undefined
                         A#alias.erlang_type,
-                        WireType,
+                        WireType2,
                         Default);
                 _ ->
                     case A#alias.erlang_type =/= 'undefined' of
                         true ->  % custom Erlang type
                             gen_field_default_value(ParentPiqi, Typedef, Default);
                         false ->
-                            % handing protobuf_wire_type override by a higher-level alias
-                            WireType2 = ?choose_defined(WireType, A#alias.protobuf_wire_type),
                             ParentContext = piqic:switch_context(Context, ParentPiqi),
                             gen_field_default(ParentContext, A#alias.type, Default, WireType2)
                     end

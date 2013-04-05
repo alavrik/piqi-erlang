@@ -4,13 +4,44 @@
 
 -record(defaults_r, {
     i = -1 :: integer() | 'undefined',
+    u = 1 :: non_neg_integer() | 'undefined',
+    u32 = 1 :: non_neg_integer() | 'undefined',
+    u64 = 1 :: non_neg_integer() | 'undefined',
+    s32 = -1 :: integer() | 'undefined',
+    s64 = -1 :: integer() | 'undefined',
+    i32 = -1 :: integer() | 'undefined',
+    i64 = -1 :: integer() | 'undefined',
+    uf32 = 1 :: non_neg_integer() | 'undefined',
+    uf64 = 1 :: non_neg_integer() | 'undefined',
+    if32 = -1 :: integer() | 'undefined',
+    if64 = -1 :: integer() | 'undefined',
     s = <<"foo">> :: string() | binary() | 'undefined',
     bin = <<"foo">> :: binary() | 'undefined',
     b = true :: boolean() | 'undefined',
-    f = 1.0 :: number() | 'undefined'
+    f = 1.0 :: number() | 'undefined',
+    f32 = 1.0 :: number() | 'undefined',
+    f64 = 1.0 :: number() | 'undefined',
+    ea = a :: defaults_e() | 'undefined',
+    eb = b :: defaults_e() | 'undefined',
+    ec = c :: defaults_e() | 'undefined',
+    ed = d :: defaults_e() | 'undefined',
+    r1 = defaults_piqi:parse_r1(<<8,1,16,2>>) :: defaults_r1() | 'undefined'
+}).
+
+-type defaults_e() ::
+      a
+    | b
+    | c
+    | d.
+
+-record(defaults_r1, {
+    i :: integer(),
+    j :: integer()
 }).
 
 -type defaults_r() :: #defaults_r{}.
+
+-type defaults_r1() :: #defaults_r1{}.
 
 
 -endif.
