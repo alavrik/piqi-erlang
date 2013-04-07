@@ -1,6 +1,7 @@
 #!/bin/sh -xe
 
-make deps
+export REBAR="`pwd`/rebar"
+
 make
 
 make test
