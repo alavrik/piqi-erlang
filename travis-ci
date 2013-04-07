@@ -1,0 +1,7 @@
+#!/bin/sh -xe
+
+make deps
+make
+
+make test
+make -C tests all test
