@@ -79,12 +79,30 @@ Mailing list
 http://groups.google.com/group/piqi
 
 
+Advanced installation
+---------------------
+
+Sometimes, it may be useful or even necessary to use a custom version of the
+`piqi` binary executable instead of the pre-built one that comes with
+`piqi-erlang`.
+
+For example, there may not be a pre-built `piqi` for your platform. Or
+organization policies may prohibit installing third-party binaries.
+
+In this case, you can build the `piqi` binary from [source
+code](https://github.com/alavrik/piqi), put it somewhere in the local filesystem
+and point to it using the `PIQI` environment variable _before_ running any
+`rebar` commands and starting the `piqi` Erlang application. For example:
+
+    export PIQI=/usr/local/bin/piqi
+
+
 Contributing
 ------------
 
 Your contributions are always welcome. Just open a pull request.
 
-Some helpul commands:
+Some useful commands:
 
     make deps  # the same as "rebar get-deps"
     make       # the same as "rebar compile"
@@ -92,6 +110,7 @@ Some helpul commands:
     make test
     make dialyzer
     make -C tests all test
+    make -C tests clean
 
 
 License
