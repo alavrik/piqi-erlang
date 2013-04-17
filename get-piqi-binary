@@ -17,7 +17,12 @@ then
 	mkdir -p priv/piqi-binary/"`uname -s`-`uname -m`"
 	cp -a "$PIQI" priv/piqi-binary/"`uname -s`-`uname -m`"/piqi
 else
-	cp -a "$REBAR_DEPS_DIR/piqi_binary/" priv/piqi-binary
-	rm -rf priv/piqi-binary/.git
+    if [ -n "`which piqi`" ]; then
+        mkdir -p priv/piqi-binary/"`uname -s`-`uname -m`"
+        cp -a "`which piqi`" priv/piqi-binary/"`uname -s`-`uname -m`"
+    else
+        cp -a "$REBAR_DEPS_DIR/piqi_binary/" priv/piqi-binary
+        rm -rf priv/piqi-binary/.git
+    fi
 fi
 

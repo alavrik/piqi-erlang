@@ -3,23 +3,13 @@
 % the "piqi" binary executable
 %
 % also, see ./get-piqi-binary
-case os:getenv("PIQI") of
-    false ->
-        case os:find_executable("piqi") of
-            false ->
-                % keep the original config including the piqi_binary dependency
-                CONFIG;
-            PiqiExe ->
-                C1 = lists:keydelete(deps, 1, CONFIG),
-                PostHooks1 = proplists:get_value(post_hooks, C1),
-                PostHooks2 = proplists:delete('get-deps', PostHooks1),
-                PostHooks3 = proplists:delete('delete-deps', PostHooks2),
-                lists:keyreplace(post_hooks, 1, C1, {post_hooks, PostHooks3})
-        end;
-    PiqiPath ->
+case {os:find_executable("piqi"), os:getenv("PIQI")} of
+    {false, false} ->
+        % keep the original config including the piqi_binary dependency
+        CONFIG;
+    _ ->
         % remove the deps section that includes the piqi_binary dependency
         lists:keydelete(deps, 1, CONFIG)
 end.
-
 
 % ex: ft=erlang

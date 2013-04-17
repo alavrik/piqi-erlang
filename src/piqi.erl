@@ -67,7 +67,7 @@ piqi_libdir() ->
             filename:join(PiqiLibPath, apppath())
     end.
 
--spec find_piqi(list(fun(() -> false | string()))) -> string().
+-spec find_piqi(list(fun(() -> false | string()))) -> false | string().
 find_piqi([]) ->
     false;
 find_piqi([Cmd|Cmds]) ->

@@ -1,8 +1,17 @@
 #!/bin/sh -xe
 
+if [ "$PIQI_BIN" = "ppa" ]; then
+    true
+elif [ "$PIQI_BIN" = "deps" ]; then
+    sudo rm `which piqi` # muhahahaha
+elif [ "$PIQI_BIN" = "env" ]; then
+    export PIQI=/usr/bin/piqi.yadda
+    sudo mv `which piqi` $PIQI
+fi
+
 export REBAR="`pwd`/rebar"
 
-make
+make deps all
 
 make test
 make -C tests all test
