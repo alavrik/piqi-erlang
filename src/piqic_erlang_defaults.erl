@@ -57,10 +57,15 @@ gen_typedef(Context, _Typedef = {Type, X}) ->
 
 gen_alias(Context, X) ->
     Expr = gen_alias_type(Context, X),
+    Body =
+        case X#alias.erlang_default of
+            'undefined' ->
+                piqic:gen_convert_value(X#alias.type, X#alias.erlang_type, "_of_", Expr);
+            Default ->
+                Default
+        end,
     [
-        "default_", X#alias.erlang_name, "() -> ",
-            piqic:gen_convert_value(X#alias.type, X#alias.erlang_type, "_of_", Expr),
-        ".\n"
+        "default_", X#alias.erlang_name, "() -> ", Body, ".\n"
     ].
 
 

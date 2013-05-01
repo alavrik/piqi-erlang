@@ -64,6 +64,12 @@
         .type string
         .optional
     ]
+
+    .with.field [
+        .name erlang-default
+        .type string
+        .optional
+    ]
 ]
 
 

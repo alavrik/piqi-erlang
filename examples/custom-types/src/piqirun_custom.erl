@@ -9,6 +9,9 @@
 -export_type([term_t/0]).
 -export([term_t_to_binary/1, term_t_of_binary/1]).
 
+-export_type([pos_int64/0]).
+-export([pos_int64_of_int64/1, pos_int64_to_int64/1, default_pos_int64/0]).
+
 
 -type bigint() :: integer().
 -type term_t() :: any().
@@ -31,4 +34,16 @@ bigint_to_string(X) -> integer_to_list(X).
 term_t_of_binary(X) -> binary_to_term(X).
 
 term_t_to_binary(X) -> term_to_binary(X).
+
+
+% example of how to use to use custom types for runtime type validation
+-type(pos_int64() :: pos_integer()).
+
+pos_int64_of_int64(I) when is_integer(I) andalso I >= 1 ->
+    I.
+pos_int64_to_int64(I) when is_integer(I) andalso I >= 1 ->
+    I.
+
+% overridden default -- referenced by .erlang-default alias property
+default_pos_int64() -> 1.
 

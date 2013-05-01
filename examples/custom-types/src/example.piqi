@@ -32,5 +32,20 @@
 ]
 
 
-.custom-field erlang-type
+.alias [
+    .name positive-int64
+    .type int64
+    .erlang-type "piqirun_custom:pos_int64"
+
+    % we need to specify a custom default value for this type to prevent
+    % Dialyzer and runtime errors caused by the default default value 0
+    %
+    % NOTE: the value is an arbitrary Erlang expression; for example, it could
+    % be specified directly as "1"
+
+    .erlang-default "piqirun_custom:default_pos_int64()"
+]
+
+
+(.custom-field erlang-type erlang-default)
 

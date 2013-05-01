@@ -109,7 +109,8 @@
     protobuf_wire_type :: protobuf_wire_type(),
     json_name :: string() | binary(),
     erlang_name :: string() | binary(),
-    erlang_type :: string() | binary()
+    erlang_type :: string() | binary(),
+    erlang_default :: string() | binary()
 }).
 
 -record(piqi_list, {
