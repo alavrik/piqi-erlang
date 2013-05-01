@@ -154,11 +154,24 @@ gen_alias(Context, X, IsPacked) ->
         gen_alias_type(Context, X, X#alias.protobuf_wire_type, IsPacked),
         "(X)"
     ],
+    Body =
+        case IsPacked of
+            false ->
+                [
+                    "    ",
+                    piqic:gen_convert_value(X#alias.type, X#alias.erlang_type, "_of_", Expr)
+                ];
+            true ->
+                [
+                    "    ", "{Res, Rest} = ", Expr, ",\n",
+                    "    ", "{",
+                        piqic:gen_convert_value(X#alias.type, X#alias.erlang_type, "_of_", "Res"),
+                        ", Rest}"
+                ]
+        end,
     [
-        PackedPrefix, "parse_", X#alias.erlang_name, "(X) ->\n"
-        "    ",
-        piqic:gen_convert_value(X#alias.type, X#alias.erlang_type, "_of_", Expr),
-        ".\n"
+        PackedPrefix, "parse_", X#alias.erlang_name, "(X) ->\n",
+            Body, ".\n"
     ].
 
 
