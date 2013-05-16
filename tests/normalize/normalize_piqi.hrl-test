@@ -1,0 +1,15 @@
+-ifndef(__NORMALIZE_PIQI_HRL__).
+-define(__NORMALIZE_PIQI_HRL__, 1).
+
+
+-record(normalize_test_dash_cap_capdash, {
+    field_one :: string() | binary(),
+    field_two :: string() | binary(),
+    field_three :: string() | binary(),
+    field_four :: string() | binary()
+}).
+
+-type normalize_test_dash_cap_capdash() :: #normalize_test_dash_cap_capdash{}.
+
+
+-endif.

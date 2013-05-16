@@ -1,0 +1,23 @@
+.record [
+	.name test-dashCap-CAPDash
+	.field [
+		.name fieldOne
+		.type string
+		.code 1
+	]
+	.field [
+		.name fieldTWO
+		.type string
+		.code 2
+	]
+	.field [
+		.name Field-Three
+		.type string
+		.code 3
+	]
+	.field [
+		.name field-four
+		.type string
+		.code 4
+	]
+]

@@ -26,6 +26,7 @@
 -define(DEBUG,1).
 -include("debug.hrl").
 
+-define(FLAG_NORMALIZE, piqic_erlang_normalize).
 
 %
 % Piqi-specific utility functions
@@ -91,9 +92,12 @@ is_piqi_any(Name) ->
 % initialize piqic context from the list of Piqi modules; the module being
 % compiled is the last one in the list; the preceding modules are all of its
 % imported dependencies
-init_context(PiqiList) ->
+init_context(PiqiList, Normalize) ->
+    put(?FLAG_NORMALIZE, Normalize),
+
     % set erlang_name fields by turning each identifier into Erlang-compliant
     % identifier
+
     PiqiList2 = [erlname_piqi(X) || X <- PiqiList],
 
     {Imports, [Piqi]} = lists:split(length(PiqiList2) - 1, PiqiList2),
@@ -414,10 +418,11 @@ erlname_undefined(ErlName, Name) ->
 erlname('undefined') ->
     'undefined';
 erlname(X) ->
-    dashes_to_underscores(uncapitalize(X)).
+    case get(?FLAG_NORMALIZE) of
+        true -> normalize(to_string(X));
+        false -> dashes_to_underscores(uncapitalize(X))
+    end.
 
-
-% uppercase the first character of the input string
 capitalize(X) ->
     S = to_string(X),
     case S of
@@ -427,16 +432,42 @@ capitalize(X) ->
             S
     end.
 
+is_upper(X) when X >= $A andalso X =< $Z -> true;
+is_upper(_) -> false.
+
+normalize([]) ->
+    [];
+normalize([H|_]=S) ->
+    normalize(is_upper(H), [], S).
+
+normalize(_, Acc, []) ->
+    lists:reverse(Acc);
+normalize(_, Acc, [H|T]) when H =:= $_ orelse H =:= $- ->
+    normalize(true, [$_|Acc], T);
+normalize(_, Acc, [H|T]) when H =:= $. orelse H =:= $: orelse H =:= $/ ->
+    normalize(true, [H|Acc], T);
+normalize(true, Acc, [H|T]) ->
+    normalize(is_upper(H), [uncapitalize_c(H)|Acc], T);
+normalize(false, Acc, [H|T]) ->
+    case is_upper(H) of
+        true -> normalize(true, [uncapitalize_c(H), $_ |Acc], T);
+        false -> normalize(false, [H|Acc], T)
+    end.
 
 uncapitalize(X) ->
     S = to_string(X),
     case S of
-        [H | T] when H >= $A andalso H =< $Z ->
-            [H - $A + $a | T];
+        [H | T] ->
+            [uncapitalize_c(H) | T];
         _ ->
             S
     end.
 
+uncapitalize_c(V) -> 
+    case is_upper(V) of
+        true -> V - $A + $a;
+        false -> V
+    end.
 
 basename(X) ->
     S = to_string(X),

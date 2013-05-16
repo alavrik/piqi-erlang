@@ -1,0 +1,14 @@
+
+ERL_SOURCES = \
+	$(PIQI_ERL_FILES) \
+
+PIQI_FILES = normalize.piqi
+PIQIC_FLAGS = --normalize-names true
+
+PRE_TARGET = $(PIQI_ERLANG_FILES)
+
+all: ebin
+
+include ../Makefile.piqi
+include ../Makefile.erlang
+
