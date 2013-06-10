@@ -9,5 +9,6 @@ DIRS = \
 	erlang_piqi \
 	addressbook \
 	custom-types \
-	untyped-json-xml
+	untyped-json-xml\
+	normalize
 

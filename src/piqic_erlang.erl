@@ -173,21 +173,12 @@ piqic_erlang(CallbackMod, Args) ->
     % capture the original Cwd so that we could restore it later
     Cwd = get_cwd(Odir),
     try
-        % call "piqi compile"
-        NormalizeNamesOpt =
-            case NormalizeNames of
-                true ->
-                    " --normalize-names";
-                false ->
-                    ""
-            end,
         PiqiCompile = lists:concat([
             find_piqi_executable(), " compile",
             " --self-spec ", SelfSpec,
             " -o ", CompiledPiqi,
             " -t pb",
             " -e erlang",  % automatically load .erlang.piqi extensions
-            NormalizeNamesOpt,
             " ", join_args(OtherArgs)
         ]),
         run_piqi_compile(PiqiCompile),
@@ -202,7 +193,7 @@ piqic_erlang(CallbackMod, Args) ->
 
         % finally, generate code for the last module in the list; the preceding
         % modules (if any) represent imported dependencies
-        Context = piqic:init_context(PiqiList),
+        Context = piqic:init_context(PiqiList, NormalizeNames),
         CallbackMod:generate(Context),
         ok
     catch
