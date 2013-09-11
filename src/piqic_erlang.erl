@@ -26,7 +26,7 @@
 main(Args) ->
     % call piqic_erlang with command-line arguments and ?MODULE as the callback
     % module
-    case piqic_erlang(?MODULE, Args) of
+    case piqic_erlang_cli(?MODULE, Args) of
         ok ->
             ok;
         {error, ErrorStr} ->
@@ -45,6 +45,7 @@ usage(IoDevice) ->
 "Usage: " ++ ScriptName ++ " [options] <.piqi file>\n"
 "Options:
   -I <dir> add directory to the list of imported .piqi search paths
+  --include-lib <app>[/<path>] similar to -I but generate -include_lib(...) instead -include(...) for imported modules
   --no-warnings don't print warnings
   --trace turn on tracing
   --debug <level> debug level; any number greater than 0 turns on debug messages
@@ -66,7 +67,10 @@ print_error(Format, Args) ->
 
 
 args_error(ErrorStr) ->
-    print_error(ErrorStr),
+    args_error(ErrorStr, []).
+
+args_error(Format, Args) ->
+    print_error(Format, Args),
     erlang:halt(1).
 
 
@@ -76,7 +80,15 @@ args_error(ErrorStr) ->
     trace = false,      % --trace
     input_file,         % last positional argument
     other = [],          % arguments to be passed to "piqi compile"
-    normalize_names = true
+    normalize_names = true,
+
+    % search path, similar to -I but generate -include_lib instead of -include
+    % for imported modules
+    include_lib = [] :: [ {AppPath :: string(), Path :: string()} ],
+
+    % -M -- print the list of goals and their dependencies instead of generating
+    % the output
+    is_deps_mode = false
 }).
 
 
@@ -95,7 +107,8 @@ parse_args([X|_], _Args) when X == "-h" orelse X == "--help" ->
 parse_args([Filename], Args) ->
     Args#args{
         input_file = Filename,
-        other = lists:reverse([Filename | Args#args.other])
+        other = lists:reverse([Filename | Args#args.other]),
+        include_lib = lists:reverse(Args#args.include_lib)
     };
 
 parse_args(["-C", Odir |T], Args) ->
@@ -123,6 +136,36 @@ parse_args([A = "--trace" |T], Args) ->
     },
     parse_args(T, NewArgs);
 
+parse_args(["--include-lib", I |T], Args) ->
+    {App, AppPath} =
+        case filename:split(I) of
+            [PathH | PathT] ->
+                {list_to_atom(PathH), PathT};
+            _ ->
+                args_error("invalid --include-lib spec: ~s", [I])
+        end,
+    AppDir =
+        case code:lib_dir(App) of
+            {error, _} ->
+                args_error("can't find app '~s' specified in --include-lib ~s", [App, I]);
+            X ->
+                X
+        end,
+    Path = filename:join([AppDir | AppPath]),
+    NewArgs = Args#args{
+        include_lib = [{I, Path} | Args#args.include_lib],
+
+        % convert --include-lib to -I
+        other = [Path, "-I" | Args#args.other]
+    },
+    parse_args(T, NewArgs);
+
+parse_args(["-M" |T], Args) ->
+    NewArgs = Args#args{
+        is_deps_mode = true
+    },
+    parse_args(T, NewArgs);
+
 parse_args([A|T], Args) ->
     NewArgs = Args#args{
         other = [A | Args#args.other]
@@ -143,19 +186,43 @@ escape_arg(X) ->
     end.
 
 
+piqic_erlang_cli(CallbackMod, CliArgs) ->
+    Args = parse_args(CliArgs),
+    Res = piqic_erlang_common(CallbackMod, Args),
+    case Args#args.is_deps_mode of
+        false ->
+            ok;
+        true ->
+            {Goals, Deps} = Res,
+            print_deps(Goals, Deps)
+    end.
+
+
+print_deps(Goals, Deps) ->
+    io:format("~s: ~s~n~n", [
+        iod(" ", Goals),
+        iod(" ", Deps)
+    ]).
+
+
 % `CallbackMod` parameter is the name of the Erlang module that exports the
 % following callback functions:
 %
 %       generate(Context = #context{})
+%       get_deps(Context = #context{})
 %
-piqic_erlang(CallbackMod, Args) ->
+piqic_erlang(CallbackMod, CliArgs) ->
+    Args = parse_args(CliArgs),
+    piqic_erlang_common(CallbackMod, Args).
+
+
+piqic_erlang_common(CallbackMod, Args) ->
     #args{
         input_file = Filename,
         output_dir = Odir,
         trace = Trace,
-        normalize_names = NormalizeNames,
         other = OtherArgs
-    } = parse_args(Args),
+    } = Args,
 
     % use process dictionary instead of carrying it through the stack
     put(?FLAG_TRACE, Trace),
@@ -193,9 +260,20 @@ piqic_erlang(CallbackMod, Args) ->
 
         % finally, generate code for the last module in the list; the preceding
         % modules (if any) represent imported dependencies
-        Context = piqic:init_context(PiqiList, NormalizeNames),
-        CallbackMod:generate(Context),
-        ok
+        Context = piqic:init_context(
+                PiqiList,
+                Args#args.normalize_names,
+                Args#args.include_lib
+        ),
+
+        case Args#args.is_deps_mode of
+            false ->
+                CallbackMod:generate(Context);
+            true ->
+                {Goals, Deps} = CallbackMod:get_deps(Context),
+                Goals2 = [maybe_filename_join(Odir, X) || X <- Goals],
+                {Goals2, Deps}
+        end
     catch
         {error, _} = Error -> Error
     after
@@ -214,6 +292,13 @@ get_cwd('undefined') -> 'undefined';
 get_cwd(_NewCwd) ->
     {ok, Cwd} = file:get_cwd(),
     Cwd.
+
+
+
+maybe_filename_join(_Dir = 'undefined', File) -> File;
+maybe_filename_join(Dir, File) ->
+    filename:join(Dir, File).
+
 
 
 % TODO: windows support
@@ -297,10 +382,36 @@ read_piqi_bundle(Filename) ->
     piqi_piqi:parse_piqi_bundle(Bytes).
 
 
+% piqic_erlang callback
 generate(Context) ->
     gen_hrl(Context),
     gen_erl(Context),
     ok.
+
+
+% piqic_erlang callback
+get_deps(Context) ->
+    Piqi = Context#context.piqi,
+
+    ErlMod = to_string(Piqi#piqi.erlang_module),
+    ErlFile = ErlMod ++ ".erl",
+    HrlFile = ErlMod ++ ".hrl",
+    Goals = [ErlFile, HrlFile],
+
+    ImportedPiqi = [get_import_piqi(Context, X) || X <- Piqi#piqi.import],
+    PiqiDeps = [Piqi | ImportedPiqi],
+    FileDeps = [X#piqi.file || X <- PiqiDeps],
+
+    % older versions of piqi don't set the file field; handling it gracefully by
+    % filtering out undefined deps
+    FileDeps2 = [X || X <- FileDeps, X =/= 'undefined'],
+
+    {Goals, FileDeps2}.
+
+
+get_import_piqi(Context, Import) ->
+    ImportedIndex = piqic:resolve_import(Context, Import),
+    ImportedIndex#index.piqi.
 
 
 gen_hrl(Context) ->

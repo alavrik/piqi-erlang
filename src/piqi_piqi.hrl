@@ -131,6 +131,7 @@
     func = [] :: [func()],
     protobuf_custom = [] :: [string() | binary()],
     protobuf_package :: string() | binary(),
+    file :: string() | binary(),
     erlang_module :: string() | binary(),
     erlang_type_prefix :: string() | binary(),
     erlang_string_type = binary :: erlang_string_type() | 'undefined'

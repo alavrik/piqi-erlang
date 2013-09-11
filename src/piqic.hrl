@@ -59,7 +59,15 @@
     % original modules being compiled (imported modules ++ [piqi])
     modules :: [#piqi{}],
     % index of imported modules: #piqi.module -> #index{}
-    module_index
+    module_index,
+
+    %
+    % piqic_erlang options
+    %
+
+    % the list of .piqi directory paths passed to piqic-erlang using the
+    % --include-lib option (as opposed to standard -I)
+    include_lib :: [ {AppPath :: string(), Path :: string()} ]
 }).
 
 

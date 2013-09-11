@@ -92,7 +92,7 @@ is_piqi_any(Name) ->
 % initialize piqic context from the list of Piqi modules; the module being
 % compiled is the last one in the list; the preceding modules are all of its
 % imported dependencies
-init_context(PiqiList, Normalize) ->
+init_context(PiqiList, Normalize, IncludeLib) ->
     put(?FLAG_NORMALIZE, Normalize),
 
     % set erlang_name fields by turning each identifier into Erlang-compliant
@@ -141,7 +141,10 @@ init_context(PiqiList, Normalize) ->
         is_self_spec = IsSelfSpec,
 
         modules = PiqiList,
-        module_index = ModIndex
+        module_index = ModIndex,
+
+        % options
+        include_lib = IncludeLib
     }.
 
 
