@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/alavrik/piqi-erlang.png)](https://travis-ci.org/alavrik/piqi-erlang)
+
+
 Piqi is a multi-format data serialization system for Erlang. It provides a
 uniform interface for serializing Erlang data structures to JSON, XML and
 Protocol Buffers formats.
