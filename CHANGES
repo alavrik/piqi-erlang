@@ -1,0 +1,51 @@
+Piqi-erlang 0.7.0 (October 28, 2013)
+====================================
+
+The main change of this release is the rewrite of the "piqic-erlang" code
+generator in Erlang. It still relies on the "piqi compile" front-end written in
+OCaml, but the Erlang code generation and support for various Erlang-specific
+features is now fully implemented in Erlang. As a result:
+
+- we were able to move the piqi-erlang code from the main Piqi project
+  repository into its own repo
+- drop dependency on "piqi_src" and OCaml code
+- "piqi-erlang" has a new optional dependency called piqi-binary that includes
+  precompiled "piqi" executable for various platforms
+- "piqic-erlang-ext" and therefore *_piqi_ext.erl go away; "piqic-erlang" now
+  generates serializers and deserializers for multi-format converters (i.e.
+  gen_X*/2, /3 and parse_X*/2, /3 functions) directly in *_piqi.erl
+
+This was a major effort and it wouldn't have been possible without support of
+many Piqi-erlang users. Thank you everyone for your bug reports, suggestions and
+patience.
+
+Special thanks goes to Dennis Docter who troubleshooted the Erlang name
+normalization problem in the new implementation and contributed the solution and
+the tests.
+
+Other changes:
+
+  - "--gen-defaults" compiler option is deprecated. "piqic-erlang" now generates
+    _piqi:default_X/1 without asking
+  - generate default values for Erlang record fields if they are defined in the
+    original Piqi spec
+  - add a new "erlang-default" alias property; when specified, it overrides the
+    Piqi-default value for the type in the generated "*_piqi:default_<type>/0"
+    functions
+
+Miscellaneous:
+
+  - piqi-erlang documentation is now distributed with the source code
+    (doc/piqi-erlang.md)
+  - continuous builds via Travis-CI
+  - support for building piqi-erlang as a rebar dependency on FreeBSD
+
+
+Piqi 0.6.0 (February 3, 2013)
+=============================
+
+  Changelog for v0.6.0 and earlier releases is available here (the piqi-erlang
+  project used to be a subtree in the piqi repository):
+
+      https://github.com/alavrik/piqi/blob/master/CHANGES
+
