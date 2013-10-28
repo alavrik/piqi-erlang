@@ -360,6 +360,27 @@ Erlang types to Piqi types.
 
         -type a() :: x().
 
+    For aliases, it is possible to specify an optional `erlang-default` string
+    property. When present, it overrides the Piqi-default value for the type in
+    the generated `*_piqi:default_<typename>/0` functions. It is especially
+    useful with custom Erlang types described in the following section.
+
+    Example:
+
+        .alias [
+            .name positive-int64
+            .type int64
+            .erlang-type "piqirun_custom:pos_int64"
+
+            % we need to specify a custom default value for this type to prevent
+            % Dialyzer and runtime errors caused by the default value of 0
+            %
+            % NOTE: the value is an arbitrary Erlang expression
+
+            .erlang-default "1"
+        ]
+
+
 ### Custom Erlang types
 
 Piqi provides a way to define mappings between custom Erlang types and Piqi
