@@ -103,7 +103,7 @@ an additional third argument representing a list of serialization options:
     %
     %      Pretty-print generated JSON and XML output (default = true)
     %
-    % json_omit_null_fields
+    % json_omit_missing_fields
     %
     %      Omit missing optional and empty repeated fields from JSON
     %      output instead of representing them as {"field_name": null} and
@@ -133,8 +133,8 @@ an additional third argument representing a list of serialization options:
     -type piqi_convert_option() ::
            'pretty_print'
         | {'pretty_print', boolean()}
-        |  'json_omit_null_fields'
-        | {'json_omit_null_fields', boolean()}
+        |  'json_omit_missing_fields'
+        | {'json_omit_missing_fields', boolean()}
         |  'use_strict_parsing'
         | {'use_strict_parsing', boolean()}
         |  'piq_frameless_output'

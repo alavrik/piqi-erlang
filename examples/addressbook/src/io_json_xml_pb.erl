@@ -23,7 +23,7 @@ run([Filename]) ->
 
 
     % true by default
-    JsonWithNullFields = addressbook_piqi:gen_address_book(AddressBook, 'json', [{'json_omit_null_fields', false}]),
+    JsonWithNullFields = addressbook_piqi:gen_address_book(AddressBook, 'json', [{'json_omit_missing_fields', false}]),
     io:format("~n~nJSON with null fields: ~n~n~s~n", [JsonWithNullFields]),
     AddressBook = addressbook_piqi:parse_address_book(JsonWithNullFields, 'json'),
 
