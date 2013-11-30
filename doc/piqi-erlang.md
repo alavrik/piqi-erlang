@@ -114,13 +114,35 @@ an additional third argument representing a list of serialization options:
     %      Treat unknown and duplicate fields as errors when parsing JSON,
     %      XML and Piq formats (default = false)
     %
+    % piq_frameless_output
+    %
+    %      Print a frame (i.e. :<typename> []) around a single output Piq object
+    %      (default=false)
+    %
+    % piq_frameless_input
+    %
+    %      Expect a frame around a single input Piq object (default=false)
+    %
+    % piq_relaxed_parsing
+    %
+    %      Parse Piq format using "relaxed" mode (default=false);
+    %
+    %      For instance, when set to `true`, single-word string literals don't have
+    %      to be quoted
+    %
     -type piqi_convert_option() ::
            'pretty_print'
         | {'pretty_print', boolean()}
         |  'json_omit_null_fields'
         | {'json_omit_null_fields', boolean()}
         |  'use_strict_parsing'
-        | {'use_strict_parsing', boolean()}.
+        | {'use_strict_parsing', boolean()}
+        |  'piq_frameless_output'
+        | {'piq_frameless_output', boolean()}
+        |  'piq_frameless_input'
+        | {'piq_frameless_input', boolean()}
+        |  'piq_relaxed_parsing'
+        | {'piq_relaxed_parsing', boolean()}.
 
 ### Command-line parameters
 
