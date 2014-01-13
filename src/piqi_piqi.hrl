@@ -53,6 +53,7 @@
     default :: piqi_any(),
     deprecated = false :: boolean(),
     piq_format :: piq_format(),
+    piq_positional :: boolean(),
     protobuf_name :: string() | binary(),
     code :: integer(),
     protobuf_packed = false :: boolean(),
