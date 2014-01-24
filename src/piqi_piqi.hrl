@@ -40,6 +40,7 @@
 -record(piqi_record, {
     name :: name(),
     field = [] :: [field()],
+    piq_positional :: boolean(),
     protobuf_name :: string() | binary(),
     protobuf_custom = [] :: [string() | binary()],
     json_name :: string() | binary(),
