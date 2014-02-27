@@ -2,8 +2,16 @@ language: erlang
 
 # install rebar 2.1.0-pre that supports 'raw' dependencies
 before_install:
+   - sudo add-apt-repository -y ppa:motiejus/piqi
+   - sudo apt-get update -qq
+   - sudo apt-get install piqi
    - wget https://github.com/alavrik/piqi-erlang/wiki/rebar
    - chmod +x rebar
+
+env:
+   - PIQI_BIN=ppa
+   - PIQI_BIN=deps
+   - PIQI_BIN=env
 
 script: "./travis-ci"
 otp_release:

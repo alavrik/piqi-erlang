@@ -92,7 +92,9 @@ Sometimes, it may be useful or even necessary to use a custom version of the
 For example, there may not be a pre-built `piqi` for your platform. Or
 organization policies may prohibit installing third-party binaries.
 
-In this case, you can build the `piqi` binary from [source
+If `piqi` exists in `$PATH`, it will be used. Alternatively, path to `piqi`
+executable can be controlled using `$PIQI` environment variable. In this case,
+you can build the `piqi` binary from [source
 code](https://github.com/alavrik/piqi), put it somewhere in the local filesystem
 and point to it using the `PIQI` environment variable _before_ running any
 `rebar` commands and starting the `piqi` Erlang application. For example:

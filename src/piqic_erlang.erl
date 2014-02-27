@@ -174,7 +174,7 @@ piqic_erlang(CallbackMod, Args) ->
     Cwd = get_cwd(Odir),
     try
         PiqiCompile = lists:concat([
-            find_piqi_executable(), " compile",
+            piqi:find_piqi(), " compile",
             " --self-spec ", SelfSpec,
             " -o ", CompiledPiqi,
             " -t pb",
@@ -216,57 +216,6 @@ get_cwd(_NewCwd) ->
     Cwd.
 
 
-% TODO: windows support
-% TODO: this is almost exact copy of piqi:find_piqi()
-% XXX: check for version compatibility
-find_piqi_executable() ->
-    KernelName = os:cmd("uname -s") -- "\n",
-    Machine = os:cmd("uname -m") -- "\n",
-    Arch = lists:concat([KernelName, "-", Machine]),
-    % path to "piqi" executable within "piqi" application directory
-    AppPath = filename:join(["priv", "piqi-binary", Arch, "piqi"]),
-    try
-        case os:getenv("PIQI") of
-            false ->
-                ok;
-            PiqiName ->
-                throw_return(PiqiName)
-        end,
-        case os:getenv("REBAR_DEPS_DIR") of
-            false ->
-                ok;
-            RebarDepsDir ->
-                file_exists(filename:join([RebarDepsDir, "piqi", AppPath]))
-        end,
-        case code:lib_dir(piqi) of
-            {error, _Error} ->
-                ok;
-            PiqiLibPath ->
-                file_exists(filename:join(PiqiLibPath, AppPath))
-        end,
-        case os:find_executable("piqi") of
-            false ->
-                throw_error("can't find \"piqi\" executable");
-            Filename ->
-                file_exists(Filename)
-        end
-    catch
-        {return, X} -> X
-    end.
-
-
-% check if the file exists and do a non-local return if it does
-file_exists(Name) ->
-    trace("checking existence of \"~s\"~n", [Name]),
-    case filelib:is_regular(Name) of
-        true ->
-            throw_return(Name);
-        false ->
-            ok
-    end.
-
-
-throw_return(X) -> throw({return, X}).
 throw_error(X) -> throw({error, X}).
 
 
