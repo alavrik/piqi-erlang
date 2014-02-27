@@ -346,8 +346,7 @@ gen_alias_type(Context, Alias) ->
                 false ->
                     % for non-builtin types, we just use the name of already
                     % generated -type
-                    Piqi = Context#context.piqi,
-                    _ScopedName = Piqi#piqi.erlang_type_prefix ++ Alias#alias.erlang_name
+                    scoped_name(Context, Alias#alias.erlang_name)
             end
     end.
 
