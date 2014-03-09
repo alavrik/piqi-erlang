@@ -134,6 +134,7 @@
     typedef = [] :: [typedef()],
     import = [] :: [import()],
     func = [] :: [func()],
+    custom_field = [] :: [word()],
     protobuf_custom = [] :: [string() | binary()],
     protobuf_package :: string() | binary(),
     file :: string() | binary(),
