@@ -63,10 +63,7 @@ gen_typedef(Context, Typedef = {Type, X}) ->
 % mutliformat parsers: parse_*/2, parse_*/3
 % TODO: generate -specs
 gen_typedef_multiformat(Context, Typedef) ->
-    Piqi = Context#context.piqi,
-    Mod = Piqi#piqi.module,
-    Name = typedef_name(Typedef),
-    ScopedName = [Mod, "/", Name],
+    ScopedName = piqic:typedef_scoped_name(Context, Typedef),
     ErlName = typedef_erlname(Typedef),
     [
         gen_typedef_2(ScopedName, ErlName),

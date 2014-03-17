@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Get type names from .erl
 grep "<<\"normalize"  normalize_piqi.erl | sed "s/.*<<\(.*\)>>.*/\1/" > normalize-piqi-typenames
 grep "<<\"nonormalize"  nonormalize_piqi.erl | sed "s/.*<<\(.*\)>>.*/\1/" > nonormalize-piqi-typenames

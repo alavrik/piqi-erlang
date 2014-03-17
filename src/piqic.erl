@@ -173,6 +173,18 @@ scoped_name(Context, Name) ->
     Piqi#piqi.erlang_type_prefix ++ to_string(Name).
 
 
+typedef_scoped_name(Context, Typedef) ->
+    Name = typedef_name(Typedef),
+    case piqic:is_builtin_typedef(Typedef) of
+        true ->
+            Name;
+        false ->
+            Piqi = Context#context.piqi,
+            Mod = Piqi#piqi.module,
+            [Mod, "/", Name]
+    end.
+
+
 % append the list of built-in typedefs that are actually referenced by the
 % module
 add_builtin_typedefs(Piqi, BuiltinsIndex) ->

@@ -756,7 +756,7 @@ gen_protobuf_int32(X, Format) ->
 
 gen_protobuf_int32(X, Format, Options) ->
     Iolist = gen_protobuf_int32(X),
-    piqirun_ext:convert(?MODULE, <<"piqi/protobuf-int32">>, 'pb', Format, iolist_to_binary(Iolist), Options).
+    piqirun_ext:convert(?MODULE, <<"protobuf-int32">>, 'pb', Format, iolist_to_binary(Iolist), Options).
 
 
 gen_protobuf_int64(X, Format) ->
@@ -765,7 +765,7 @@ gen_protobuf_int64(X, Format) ->
 
 gen_protobuf_int64(X, Format, Options) ->
     Iolist = gen_protobuf_int64(X),
-    piqirun_ext:convert(?MODULE, <<"piqi/protobuf-int64">>, 'pb', Format, iolist_to_binary(Iolist), Options).
+    piqirun_ext:convert(?MODULE, <<"protobuf-int64">>, 'pb', Format, iolist_to_binary(Iolist), Options).
 
 
 gen_protobuf_wire_type(X, Format) ->
@@ -783,7 +783,7 @@ gen_bool(X, Format) ->
 
 gen_bool(X, Format, Options) ->
     Iolist = gen_bool(X),
-    piqirun_ext:convert(?MODULE, <<"piqi/bool">>, 'pb', Format, iolist_to_binary(Iolist), Options).
+    piqirun_ext:convert(?MODULE, <<"bool">>, 'pb', Format, iolist_to_binary(Iolist), Options).
 
 
 gen_string(X, Format) ->
@@ -792,7 +792,7 @@ gen_string(X, Format) ->
 
 gen_string(X, Format, Options) ->
     Iolist = gen_string(X),
-    piqirun_ext:convert(?MODULE, <<"piqi/string">>, 'pb', Format, iolist_to_binary(Iolist), Options).
+    piqirun_ext:convert(?MODULE, <<"string">>, 'pb', Format, iolist_to_binary(Iolist), Options).
 
 
 gen_binary(X, Format) ->
@@ -801,7 +801,7 @@ gen_binary(X, Format) ->
 
 gen_binary(X, Format, Options) ->
     Iolist = gen_binary(X),
-    piqirun_ext:convert(?MODULE, <<"piqi/binary">>, 'pb', Format, iolist_to_binary(Iolist), Options).
+    piqirun_ext:convert(?MODULE, <<"binary">>, 'pb', Format, iolist_to_binary(Iolist), Options).
 
 
 gen_piqi_piqi_any(X, Format) ->
@@ -810,7 +810,7 @@ gen_piqi_piqi_any(X, Format) ->
 
 gen_piqi_piqi_any(X, Format, Options) ->
     Iolist = gen_piqi_piqi_any(X),
-    piqirun_ext:convert(?MODULE, <<"piqi/piqi-any">>, 'pb', Format, iolist_to_binary(Iolist), Options).
+    piqirun_ext:convert(?MODULE, <<"piqi-any">>, 'pb', Format, iolist_to_binary(Iolist), Options).
 
 
 gen_int(X, Format) ->
@@ -819,7 +819,7 @@ gen_int(X, Format) ->
 
 gen_int(X, Format, Options) ->
     Iolist = gen_int(X),
-    piqirun_ext:convert(?MODULE, <<"piqi/int">>, 'pb', Format, iolist_to_binary(Iolist), Options).
+    piqirun_ext:convert(?MODULE, <<"int">>, 'pb', Format, iolist_to_binary(Iolist), Options).
 
 
 gen_uint(X, Format) ->
@@ -828,7 +828,7 @@ gen_uint(X, Format) ->
 
 gen_uint(X, Format, Options) ->
     Iolist = gen_uint(X),
-    piqirun_ext:convert(?MODULE, <<"piqi/uint">>, 'pb', Format, iolist_to_binary(Iolist), Options).
+    piqirun_ext:convert(?MODULE, <<"uint">>, 'pb', Format, iolist_to_binary(Iolist), Options).
 
 
 gen_int32(X, Format) ->
@@ -837,7 +837,7 @@ gen_int32(X, Format) ->
 
 gen_int32(X, Format, Options) ->
     Iolist = gen_int32(X),
-    piqirun_ext:convert(?MODULE, <<"piqi/int32">>, 'pb', Format, iolist_to_binary(Iolist), Options).
+    piqirun_ext:convert(?MODULE, <<"int32">>, 'pb', Format, iolist_to_binary(Iolist), Options).
 
 
 gen_uint32(X, Format) ->
@@ -846,7 +846,7 @@ gen_uint32(X, Format) ->
 
 gen_uint32(X, Format, Options) ->
     Iolist = gen_uint32(X),
-    piqirun_ext:convert(?MODULE, <<"piqi/uint32">>, 'pb', Format, iolist_to_binary(Iolist), Options).
+    piqirun_ext:convert(?MODULE, <<"uint32">>, 'pb', Format, iolist_to_binary(Iolist), Options).
 
 
 gen_int64(X, Format) ->
@@ -855,7 +855,7 @@ gen_int64(X, Format) ->
 
 gen_int64(X, Format, Options) ->
     Iolist = gen_int64(X),
-    piqirun_ext:convert(?MODULE, <<"piqi/int64">>, 'pb', Format, iolist_to_binary(Iolist), Options).
+    piqirun_ext:convert(?MODULE, <<"int64">>, 'pb', Format, iolist_to_binary(Iolist), Options).
 
 
 gen_uint64(X, Format) ->
@@ -864,7 +864,7 @@ gen_uint64(X, Format) ->
 
 gen_uint64(X, Format, Options) ->
     Iolist = gen_uint64(X),
-    piqirun_ext:convert(?MODULE, <<"piqi/uint64">>, 'pb', Format, iolist_to_binary(Iolist), Options).
+    piqirun_ext:convert(?MODULE, <<"uint64">>, 'pb', Format, iolist_to_binary(Iolist), Options).
 
 
 gen_float64(X, Format) ->
@@ -873,7 +873,7 @@ gen_float64(X, Format) ->
 
 gen_float64(X, Format, Options) ->
     Iolist = gen_float64(X),
-    piqirun_ext:convert(?MODULE, <<"piqi/float64">>, 'pb', Format, iolist_to_binary(Iolist), Options).
+    piqirun_ext:convert(?MODULE, <<"float64">>, 'pb', Format, iolist_to_binary(Iolist), Options).
 
 
 gen_float32(X, Format) ->
@@ -882,7 +882,7 @@ gen_float32(X, Format) ->
 
 gen_float32(X, Format, Options) ->
     Iolist = gen_float32(X),
-    piqirun_ext:convert(?MODULE, <<"piqi/float32">>, 'pb', Format, iolist_to_binary(Iolist), Options).
+    piqirun_ext:convert(?MODULE, <<"float32">>, 'pb', Format, iolist_to_binary(Iolist), Options).
 
 
 gen_int32_fixed(X, Format) ->
@@ -891,7 +891,7 @@ gen_int32_fixed(X, Format) ->
 
 gen_int32_fixed(X, Format, Options) ->
     Iolist = gen_int32_fixed(X),
-    piqirun_ext:convert(?MODULE, <<"piqi/int32-fixed">>, 'pb', Format, iolist_to_binary(Iolist), Options).
+    piqirun_ext:convert(?MODULE, <<"int32-fixed">>, 'pb', Format, iolist_to_binary(Iolist), Options).
 
 
 gen_uint32_fixed(X, Format) ->
@@ -900,7 +900,7 @@ gen_uint32_fixed(X, Format) ->
 
 gen_uint32_fixed(X, Format, Options) ->
     Iolist = gen_uint32_fixed(X),
-    piqirun_ext:convert(?MODULE, <<"piqi/uint32-fixed">>, 'pb', Format, iolist_to_binary(Iolist), Options).
+    piqirun_ext:convert(?MODULE, <<"uint32-fixed">>, 'pb', Format, iolist_to_binary(Iolist), Options).
 
 
 gen_int64_fixed(X, Format) ->
@@ -909,7 +909,7 @@ gen_int64_fixed(X, Format) ->
 
 gen_int64_fixed(X, Format, Options) ->
     Iolist = gen_int64_fixed(X),
-    piqirun_ext:convert(?MODULE, <<"piqi/int64-fixed">>, 'pb', Format, iolist_to_binary(Iolist), Options).
+    piqirun_ext:convert(?MODULE, <<"int64-fixed">>, 'pb', Format, iolist_to_binary(Iolist), Options).
 
 
 gen_uint64_fixed(X, Format) ->
@@ -918,7 +918,7 @@ gen_uint64_fixed(X, Format) ->
 
 gen_uint64_fixed(X, Format, Options) ->
     Iolist = gen_uint64_fixed(X),
-    piqirun_ext:convert(?MODULE, <<"piqi/uint64-fixed">>, 'pb', Format, iolist_to_binary(Iolist), Options).
+    piqirun_ext:convert(?MODULE, <<"uint64-fixed">>, 'pb', Format, iolist_to_binary(Iolist), Options).
 
 
 gen_float(X, Format) ->
@@ -927,7 +927,7 @@ gen_float(X, Format) ->
 
 gen_float(X, Format, Options) ->
     Iolist = gen_float(X),
-    piqirun_ext:convert(?MODULE, <<"piqi/float">>, 'pb', Format, iolist_to_binary(Iolist), Options).
+    piqirun_ext:convert(?MODULE, <<"float">>, 'pb', Format, iolist_to_binary(Iolist), Options).
 
 
 gen_word(X, Format) ->
@@ -1737,7 +1737,7 @@ parse_protobuf_int32(X, Format) ->
 
 parse_protobuf_int32(X, Format, Options) ->
     parse_protobuf_int32(
-        piqirun_ext:convert(?MODULE, <<"piqi/protobuf-int32">>, Format, 'pb', X, Options)).
+        piqirun_ext:convert(?MODULE, <<"protobuf-int32">>, Format, 'pb', X, Options)).
 
 
 parse_protobuf_int64(X, Format) ->
@@ -1746,7 +1746,7 @@ parse_protobuf_int64(X, Format) ->
 
 parse_protobuf_int64(X, Format, Options) ->
     parse_protobuf_int64(
-        piqirun_ext:convert(?MODULE, <<"piqi/protobuf-int64">>, Format, 'pb', X, Options)).
+        piqirun_ext:convert(?MODULE, <<"protobuf-int64">>, Format, 'pb', X, Options)).
 
 
 parse_protobuf_wire_type(X, Format) ->
@@ -1764,7 +1764,7 @@ parse_bool(X, Format) ->
 
 parse_bool(X, Format, Options) ->
     parse_bool(
-        piqirun_ext:convert(?MODULE, <<"piqi/bool">>, Format, 'pb', X, Options)).
+        piqirun_ext:convert(?MODULE, <<"bool">>, Format, 'pb', X, Options)).
 
 
 parse_string(X, Format) ->
@@ -1773,7 +1773,7 @@ parse_string(X, Format) ->
 
 parse_string(X, Format, Options) ->
     parse_string(
-        piqirun_ext:convert(?MODULE, <<"piqi/string">>, Format, 'pb', X, Options)).
+        piqirun_ext:convert(?MODULE, <<"string">>, Format, 'pb', X, Options)).
 
 
 parse_binary(X, Format) ->
@@ -1782,7 +1782,7 @@ parse_binary(X, Format) ->
 
 parse_binary(X, Format, Options) ->
     parse_binary(
-        piqirun_ext:convert(?MODULE, <<"piqi/binary">>, Format, 'pb', X, Options)).
+        piqirun_ext:convert(?MODULE, <<"binary">>, Format, 'pb', X, Options)).
 
 
 parse_piqi_piqi_any(X, Format) ->
@@ -1791,7 +1791,7 @@ parse_piqi_piqi_any(X, Format) ->
 
 parse_piqi_piqi_any(X, Format, Options) ->
     parse_piqi_piqi_any(
-        piqirun_ext:convert(?MODULE, <<"piqi/piqi-any">>, Format, 'pb', X, Options)).
+        piqirun_ext:convert(?MODULE, <<"piqi-any">>, Format, 'pb', X, Options)).
 
 
 parse_int(X, Format) ->
@@ -1800,7 +1800,7 @@ parse_int(X, Format) ->
 
 parse_int(X, Format, Options) ->
     parse_int(
-        piqirun_ext:convert(?MODULE, <<"piqi/int">>, Format, 'pb', X, Options)).
+        piqirun_ext:convert(?MODULE, <<"int">>, Format, 'pb', X, Options)).
 
 
 parse_uint(X, Format) ->
@@ -1809,7 +1809,7 @@ parse_uint(X, Format) ->
 
 parse_uint(X, Format, Options) ->
     parse_uint(
-        piqirun_ext:convert(?MODULE, <<"piqi/uint">>, Format, 'pb', X, Options)).
+        piqirun_ext:convert(?MODULE, <<"uint">>, Format, 'pb', X, Options)).
 
 
 parse_int32(X, Format) ->
@@ -1818,7 +1818,7 @@ parse_int32(X, Format) ->
 
 parse_int32(X, Format, Options) ->
     parse_int32(
-        piqirun_ext:convert(?MODULE, <<"piqi/int32">>, Format, 'pb', X, Options)).
+        piqirun_ext:convert(?MODULE, <<"int32">>, Format, 'pb', X, Options)).
 
 
 parse_uint32(X, Format) ->
@@ -1827,7 +1827,7 @@ parse_uint32(X, Format) ->
 
 parse_uint32(X, Format, Options) ->
     parse_uint32(
-        piqirun_ext:convert(?MODULE, <<"piqi/uint32">>, Format, 'pb', X, Options)).
+        piqirun_ext:convert(?MODULE, <<"uint32">>, Format, 'pb', X, Options)).
 
 
 parse_int64(X, Format) ->
@@ -1836,7 +1836,7 @@ parse_int64(X, Format) ->
 
 parse_int64(X, Format, Options) ->
     parse_int64(
-        piqirun_ext:convert(?MODULE, <<"piqi/int64">>, Format, 'pb', X, Options)).
+        piqirun_ext:convert(?MODULE, <<"int64">>, Format, 'pb', X, Options)).
 
 
 parse_uint64(X, Format) ->
@@ -1845,7 +1845,7 @@ parse_uint64(X, Format) ->
 
 parse_uint64(X, Format, Options) ->
     parse_uint64(
-        piqirun_ext:convert(?MODULE, <<"piqi/uint64">>, Format, 'pb', X, Options)).
+        piqirun_ext:convert(?MODULE, <<"uint64">>, Format, 'pb', X, Options)).
 
 
 parse_float64(X, Format) ->
@@ -1854,7 +1854,7 @@ parse_float64(X, Format) ->
 
 parse_float64(X, Format, Options) ->
     parse_float64(
-        piqirun_ext:convert(?MODULE, <<"piqi/float64">>, Format, 'pb', X, Options)).
+        piqirun_ext:convert(?MODULE, <<"float64">>, Format, 'pb', X, Options)).
 
 
 parse_float32(X, Format) ->
@@ -1863,7 +1863,7 @@ parse_float32(X, Format) ->
 
 parse_float32(X, Format, Options) ->
     parse_float32(
-        piqirun_ext:convert(?MODULE, <<"piqi/float32">>, Format, 'pb', X, Options)).
+        piqirun_ext:convert(?MODULE, <<"float32">>, Format, 'pb', X, Options)).
 
 
 parse_int32_fixed(X, Format) ->
@@ -1872,7 +1872,7 @@ parse_int32_fixed(X, Format) ->
 
 parse_int32_fixed(X, Format, Options) ->
     parse_int32_fixed(
-        piqirun_ext:convert(?MODULE, <<"piqi/int32-fixed">>, Format, 'pb', X, Options)).
+        piqirun_ext:convert(?MODULE, <<"int32-fixed">>, Format, 'pb', X, Options)).
 
 
 parse_uint32_fixed(X, Format) ->
@@ -1881,7 +1881,7 @@ parse_uint32_fixed(X, Format) ->
 
 parse_uint32_fixed(X, Format, Options) ->
     parse_uint32_fixed(
-        piqirun_ext:convert(?MODULE, <<"piqi/uint32-fixed">>, Format, 'pb', X, Options)).
+        piqirun_ext:convert(?MODULE, <<"uint32-fixed">>, Format, 'pb', X, Options)).
 
 
 parse_int64_fixed(X, Format) ->
@@ -1890,7 +1890,7 @@ parse_int64_fixed(X, Format) ->
 
 parse_int64_fixed(X, Format, Options) ->
     parse_int64_fixed(
-        piqirun_ext:convert(?MODULE, <<"piqi/int64-fixed">>, Format, 'pb', X, Options)).
+        piqirun_ext:convert(?MODULE, <<"int64-fixed">>, Format, 'pb', X, Options)).
 
 
 parse_uint64_fixed(X, Format) ->
@@ -1899,7 +1899,7 @@ parse_uint64_fixed(X, Format) ->
 
 parse_uint64_fixed(X, Format, Options) ->
     parse_uint64_fixed(
-        piqirun_ext:convert(?MODULE, <<"piqi/uint64-fixed">>, Format, 'pb', X, Options)).
+        piqirun_ext:convert(?MODULE, <<"uint64-fixed">>, Format, 'pb', X, Options)).
 
 
 parse_float(X, Format) ->
@@ -1908,7 +1908,7 @@ parse_float(X, Format) ->
 
 parse_float(X, Format, Options) ->
     parse_float(
-        piqirun_ext:convert(?MODULE, <<"piqi/float">>, Format, 'pb', X, Options)).
+        piqirun_ext:convert(?MODULE, <<"float">>, Format, 'pb', X, Options)).
 
 
 parse_word(X, Format) ->
