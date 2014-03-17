@@ -156,7 +156,7 @@ gen_unpacked_alias(Context, X) ->
         "    ",
             gen_alias_type(Context, X, X#alias.protobuf_wire_type, _IsPacked = false),
             "(Code, ",
-                piqic:gen_convert_value(X#alias.type, X#alias.erlang_type, "_to_", "X"),
+                piqic:gen_convert_value(X#alias.erlang_type, "_to_", X#alias.type, "X"),
             ").\n"
     ].
 
@@ -170,7 +170,7 @@ gen_packed_alias(Context, X) ->
         "    ",
             gen_alias_type(Context, X, X#alias.protobuf_wire_type, _IsPacked = true),
             "(",
-                piqic:gen_convert_value(X#alias.type, X#alias.erlang_type, "_to_", "X"),
+                piqic:gen_convert_value(X#alias.erlang_type, "_to_", X#alias.type, "X"),
             ").\n"
     ].
 
@@ -275,7 +275,7 @@ gen_option(Context, X, OuterOption) ->
                         end,
                     % recursively generate cases from "included" variants and
                     % enums
-                    OuterOption2 = ?choose_defined(OuterOption, {Context, X}),
+                    OuterOption2 = ?defined(OuterOption, {Context, X}),
                     ParentContext = piqic:switch_context(Context, ParentPiqi),
                     L = [gen_option(ParentContext, O, OuterOption2) || O <- Options],
                     lists:append(L);  % flatten

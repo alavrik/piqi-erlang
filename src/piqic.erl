@@ -118,10 +118,7 @@ init_context(PiqiList, Normalize) ->
                 % XXX: remove unused built-in typedefs from generated self-spec?
                 [];
             false ->
-                [X ||
-                    X = {alias, A} <- SelfSpec#piqi.typedef,
-                    is_builtin_alias(A)
-                ]
+                [X || X <- SelfSpec#piqi.typedef, is_builtin_typedef(X)]
         end,
     BuiltinsIndex = index_typedefs(BuiltinTypedefs),
 
@@ -160,7 +157,24 @@ switch_context(Context, Piqi) ->
     end.
 
 
-% get the list of built-in typedefs that are actually referenced by the module
+gen_parent_mod(Context, ParentPiqi) ->
+    CurrentPiqi = Context#context.piqi,
+    % efficient way to compare whether we are dealing with the current module
+    case CurrentPiqi#piqi.module =:= ParentPiqi#piqi.module of
+        true ->
+            "";
+        false ->
+            [ParentPiqi#piqi.erlang_module, ":"]
+    end.
+
+
+scoped_name(Context, Name) ->
+    Piqi = Context#context.piqi,
+    Piqi#piqi.erlang_type_prefix ++ to_string(Name).
+
+
+% append the list of built-in typedefs that are actually referenced by the
+% module
 add_builtin_typedefs(Piqi, BuiltinsIndex) ->
     % exclude builtin typedefs that are masked by the local typedefs
     TypedefNames = [typedef_name(X) || X <- Piqi#piqi.typedef],
@@ -181,50 +195,39 @@ is_builtin_alias(X) ->
     X#alias.piqi_type =/= 'undefined'.
 
 
+is_builtin_typedef({alias, X}) ->
+    is_builtin_alias(X);
+is_builtin_typedef(_) ->
+    false.
+
+
 get_used_builtin_typedefs([], _BuiltinsIndex) ->
     [];
 get_used_builtin_typedefs(Typedefs, BuiltinsIndex) ->
-    L = [get_used_builtin_names(X, BuiltinsIndex) || X <- Typedefs],
-    BuiltinNames = lists:usort(lists:append(L)),
-    BuiltinTypedefs = [fetch(N, BuiltinsIndex) || N <- BuiltinNames],
+    TypeNames = lists:usort(lists:append([get_used_typenames(X) || X <- Typedefs])),
+    BuiltinTypeNames = [N || N <- TypeNames, find(N, BuiltinsIndex) =/= 'undefined'],
+    BuiltinTypedefs = [fetch(N, BuiltinsIndex) || N <- BuiltinTypeNames],
     % get built-in types' dependencies (that are also built-in types) -- usually
     % no more than 2-3 recursion steps is needed
     Res = get_used_builtin_typedefs(BuiltinTypedefs, BuiltinsIndex) ++ BuiltinTypedefs,
     lists:usort(Res).
 
 
-get_used_builtin_names(_Typedef = {Type, X}, BuiltinsIndex) ->
-    TypeNames =
+get_used_typenames(_Typedef = {Type, X}) ->
+    L =
         case Type of
             piqi_record ->
                 [F#field.type || F <- X#piqi_record.field];
             variant ->
                 [O#option.type || O <- X#variant.option];
             alias ->
-                case X#alias.type of
-                    'undefined' ->  % it is undefined for lowest-level built-in types
-                        [];
-                    _ ->
-                        [X#alias.type]
-                end;
+                [X#alias.type];
             piqi_list ->
                 [X#piqi_list.type];
             enum ->
                 []
         end,
-    [N || N <- TypeNames, is_builtin(N, BuiltinsIndex)].
-
-
-is_builtin(_TypeName = 'undefined', _BuiltinsIndex) ->
-    false;
-
-is_builtin(TypeName, BuiltinsIndex) ->
-    case find(TypeName, BuiltinsIndex) of
-        'undefined' ->
-            false;
-        _ ->
-            true
-    end.
+    lists:usort([N || N <- L, N =/= 'undefined']).
 
 
 load_self_spec() ->
@@ -301,7 +304,7 @@ resolve_type_name(Context, TypeName) ->
     case string:tokens(S, "/") of
         [Name] ->
             % NOTE: this will also resolve built-in types
-            resolve_local_type_name(Context#context.index, Name);
+            resolve_local_type_name(Index, Name);
         [ImportName, Name] ->  % imported type
             Import = fetch(ImportName, Index#index.import),
             ImportedIndex = resolve_import(Context, Import),
@@ -321,11 +324,6 @@ resolve_import(Context, Import) ->
     _ImportedIndex = fetch(Import#import.module, Context#context.module_index).
 
 
-scoped_name(Context, Name) ->
-    Piqi = Context#context.piqi,
-    Piqi#piqi.erlang_type_prefix ++ to_string(Name).
-
-
 % set erlang_name fields by turning each identifier into Erlang-compliant
 % identifier
 erlname_piqi(Piqi) ->
@@ -334,11 +332,11 @@ erlname_piqi(Piqi) ->
     % Erlang module name derived from Piqi module name
     DerivedMod = erlname(basename(Mod)),
 
-    ErlTypePrefix = ?choose_defined(
+    ErlTypePrefix = ?defined(
         Piqi#piqi.erlang_type_prefix,
-        ?choose_defined(Piqi#piqi.erlang_module, DerivedMod) ++ "_"
+        ?defined(Piqi#piqi.erlang_module, DerivedMod) ++ "_"
     ),
-    ErlMod = ?choose_defined(Piqi#piqi.erlang_module, DerivedMod ++ "_piqi"),
+    ErlMod = ?defined(Piqi#piqi.erlang_module, DerivedMod ++ "_piqi"),
 
     Piqi#piqi{
         erlang_module = ErlMod,
@@ -412,7 +410,7 @@ erlname_list(X) ->
 
 
 erlname_undefined(ErlName, Name) ->
-    ?choose_defined(ErlName, erlname(Name)).
+    ?defined(ErlName, erlname(Name)).
 
 
 erlname('undefined') ->
@@ -463,7 +461,7 @@ uncapitalize(X) ->
             S
     end.
 
-uncapitalize_c(V) -> 
+uncapitalize_c(V) ->
     case is_upper(V) of
         true -> V - $A + $a;
         false -> V
@@ -488,11 +486,6 @@ is_localname(X) ->
             false
     end.
 
-
-can_be_protobuf_packed(Context, TypeName) when is_list(TypeName); is_binary(TypeName) ->
-    {ParentPiqi, Typedef} = resolve_type_name(Context, TypeName),
-    ParentContext = switch_context(Context, ParentPiqi),
-    can_be_protobuf_packed(ParentContext, Typedef);
 
 can_be_protobuf_packed(Context, Typedef) ->
     case unalias(Context, Typedef) of
@@ -529,14 +522,7 @@ erlname_of_option(Context, X) ->
 
 
 erlname_of(Context, Name, TypeName) ->
-    % XXX: use this instead
-    %?choose_defined(Name, type_erlname(Context, TypeName)).
-    case Name of
-        'undefined' ->
-            type_erlname(Context, TypeName);
-        _ ->
-            Name
-    end.
+    ?defined(Name, type_erlname(Context, TypeName)).
 
 
 type_erlname(Context, TypeName) ->
@@ -544,7 +530,7 @@ type_erlname(Context, TypeName) ->
     typedef_erlname(Typedef).
 
 
-gen_convert_value(TypeName, ErlType, Direction, Value) ->
+gen_convert_value(ErlType, Direction, TypeName, Value) ->
     case ErlType =/= 'undefined' andalso TypeName =/= 'undefined' of
         true ->  % custom Erlang type
             [
@@ -569,32 +555,18 @@ gen_field_mode(X) ->
     end.
 
 
-get_wire_type(PiqiType, _WireType = 'undefined') ->
+get_default_wire_type(PiqiType) ->
     case PiqiType of
         int -> zigzag_varint;
         float -> fixed64;
         bool -> varint;
         _ -> block
-    end;
-
-get_wire_type(_PiqiType, WireType) ->
-    WireType.
+    end.
 
 
 gen_wire_type_name(PiqiType, WireType) ->
-    WireType2 = get_wire_type(PiqiType, WireType),
+    WireType2 = ?defined(WireType, get_default_wire_type(PiqiType)),
     atom_to_list(WireType2).
-
-
-gen_parent_mod(Context, ParentPiqi) ->
-    CurrentPiqi = Context#context.piqi,
-    % efficient way to compare whether we are dealing with the current module
-    case CurrentPiqi#piqi.module =:= ParentPiqi#piqi.module of
-        true ->
-            "";
-        false ->
-            [ParentPiqi#piqi.erlang_module, ":"]
-    end.
 
 
 % these cases are only used during bootstrap; normally .erlang-name property
@@ -610,7 +582,7 @@ gen_builtin_type_name(PiqiType) ->
 
 
 gen_builtin_type_name(PiqiType, ErlType) ->
-    ?choose_defined(  % always choose ErlType if it is defined
+    ?defined(  % always choose ErlType if it is defined
         ErlType,
         gen_builtin_type_name(PiqiType)
     ).

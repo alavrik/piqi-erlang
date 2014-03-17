@@ -224,7 +224,7 @@ gen_field_default(Context, TypeName, Default, WireType) ->
     case Typedef of
         {alias, A} ->
             % handing protobuf_wire_type override by a higher-level alias
-            WireType2 = ?choose_defined(WireType, A#alias.protobuf_wire_type),
+            WireType2 = ?defined(WireType, A#alias.protobuf_wire_type),
             case A#alias.type of
                 'undefined' ->  % we are dealing with built-in type
                     gen_field_default_builtin_value(Context,
@@ -355,7 +355,7 @@ gen_builtin_type(Context, PiqiType) ->
     case PiqiType of
         any ->
             Piqi = Context#context.piqi,
-            case piqic:is_self_spec(Piqi) of
+            case Context#context.is_self_spec of
                 true ->
                     _ScopedName = Piqi#piqi.erlang_type_prefix ++ "any";
                 false ->

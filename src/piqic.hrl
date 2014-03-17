@@ -68,7 +68,7 @@
 %
 
 
--define(choose_defined(A, B),
+-define(defined(A, B),
     case A of
         'undefined' -> B;
         _ -> A

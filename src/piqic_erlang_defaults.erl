@@ -60,7 +60,7 @@ gen_alias(Context, X) ->
     Body =
         case X#alias.erlang_default of
             'undefined' ->
-                piqic:gen_convert_value(X#alias.type, X#alias.erlang_type, "_of_", Expr);
+                piqic:gen_convert_value(X#alias.erlang_type, "_of_", X#alias.type, Expr);
             Default ->
                 Default
         end,

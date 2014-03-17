@@ -159,13 +159,13 @@ gen_alias(Context, X, IsPacked) ->
             false ->
                 [
                     "    ",
-                    piqic:gen_convert_value(X#alias.type, X#alias.erlang_type, "_of_", Expr)
+                    piqic:gen_convert_value(X#alias.erlang_type, "_of_", X#alias.type, Expr)
                 ];
             true ->
                 [
                     "    ", "{Res, Rest} = ", Expr, ",\n",
                     "    ", "{",
-                        piqic:gen_convert_value(X#alias.type, X#alias.erlang_type, "_of_", "Res"),
+                        piqic:gen_convert_value(X#alias.erlang_type, "_of_", X#alias.type, "Res"),
                         ", Rest}"
                 ]
         end,
@@ -399,6 +399,7 @@ gen_type(Context, TypeName, IsPacked) ->
     ].
 
 
+% copy-pasted piqic_erlang_out:gen_alias_type -- not sure how to avoid this
 gen_alias_type(Context, Alias, WireType, IsPacked) ->
     case Alias#alias.type of
         'undefined' ->  % we are dealing with built-in type
