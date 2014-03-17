@@ -104,7 +104,7 @@ gen_typedef(Context, {Type, X}) ->
 
 
 gen_alias(Context, X) ->
-    TypeExpr = gen_out_type(Context, X#alias.type, X#alias.erlang_type),
+    TypeExpr = gen_out_alias_type(Context, X),
     make_typedef_1(Context, X#alias.erlang_name, TypeExpr).
 
 
@@ -295,11 +295,16 @@ gen_field_type(Context, Mode, TypeName) ->
 
 
 gen_out_type(Context, TypeName) ->
-    gen_out_type(Context, TypeName, _ErlType = 'undefined').
+    T = gen_type(Context, TypeName),
+    output_type(T).
 
 
-gen_out_type(Context, TypeName, ErlType) ->
-    T = gen_type(Context, TypeName, ErlType),
+gen_out_alias_type(Context, Alias) ->
+    T = gen_alias_type(Context, Alias),
+    output_type(T).
+
+
+output_type(T) ->
     % allow more flexible typing for convenience
     case to_string(T) of
         "string" ->
@@ -311,43 +316,40 @@ gen_out_type(Context, TypeName, ErlType) ->
     end.
 
 
-gen_type(_Context, _TypeName, ErlType) when ErlType =/= 'undefined' ->
-    ErlType;
-
-gen_type(Context, TypeName, _ErlType) ->
-    gen_type(Context, TypeName).
-
-
 gen_type(Context, TypeName) ->
     {ParentPiqi, Typedef} = resolve_type_name(Context, TypeName),
+    ParentContext = piqic:switch_context(Context, ParentPiqi),
     case Typedef of
-        {alias, X} ->
-            ParentContext = piqic:switch_context(Context, ParentPiqi),
-            gen_alias_type(ParentContext, X);
-        _ -> % piqi_record | variant | list | enum
-            LocalName = typedef_erlname(Typedef),
-            % make scoped name based on the parent module's type prefix
-            _ScopedName = ParentPiqi#piqi.erlang_type_prefix ++ to_string(LocalName)
-    end.
-
-        
-gen_alias_type(Context, Alias) ->
-    case Alias#alias.type =:= 'undefined' andalso Alias#alias.erlang_type =:= 'undefined' of
-        true ->
-            % this is an alias for a built-in type (piqi_type field must be
-            % defined when neither of type and erlang_type fields are present)
-            gen_builtin_type(Context, Alias#alias.piqi_type);
-        false ->
+        {alias, Alias} ->
             case piqic:is_builtin_alias(Alias) of
                 true ->
                     % we need to recurse, because we don't generate -type
-                    % definitions for built-in types
-                    gen_type(Context, Alias#alias.type, Alias#alias.erlang_type);
+                    % definitions for built-in types (see below)
+                    gen_alias_type(ParentContext, Alias);
                 false ->
-                    % for non-builtin types, we just use the name of already
-                    % generated -type
-                    scoped_name(Context, Alias#alias.erlang_name)
-            end
+                    gen_typedef_type(ParentContext, Typedef)
+            end;
+        _ -> % piqi_record | variant | list | enum
+            gen_typedef_type(ParentContext, Typedef)
+    end.
+
+
+gen_typedef_type(Context, Typedef) ->
+    % make scoped name based on the parent module's type prefix
+    Name = typedef_erlname(Typedef),
+    scoped_name(Context, Name).
+
+        
+gen_alias_type(Context, Alias) ->
+    case {Alias#alias.erlang_type, Alias#alias.type} of
+        {ErlType, _} when ErlType =/= 'undefined' ->
+            ErlType;
+        {'undefined', 'undefined'} ->
+            % this is an alias for a built-in type (piqi_type field must be
+            % defined when neither of type and erlang_type fields are present)
+            gen_builtin_type(Context, Alias#alias.piqi_type);
+        {'undefined', TypeName} ->
+            gen_type(Context, TypeName)
     end.
 
 
