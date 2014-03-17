@@ -156,7 +156,7 @@ gen_unpacked_alias(Context, X) ->
         "    ",
             gen_alias_type(Context, X, X#alias.protobuf_wire_type, _IsPacked = false),
             "(Code, ",
-                piqic:gen_convert_value(X#alias.erlang_type, "_to_", X#alias.type, "X"),
+                piqic:gen_convert_value(Context, X#alias.erlang_type, "_to_", X#alias.type, "X"),
             ").\n"
     ].
 
@@ -170,7 +170,7 @@ gen_packed_alias(Context, X) ->
         "    ",
             gen_alias_type(Context, X, X#alias.protobuf_wire_type, _IsPacked = true),
             "(",
-                piqic:gen_convert_value(X#alias.erlang_type, "_to_", X#alias.type, "X"),
+                piqic:gen_convert_value(Context, X#alias.erlang_type, "_to_", X#alias.type, "X"),
             ").\n"
     ].
 

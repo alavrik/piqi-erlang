@@ -526,15 +526,16 @@ erlname_of(Context, Name, TypeName) ->
 
 
 type_erlname(Context, TypeName) ->
-    {_Piqi, Typedef} = resolve_type_name(Context, TypeName),
+    {_ParentPiqi, Typedef} = resolve_type_name(Context, TypeName),
     typedef_erlname(Typedef).
 
 
-gen_convert_value(ErlType, Direction, TypeName, Value) ->
+gen_convert_value(Context, ErlType, Direction, TypeName, Value) ->
     case ErlType =/= 'undefined' andalso TypeName =/= 'undefined' of
         true ->  % custom Erlang type
+            Name = type_erlname(Context, TypeName),
             [
-                ErlType, Direction, TypeName, "(", Value, ")"
+                ErlType, Direction, Name, "(", Value, ")"
             ];
         false ->
             Value

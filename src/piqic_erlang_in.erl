@@ -159,13 +159,13 @@ gen_alias(Context, X, IsPacked) ->
             false ->
                 [
                     "    ",
-                    piqic:gen_convert_value(X#alias.erlang_type, "_of_", X#alias.type, Expr)
+                    piqic:gen_convert_value(Context, X#alias.erlang_type, "_of_", X#alias.type, Expr)
                 ];
             true ->
                 [
                     "    ", "{Res, Rest} = ", Expr, ",\n",
                     "    ", "{",
-                        piqic:gen_convert_value(X#alias.erlang_type, "_of_", X#alias.type, "Res"),
+                        piqic:gen_convert_value(Context, X#alias.erlang_type, "_of_", X#alias.type, "Res"),
                         ", Rest}"
                 ]
         end,
