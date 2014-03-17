@@ -1,6 +1,7 @@
 /ebin
 /.eunit
 /deps
+.rebar
 
 # created by get-deps
 /priv/piqi-binary
