@@ -279,14 +279,20 @@ gen_record(Context, X) ->
         fun (A, B) -> A#field.code =< B#field.code end,
         X#piqi_record.field
     ),
+    UnknownFields =
+        case piqic:get_option(Context, gen_preserve_unknown_fields) of
+            false -> [];
+            true ->
+                [["piqi_unknown_pb = ", record_variable(length(Fields))]]
+        end,
     ConstructorsCode =
         case Fields of
-            [] ->
+            [] when UnknownFields =:= [] ->
                 "";
             _ ->
                 FieldConstructors = [gen_field_constructor(Context, F) || F <- Fields],
                 [
-                    "        ", iod(",\n        ", FieldConstructors), "\n"
+                    "        ", iod(",\n        ", FieldConstructors ++ UnknownFields), "\n"
                 ]
         end,
     ParsersCode =
@@ -304,7 +310,8 @@ gen_record(Context, X) ->
         "parse_", Name, "(X) ->\n",
         "    ", "R0 = piqirun:parse_record(X),\n",
         ParsersCode,
-        "    ", "piqirun:check_unparsed_fields(", record_variable(length(Fields)), "),\n",
+        % prevent "variable XXX is unused" warning
+        "    _ = ", record_variable(length(Fields)), ",\n",
         "    ", "#", scoped_name(Context, Name), "{\n",
         ConstructorsCode,
         "    ", "}.\n"

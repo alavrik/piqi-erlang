@@ -92,8 +92,8 @@ is_piqi_any(Name) ->
 % initialize piqic context from the list of Piqi modules; the module being
 % compiled is the last one in the list; the preceding modules are all of its
 % imported dependencies
-init_context(PiqiList, Normalize) ->
-    put(?FLAG_NORMALIZE, Normalize),
+init_context(PiqiList, Options) ->
+    put(?FLAG_NORMALIZE, proplists:get_value(normalize_names, Options)),
 
     % set erlang_name fields by turning each identifier into Erlang-compliant
     % identifier
@@ -138,8 +138,14 @@ init_context(PiqiList, Normalize) ->
         is_self_spec = IsSelfSpec,
 
         modules = PiqiList,
-        module_index = ModIndex
+        module_index = ModIndex,
+
+        options = Options
     }.
+
+
+get_option(Context, Name) ->
+    proplists:get_value(Name, Context#context.options).
 
 
 switch_context(Context, Piqi) ->

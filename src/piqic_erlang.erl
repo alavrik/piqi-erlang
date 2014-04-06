@@ -53,6 +53,7 @@ usage(IoDevice) ->
   --strict treat unknown and duplicate fields as errors
   -e <name> try including extension <name> for all loaded modules (can be used several times)
   --normalize-names true|false turn CamlCase-style names into \"camel-case\" (default = true)
+  --gen-preserve-unknown-fields generate code that preserves unknown Protobuf fields when they are serialized back
   -h, --help  Display this list of options
 "
     ]).
@@ -76,7 +77,8 @@ args_error(ErrorStr) ->
     trace = false,      % --trace
     input_file,         % last positional argument
     other = [],          % arguments to be passed to "piqi compile"
-    normalize_names = true
+    normalize_names = true,
+    gen_preserve_unknown_fields = false
 }).
 
 
@@ -116,6 +118,12 @@ parse_args(["--normalize-names" , Value |T], Args) ->
     },
     parse_args(T, NewArgs);
 
+parse_args(["--gen-preserve-unknown-fields" |T], Args) ->
+    NewArgs = Args#args{
+        gen_preserve_unknown_fields = true
+    },
+    parse_args(T, NewArgs);
+
 parse_args([A = "--trace" |T], Args) ->
     NewArgs = Args#args{
         trace = true,
@@ -149,13 +157,13 @@ escape_arg(X) ->
 %       generate(Context = #context{})
 %
 piqic_erlang(CallbackMod, Args) ->
+    ParsedArgs = parse_args(Args),
     #args{
         input_file = Filename,
         output_dir = Odir,
         trace = Trace,
-        normalize_names = NormalizeNames,
         other = OtherArgs
-    } = parse_args(Args),
+    } = ParsedArgs,
 
     % use process dictionary instead of carrying it through the stack
     put(?FLAG_TRACE, Trace),
@@ -193,7 +201,11 @@ piqic_erlang(CallbackMod, Args) ->
 
         % finally, generate code for the last module in the list; the preceding
         % modules (if any) represent imported dependencies
-        Context = piqic:init_context(PiqiList, NormalizeNames),
+        Options = [
+            {normalize_names, ParsedArgs#args.normalize_names},
+            {gen_preserve_unknown_fields, ParsedArgs#args.gen_preserve_unknown_fields}
+        ],
+        Context = piqic:init_context(PiqiList, Options),
         CallbackMod:generate(Context),
         ok
     catch
@@ -311,6 +323,7 @@ gen_hrl(Context) ->
     Code = [
         "-ifndef(", HeaderMacro, ").\n"
         "-define(", HeaderMacro, ", 1).\n\n\n",
+        "-include_lib(\"piqi/include/piqirun.hrl\").\n\n",
         piqic_erlang_types:gen_piqi(Context),
         "\n\n-endif.\n"
     ],
@@ -325,7 +338,6 @@ gen_erl(Context) ->
         [
             "-module(", ErlMod, ").\n",
             "-compile(export_all).\n\n",
-            "-include_lib(\"piqi/include/piqirun.hrl\").\n",
             "-include(\"", ErlMod, ".hrl\").\n"
         ],
         piqic_erlang_out:gen_piqi(Context),

@@ -309,29 +309,46 @@ gen_record(Context, X) ->
     ),
     Name = X#piqi_record.erlang_name,
     ScopedName = scoped_name(Context, Name),
+    UnknownFields =
+        case piqic:get_option(Context, gen_preserve_unknown_fields) of
+            false -> [];
+            true ->
+                ["[piqirun:gen_parsed_field(F) || F <- X#", ScopedName, ".piqi_unknown_pb]"]
+        end,
     GeneratorsCode =
         case Fields of
+            [] when UnknownFields =:= [] ->
+                "[]";
             [] ->
-                "[]).\n";
+                UnknownFields;
             _ ->
                 FieldGenerators = [gen_field(Context, ScopedName, F) || F <- Fields],
-                [
-                    "[\n",
-                    "        ", iod(",\n        ", FieldGenerators), "\n",
-                    "    ", "]).\n"
-                ]
+                case UnknownFields of
+                    [] ->
+                        [
+                            "[\n",
+                            "        ", iod(",\n        ", FieldGenerators), "\n",
+                            "    ", "]"
+                        ];
+                    _ ->
+                        [
+                            "[\n",
+                            "        ", iod(",\n        ", FieldGenerators), "\n",
+                            "    |", UnknownFields, "]"
+                        ]
+                end
         end,
     % prevent Erlang warning on unused variable
     ArgVariable =
-        case Fields =/= [] of
-            true ->
-                "X";
-            false ->
-                ["#", ScopedName, "{}"]
+        case Fields of
+            [] when UnknownFields =:= [] ->
+                ["#", ScopedName, "{}"];
+            _ ->
+                "X"
         end,
     [
         "field_gen_", Name, "(Code, ", ArgVariable, ") ->\n",
-        "    ", "piqirun:gen_record(Code, ", GeneratorsCode
+        "    ", "piqirun:gen_record(Code, ", GeneratorsCode, ").\n"
     ].
 
 

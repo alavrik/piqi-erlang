@@ -172,7 +172,13 @@ make_typedef_1(Context, Name, TypeExpr) ->
 
 gen_record(Context, X) ->
     Name = X#piqi_record.erlang_name,
-    Fields = [gen_field(Context, F) || F <- X#piqi_record.field],
+    ImplicitFields =
+        case piqic:get_option(Context, gen_preserve_unknown_fields) of
+            false -> [];
+            true ->
+                ["piqi_unknown_pb = [] :: [piqirun_parsed_field()]"]
+        end,
+    Fields = [gen_field(Context, F) || F <- X#piqi_record.field] ++ ImplicitFields,
     FieldsCode =
         case Fields of
             [] ->

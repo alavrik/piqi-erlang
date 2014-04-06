@@ -2,6 +2,8 @@
 -define(__NORMALIZE_PIQI_HRL__, 1).
 
 
+-include_lib("piqi/include/piqirun.hrl").
+
 -record(normalize_test_dash_cap_capdash, {
     field_one :: string() | binary(),
     field_two :: string() | binary(),

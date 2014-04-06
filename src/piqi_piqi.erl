@@ -1,7 +1,6 @@
 -module(piqi_piqi).
 -compile(export_all).
 
--include_lib("piqi/include/piqirun.hrl").
 -include("piqi_piqi.hrl").
 
 
@@ -1407,7 +1406,7 @@ parse_piqi_record(X) ->
     {_Name, R5} = piqirun:parse_required_field(150958667, fun parse_name/1, R4),
     {_Piq_positional, R6} = piqirun:parse_optional_field(197354217, fun parse_bool/1, R5),
     {_Json_name, R7} = piqirun:parse_optional_field(515275216, fun parse_string/1, R6),
-    piqirun:check_unparsed_fields(R7),
+    _ = R7,
     #piqi_record{
         field = _Field,
         erlang_name = _Erlang_name,
@@ -1439,7 +1438,7 @@ parse_field(X) ->
     {_Getopt_doc, R14} = piqirun:parse_optional_field(442330184, fun parse_string/1, R13),
     {_Default, R15} = piqirun:parse_optional_field(465819841, fun parse_piqi_piqi_any/1, R14),
     {_Json_name, R16} = piqirun:parse_optional_field(515275216, fun parse_string/1, R15),
-    piqirun:check_unparsed_fields(R16),
+    _ = R16,
     #field{
         code = _Code,
         erlang_name = _Erlang_name,
@@ -1491,7 +1490,7 @@ parse_variant(X) ->
     {_Name, R4} = piqirun:parse_required_field(150958667, fun parse_name/1, R3),
     {_Option, R5} = piqirun:parse_repeated_field(192598901, fun parse_option/1, R4),
     {_Json_name, R6} = piqirun:parse_optional_field(515275216, fun parse_string/1, R5),
-    piqirun:check_unparsed_fields(R6),
+    _ = R6,
     #variant{
         erlang_name = _Erlang_name,
         protobuf_name = _Protobuf_name,
@@ -1517,7 +1516,7 @@ parse_option(X) ->
     {_Piq_alias, R9} = piqirun:parse_optional_field(434682011, fun parse_name/1, R8),
     {_Getopt_doc, R10} = piqirun:parse_optional_field(442330184, fun parse_string/1, R9),
     {_Json_name, R11} = piqirun:parse_optional_field(515275216, fun parse_string/1, R10),
-    piqirun:check_unparsed_fields(R11),
+    _ = R11,
     #option{
         code = _Code,
         erlang_name = _Erlang_name,
@@ -1544,7 +1543,7 @@ parse_enum(X) ->
     {_Option, R5} = piqirun:parse_repeated_field(192598901, fun parse_option/1, R4),
     {_Protobuf_prefix, R6} = piqirun:parse_optional_field(366391188, fun parse_string/1, R5),
     {_Json_name, R7} = piqirun:parse_optional_field(515275216, fun parse_string/1, R6),
-    piqirun:check_unparsed_fields(R7),
+    _ = R7,
     #enum{
         erlang_name = _Erlang_name,
         protobuf_name = _Protobuf_name,
@@ -1571,7 +1570,7 @@ parse_alias(X) ->
     {_Piq_format, R9} = piqirun:parse_optional_field(296833484, fun parse_piq_format/1, R8),
     {_Erlang_default, R10} = piqirun:parse_optional_field(400905231, fun parse_string/1, R9),
     {_Json_name, R11} = piqirun:parse_optional_field(515275216, fun parse_string/1, R10),
-    piqirun:check_unparsed_fields(R11),
+    _ = R11,
     #alias{
         erlang_name = _Erlang_name,
         protobuf_name = _Protobuf_name,
@@ -1599,7 +1598,7 @@ parse_piqi_list(X) ->
     {_Type, R6} = piqirun:parse_required_field(218690234, fun parse_type/1, R5),
     {_Piq_format, R7} = piqirun:parse_optional_field(296833484, fun parse_piq_format/1, R6),
     {_Json_name, R8} = piqirun:parse_optional_field(515275216, fun parse_string/1, R7),
-    piqirun:check_unparsed_fields(R8),
+    _ = R8,
     #piqi_list{
         erlang_name = _Erlang_name,
         protobuf_name = _Protobuf_name,
@@ -1627,7 +1626,7 @@ parse_piqi(X) ->
     {_Protobuf_package, R9} = piqirun:parse_optional_field(376215364, fun parse_string/1, R8),
     {_Typedef, R10} = piqirun:parse_repeated_field(416823115, fun parse_typedef/1, R9),
     {_Erlang_module, R11} = piqirun:parse_optional_field(492641566, fun parse_string/1, R10),
-    piqirun:check_unparsed_fields(R11),
+    _ = R11,
     #piqi{
         module = _Module,
         erlang_string_type = _Erlang_string_type,
@@ -1649,7 +1648,7 @@ parse_import(X) ->
     R0 = piqirun:parse_record(X),
     {_Module, R1} = piqirun:parse_required_field(13841580, fun parse_word/1, R0),
     {_Name, R2} = piqirun:parse_optional_field(150958667, fun parse_name/1, R1),
-    piqirun:check_unparsed_fields(R2),
+    _ = R2,
     #import{
         module = _Module,
         name = _Name
@@ -1664,7 +1663,7 @@ parse_piqi_any(X) ->
     {_Protobuf, R2} = piqirun:parse_optional_field(6461771, fun parse_binary/1, R1),
     {_Json, R3} = piqirun:parse_optional_field(107495976, fun parse_string/1, R2),
     {_Type, R4} = piqirun:parse_optional_field(218690234, fun parse_string/1, R3),
-    piqirun:check_unparsed_fields(R4),
+    _ = R4,
     #piqi_any{
         xml = _Xml,
         protobuf = _Protobuf,
@@ -1682,7 +1681,7 @@ parse_func(X) ->
     {_Output, R3} = piqirun:parse_optional_field(209784577, fun parse_type/1, R2),
     {_Error, R4} = piqirun:parse_optional_field(321506248, fun parse_type/1, R3),
     {_Input, R5} = piqirun:parse_optional_field(505267210, fun parse_type/1, R4),
-    piqirun:check_unparsed_fields(R5),
+    _ = R5,
     #func{
         erlang_name = _Erlang_name,
         name = _Name,
@@ -1697,7 +1696,7 @@ parse_func(X) ->
 parse_piqi_bundle(X) ->
     R0 = piqirun:parse_record(X),
     {_Piqi, R1} = piqirun:parse_repeated_field(1, fun parse_piqi/1, R0),
-    piqirun:check_unparsed_fields(R1),
+    _ = R1,
     #piqi_bundle{
         piqi = _Piqi
     }.

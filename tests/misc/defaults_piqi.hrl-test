@@ -2,6 +2,8 @@
 -define(__DEFAULTS_PIQI_HRL__, 1).
 
 
+-include_lib("piqi/include/piqirun.hrl").
+
 -record(defaults_r, {
     i = -1 :: integer() | 'undefined',
     u = 1 :: non_neg_integer() | 'undefined',

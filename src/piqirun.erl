@@ -455,8 +455,7 @@ to_float(X) when is_integer(X) -> X + 0.0.
 binary_to_block(Code, X) when is_binary(X) ->
     [
         encode_field_tag(Code, ?TYPE_STRING),
-        encode_varint_value(size(X)),
-        X
+        gen_block(X)
     ].
 
 
@@ -530,8 +529,7 @@ float_to_packed_fixed32(X) ->
 % Decoders and parsers
 %
 
--type parsed_field() ::
-    {FieldCode :: pos_integer(), FieldValue :: piqirun_return_buffer()}.
+-type parsed_field() :: piqirun_parsed_field().
 
 -spec parse_field_header/1 :: ( Bytes :: binary() ) ->
     {Code :: pos_integer(), WireType :: field_type(), Rest :: binary()}.
@@ -819,7 +817,8 @@ parse_packed_values(ParseValue, Bytes, Accu) ->
     parse_packed_values(ParseValue, Rest, [X|Accu]).
 
 
-% XXX, TODO: print warnings on unrecognized fields
+% NOTE: kept for backward compatibility
+% TODO: remove in the next major release
 check_unparsed_fields(_L) -> ok.
 
 
@@ -1035,4 +1034,16 @@ float_of_packed_fixed32(_) ->
 
 parse_ieee754_64(_) -> throw_error('ieee754_infinities_NaN_not_supported_yet').
 parse_ieee754_32(_) -> throw_error('ieee754_infinities_NaN_not_supported_yet').
+
+
+-spec gen_parsed_field/1 :: (parsed_field()) -> iolist().
+
+gen_parsed_field({Code, Integer}) when is_integer(Integer) -> % XXX: check if Integer >= 0
+    encode_varint_field(Code, Integer);
+gen_parsed_field({Code, {'fixed32', Binary}}) -> % XXX: validate input type and size?
+    [encode_field_tag(Code, ?TYPE_32BIT), Binary];
+gen_parsed_field({Code, {'fixed64', Binary}}) -> % XXX: validate input type and size?
+    [encode_field_tag(Code, ?TYPE_64BIT), Binary];
+gen_parsed_field({Code, {'block', Binary}}) -> % XXX: validate input type?
+    [encode_field_tag(Code, ?TYPE_STRING), gen_block(Binary)].
 

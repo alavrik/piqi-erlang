@@ -59,7 +59,10 @@
     % original modules being compiled (imported modules ++ [piqi])
     modules :: [#piqi{}],
     % index of imported modules: #piqi.module -> #index{}
-    module_index
+    module_index,
+
+    % piqic options (proplist)
+    options :: list()
 }).
 
 

@@ -2,6 +2,8 @@
 -define(__PIQI_PIQI_HRL__, 1).
 
 
+-include_lib("piqi/include/piqirun.hrl").
+
 -type piq_format() ::
       word
     | text.

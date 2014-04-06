@@ -64,7 +64,7 @@ definitions.
 Generated `<erlang-module>.erl` file includes `<erlang-module>.hrl` and contains
 functions for serializing and deserializing Erlang values.
 
-Generated `<erlang-module>.ml` file contains Erlang type definitions and
+Generated `<erlang-module>.hrl` file contains Erlang type definitions and
 functions for serializing and deserializing Erlang values.
 
 For each defined data type `<typename>`, `piqic-erlang` will produce several
@@ -161,6 +161,12 @@ an additional third argument representing a list of serialization options:
     `false`, the original identifiers will be lowercased without performing any
     additional transformations, e.g. "CamelCase" turns into "camelCase". The
     default value is `true`.
+
+-   `--gen-preserve-unknown-fields` -- generate code that preserves unknown
+    Protobuf fields when they are serialized back. When enabled, unknown
+    (unrecognized) Protobuf fields are captured during de-serialization in a
+    special 'piqi_unknown_pb' field and automatically written back when the
+    record is serialized to Protobuf.
 
 -   `--trace` -- turn on tracing (verbose output)
 

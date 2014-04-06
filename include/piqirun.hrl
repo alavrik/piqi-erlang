@@ -65,4 +65,8 @@
 -type piqirun_code() :: 'undefined' | pos_integer().
 
 
+-type piqirun_parsed_field() ::
+    {FieldCode :: pos_integer(), FieldValue :: piqirun_return_buffer()}.
+
+
 -endif.
