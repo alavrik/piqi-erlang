@@ -153,7 +153,7 @@ an additional third argument representing a list of serialization options:
 
 -   `-I <dir>` -- add directory to the list of imported .piqi search paths
 
---  `-e <name>` -- try including extension <name> for all loaded modules (can be
+-   `-e <name>` -- try including extension <name> for all loaded modules (can be
     used several times)
 
 -   `--normalize-names true|false` -- convert "CamelCase"-style identifiers from
