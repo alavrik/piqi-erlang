@@ -1,3 +1,25 @@
+Piqi-erlang 0.7.1 (April 7, 2014)
+=================================
+
+Fixes:
+
+  - Fix a crash in piqic-erlang
+  - Fix generation of incorrect code for custom Erlang types
+
+New features:
+
+  - preserve unknown Protobuf fields through deserialization-serialization cycle
+    (new piqic-erlang --gen-preserve-unknown-fields flag)
+  - New conversion options: piq_frameless_output, piq_frameless_input,
+    piq_relaxed_parsing
+
+Miscellaneous:
+
+  - Rename conversion option: json_omit_null_fields -> json_omit_missing_fields
+  - Bump piqi-binary dependency to the latest stable upstream version (v0.6.6)
+  - Various improvements in piqic-erlang
+
+
 Piqi-erlang 0.7.0 (October 28, 2013)
 ====================================
 
