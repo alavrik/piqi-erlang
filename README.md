@@ -103,7 +103,8 @@ and point to it using the `PIQI` environment variable _before_ running any
 Contributing
 ------------
 
-Your contributions are always welcome. Just open a pull request.
+Your contributions are always welcome. Just open a pull request. Check [TODO
+list](TODO) for ideas.
 
 Some useful commands:
 

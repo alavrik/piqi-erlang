@@ -1,0 +1,49 @@
+This is a list of ideas of how to improve piqi-erlang.
+
+Current issues and feature requests: https://github.com/alavrik/piqi-erlang/issues
+
+
+Improvements
+------------
+
+- Automatic schema reload for multi-format serialization. Automatically
+  reload/re-init Piqi modules when Erlang _piqi modules get hot-loaded. Without
+  automatic handing, the easiest way to do it manually is to run `piqi:stop(),
+  piqi:start().` Needless to say, doing this often quickly becomes annoying.
+
+
+New features
+------------
+
+- optionally, copy sub-binaries during deserialization
+- optionally, treat Piqi enums as Erlang integers and generate enum constants as
+  macros instead of atoms
+
+
+Optimizations
+-------------
+
+- faster piqi_tools.erl pooling especially for short-lived processes such as
+  used by Piqi-RPC
+- profile and optimize piqirun.erl especially on recent Erlang releases
+
+
+Packaging
+---------
+
+- drop piqi-binary as a dependency and rely having a compatible version of piqi
+  in path (after piqi-0.7.0 is release)
+- add piqic-erlang --version and --piqi-version options
+
+
+Miscellaneous
+-------------
+
+- add examples/piq-config that uses frameless Piq as input/output; see
+  piqi-ocaml/examples/piq-config for details
+
+- more tests
+
+
+
+# ex: et sw=4 ts=4
