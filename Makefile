@@ -1,7 +1,7 @@
 REBAR ?= rebar
 
 
-all:
+all: deps
 	$(REBAR) compile
 	$(MAKE) -C piqic-erlang
 
