@@ -63,7 +63,33 @@ gen_imports(Context, Imports) ->
 gen_import(Context, Import) ->
     ImportedIndex = piqic:resolve_import(Context, Import),
     ImportedPiqi = ImportedIndex#index.piqi,
-    ["-include(\"", ImportedPiqi#piqi.erlang_module, ".hrl\")."].
+    ErlMod = ImportedPiqi#piqi.erlang_module,
+    IncludeLib = piqic:get_option(Context, include_lib),
+    case find_include_lib(IncludeLib, ImportedPiqi#piqi.file) of
+        'undefined' ->
+            ["-include(\"", ErlMod, ".hrl\")."];
+        {AppPath, _Path} ->
+            ["-include_lib(\"", AppPath, "/", ErlMod, ".hrl\")."]
+    end.
+
+
+find_include_lib(_IncludeLib, _File = 'undefined') ->
+    % backward compatibility: in older versions of piqi the "file" attribute may
+    % not be present
+    'undefined';
+
+find_include_lib([], _File) ->
+    % not found
+    'undefined';
+
+find_include_lib([H = {_AppPath, Path} |T], File) ->
+    % was the .piqi module (File) found in Path?
+    case lists:prefix(Path, binary_to_list(File)) of
+        true ->  % found
+            H;
+        false -> % not found => keep going through the list
+            find_include_lib(T, File)
+    end.
 
 
 gen_typedefs(Context, Typedefs) ->

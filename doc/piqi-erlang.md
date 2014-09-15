@@ -153,6 +153,9 @@ an additional third argument representing a list of serialization options:
 
 -   `-I <dir>` -- add directory to the list of imported .piqi search paths
 
+-   `--include-lib <app>[/<path>]` similar to `-I` but generates
+    `-include_lib(...)` instead `-include(...)` for imported modules
+
 -   `-e <name>` -- try including extension <name> for all loaded modules (can be
     used several times)
 

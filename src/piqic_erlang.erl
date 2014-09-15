@@ -45,6 +45,7 @@ usage(IoDevice) ->
 "Usage: " ++ ScriptName ++ " [options] <.piqi file>\n"
 "Options:
   -I <dir> add directory to the list of imported .piqi search paths
+  --include-lib <app>[/<path>] similar to -I but generate -include_lib(...) instead -include(...) for imported modules
   --no-warnings don't print warnings
   --trace turn on tracing
   --debug <level> debug level; any number greater than 0 turns on debug messages
@@ -67,7 +68,10 @@ print_error(Format, Args) ->
 
 
 args_error(ErrorStr) ->
-    print_error(ErrorStr),
+    args_error(ErrorStr, []).
+
+args_error(Format, Args) ->
+    print_error(Format, Args),
     erlang:halt(1).
 
 
@@ -78,7 +82,11 @@ args_error(ErrorStr) ->
     input_file,         % last positional argument
     other = [],          % arguments to be passed to "piqi compile"
     normalize_names = true,
-    gen_preserve_unknown_fields = false
+    gen_preserve_unknown_fields = false,
+
+    % search path, similar to -I but generate -include_lib instead of -include
+    % for imported modules
+    include_lib = [] :: [ {AppPath :: string(), Path :: string()} ]
 }).
 
 
@@ -97,7 +105,8 @@ parse_args([X|_], _Args) when X == "-h" orelse X == "--help" ->
 parse_args([Filename], Args) ->
     Args#args{
         input_file = Filename,
-        other = lists:reverse([Filename | Args#args.other])
+        other = lists:reverse([Filename | Args#args.other]),
+        include_lib = lists:reverse(Args#args.include_lib)
     };
 
 parse_args(["-C", Odir |T], Args) ->
@@ -128,6 +137,30 @@ parse_args([A = "--trace" |T], Args) ->
     NewArgs = Args#args{
         trace = true,
         other = [A | Args#args.other]  % pass through
+    },
+    parse_args(T, NewArgs);
+
+parse_args(["--include-lib", I |T], Args) ->
+    {App, AppPath} =
+        case filename:split(I) of
+            [PathH | PathT] ->
+                {list_to_atom(PathH), PathT};
+            _ ->
+                args_error("invalid --include-lib spec: ~s", [I])
+        end,
+    AppDir =
+        case code:lib_dir(App) of
+            {error, _} ->
+                args_error("can't find app '~s' specified in --include-lib ~s", [App, I]);
+            X ->
+                X
+        end,
+    Path = filename:join([AppDir | AppPath]),
+    NewArgs = Args#args{
+        include_lib = [{I, Path} | Args#args.include_lib],
+
+        % convert --include-lib to -I
+        other = [Path, "-I" | Args#args.other]
     },
     parse_args(T, NewArgs);
 
@@ -203,7 +236,8 @@ piqic_erlang(CallbackMod, Args) ->
         % modules (if any) represent imported dependencies
         Options = [
             {normalize_names, ParsedArgs#args.normalize_names},
-            {gen_preserve_unknown_fields, ParsedArgs#args.gen_preserve_unknown_fields}
+            {gen_preserve_unknown_fields, ParsedArgs#args.gen_preserve_unknown_fields},
+            {include_lib, ParsedArgs#args.include_lib}
         ],
         Context = piqic:init_context(PiqiList, Options),
         CallbackMod:generate(Context),
