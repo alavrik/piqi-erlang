@@ -1,23 +1,31 @@
 #!/bin/sh
 #
-# this is a rebar get-deps post-hook that copies pre-built piqi binaries
+# this is a rebar compile pre-hook that copies pre-built piqi binaries
 # downloaded by "rebar get-deps" under ./priv or takes the piqi binary pointed
 # to by $PIQI
 
 set -e
 
 
-# cleanup previously created directory
-rm -rf priv/piqi-binary
-
 # check if the PIQI environment variable is defined; when defined it points to
 # the "piqi" binary executable
 if [ -n "$PIQI" ]
 then
-	mkdir -p priv/piqi-binary/"`uname -s`-`uname -m`"
-	cp -a "$PIQI" priv/piqi-binary/"`uname -s`-`uname -m`"/piqi
+	version="`uname -s`-`uname -m`"
+	prefix=priv/piqi-binary/$version
+	dst=$prefix/piqi
+	if [ ! -f $dst ] || [ "$PIQI" -nt $dst ]
+	then
+		mkdir -p $prefix
+		cp -a "$PIQI" $dst
+	fi
 else
-	cp -a "$REBAR_DEPS_DIR/piqi_binary/" priv/piqi-binary
-	rm -rf priv/piqi-binary/.git
+	src="$REBAR_DEPS_DIR/piqi_binary/"
+	dst=priv/piqi-binary
+	if [ ! -d $dst ] || [ "$src" -nt $dst ]
+	then
+		cp -a "$src" $dst
+		rm -rf $dst/.git
+	fi
 fi
 
