@@ -201,9 +201,14 @@ piqic_erlang(CallbackMod, Args) ->
     % use process dictionary instead of carrying it through the stack
     put(?FLAG_TRACE, Trace),
 
-    % TODO: send self-spec to "piqic compile" stdin instead of writing it to a
-    % file
-    SelfSpec = "piqi.piqi.pb",
+    % NOTE: ideally, we should send self-spec to "piqic compile" stdin instead
+    % of passing it as a temporary file. Unfortunately, Erlang port interface
+    % doesn't support sending EOF so we can't use it without some kind of
+    % adapter script.
+    %
+    % NOTE: using os:getpid() to avoid race between concurrent piqic-erlang
+    % invocations (typically, during parallel builds)
+    SelfSpec = "piqi.piqi." ++ os:getpid() ++ ".pb",
     piqic:write_file(SelfSpec, piqi_piqi:piqi()),
 
     % NOTE: it would be more better to read it from stdout, but it is not
