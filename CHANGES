@@ -1,3 +1,23 @@
+Piqi-erlang 0.7.2 (December 29, 2014)
+=====================================
+
+Fixes:
+
+  - Fix #13: race condition with parallel builds
+  - Fix #15: make wrapper goes into an infinite loop
+
+
+New features:
+
+  - Add a new piqic-erlang --include-lib option
+
+
+Miscellaneous:
+
+  - Bump piqi-binary dependency to the latest stable upstream version (v0.6.10)
+  - Run ./get-piqi-binary from pre- compile hook instead of post- get-deps
+
+
 Piqi-erlang 0.7.1 (April 7, 2014)
 =================================
 
