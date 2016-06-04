@@ -487,8 +487,8 @@ Examples
     programs: for adding a record to an addressbook and for listing addressbook
     contents. The programs implement the same functionality as programs from the
     Protocol Buffers
-    [examples](http://protobuf.googlecode.com/svn/trunk/examples/) written in
-    C++, Java and Python.
+    [examples](https://github.com/google/protobuf/tree/v2.6.1/examples) written
+    in C++, Java and Python.
 
     [examples/erlang](http://github.com/alavrik/piqi-erlang/tree/master/examples/addressbook/)
 
