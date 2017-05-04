@@ -75,7 +75,7 @@ gen_typedef_1(Context, Typedef) ->
 
 gen_spec(Context, Typedef) ->
     [
-        "-spec field_gen_", typedef_erlname(Typedef), "/2 :: (",
+        "-spec field_gen_", typedef_erlname(Typedef), "(",
             "Code :: piqirun_code(), "
             "X :: ", gen_output_type_name(Context, Typedef), ") -> iolist().\n"
     ].
@@ -84,7 +84,7 @@ gen_spec(Context, Typedef) ->
 % generate gen_<name>/1 spec
 gen_spec_1(Context, Typedef) ->
     [
-        "-spec gen_", typedef_erlname(Typedef), "/1 :: (",
+        "-spec gen_", typedef_erlname(Typedef), "(",
             "X :: ", gen_output_type_name(Context, Typedef), ") -> iolist().\n"
     ].
 

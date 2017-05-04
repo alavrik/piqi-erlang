@@ -91,8 +91,7 @@ gen_typedef_3(Name, ErlName) ->
 
 gen_spec(Context, Typedef) ->
     [
-        "-spec parse_", typedef_erlname(Typedef), "/1 :: ",
-        "(X :: piqirun_buffer()) -> ",
+        "-spec parse_", typedef_erlname(Typedef), "(X :: piqirun_buffer()) -> ",
         gen_input_type_name(Context, Typedef),
         ".\n"
     ].

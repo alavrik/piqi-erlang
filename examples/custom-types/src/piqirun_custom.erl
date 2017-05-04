@@ -17,8 +17,8 @@
 -type term_t() :: any().
 
 
--spec bigint_of_string/1 :: (string() | binary()) -> integer().
--spec bigint_to_string/1 :: (integer()) -> list().
+-spec bigint_of_string(string() | binary()) -> integer().
+-spec bigint_to_string(integer()) -> list().
 
 
 bigint_of_string(X) when is_list(X) -> list_to_integer(X);
@@ -28,8 +28,8 @@ bigint_of_string(X) when is_binary(X) ->
 bigint_to_string(X) -> integer_to_list(X).
 
 
--spec term_t_of_binary/1 :: (binary()) -> any().
--spec term_t_to_binary/1 :: (any()) -> binary().
+-spec term_t_of_binary(binary()) -> any().
+-spec term_t_to_binary(any()) -> binary().
 
 term_t_of_binary(X) -> binary_to_term(X).
 

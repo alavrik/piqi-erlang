@@ -4,7 +4,7 @@
 -include("piqi_piqi.hrl").
 
 
--spec field_gen_piq_format/2 :: (Code :: piqirun_code(), X :: piq_format()) -> iolist().
+-spec field_gen_piq_format(Code :: piqirun_code(), X :: piq_format()) -> iolist().
 
 field_gen_piq_format(Code, X) ->
     piqirun:gen_variant(Code,
@@ -15,7 +15,7 @@ field_gen_piq_format(Code, X) ->
     ).
 
 
--spec field_gen_protobuf_int32/2 :: (Code :: piqirun_code(), X :: integer()) -> iolist().
+-spec field_gen_protobuf_int32(Code :: piqirun_code(), X :: integer()) -> iolist().
 
 field_gen_protobuf_int32(Code, X) ->
     piqirun:integer_to_signed_varint(Code, X).
@@ -25,7 +25,7 @@ packed_field_gen_protobuf_int32(X) ->
     piqirun:integer_to_packed_signed_varint(X).
 
 
--spec field_gen_protobuf_int64/2 :: (Code :: piqirun_code(), X :: integer()) -> iolist().
+-spec field_gen_protobuf_int64(Code :: piqirun_code(), X :: integer()) -> iolist().
 
 field_gen_protobuf_int64(Code, X) ->
     piqirun:integer_to_signed_varint(Code, X).
@@ -35,7 +35,7 @@ packed_field_gen_protobuf_int64(X) ->
     piqirun:integer_to_packed_signed_varint(X).
 
 
--spec field_gen_protobuf_wire_type/2 :: (Code :: piqirun_code(), X :: protobuf_wire_type()) -> iolist().
+-spec field_gen_protobuf_wire_type(Code :: piqirun_code(), X :: protobuf_wire_type()) -> iolist().
 
 field_gen_protobuf_wire_type(Code, X) ->
     piqirun:integer_to_signed_varint(Code,
@@ -67,7 +67,7 @@ packed_field_gen_protobuf_wire_type(X) ->
     ).
 
 
--spec field_gen_bool/2 :: (Code :: piqirun_code(), X :: boolean()) -> iolist().
+-spec field_gen_bool(Code :: piqirun_code(), X :: boolean()) -> iolist().
 
 field_gen_bool(Code, X) ->
     piqirun:boolean_to_varint(Code, X).
@@ -77,25 +77,25 @@ packed_field_gen_bool(X) ->
     piqirun:boolean_to_packed_varint(X).
 
 
--spec field_gen_string/2 :: (Code :: piqirun_code(), X :: string() | binary()) -> iolist().
+-spec field_gen_string(Code :: piqirun_code(), X :: string() | binary()) -> iolist().
 
 field_gen_string(Code, X) ->
     piqirun:string_to_block(Code, X).
 
 
--spec field_gen_binary/2 :: (Code :: piqirun_code(), X :: binary()) -> iolist().
+-spec field_gen_binary(Code :: piqirun_code(), X :: binary()) -> iolist().
 
 field_gen_binary(Code, X) ->
     piqirun:binary_to_block(Code, X).
 
 
--spec field_gen_piqi_piqi_any/2 :: (Code :: piqirun_code(), X :: piqi_any()) -> iolist().
+-spec field_gen_piqi_piqi_any(Code :: piqirun_code(), X :: piqi_any()) -> iolist().
 
 field_gen_piqi_piqi_any(Code, X) ->
     field_gen_piqi_any(Code, X).
 
 
--spec field_gen_int/2 :: (Code :: piqirun_code(), X :: integer()) -> iolist().
+-spec field_gen_int(Code :: piqirun_code(), X :: integer()) -> iolist().
 
 field_gen_int(Code, X) ->
     piqirun:integer_to_zigzag_varint(Code, X).
@@ -105,7 +105,7 @@ packed_field_gen_int(X) ->
     piqirun:integer_to_packed_zigzag_varint(X).
 
 
--spec field_gen_uint/2 :: (Code :: piqirun_code(), X :: non_neg_integer()) -> iolist().
+-spec field_gen_uint(Code :: piqirun_code(), X :: non_neg_integer()) -> iolist().
 
 field_gen_uint(Code, X) ->
     piqirun:non_neg_integer_to_varint(Code, X).
@@ -115,7 +115,7 @@ packed_field_gen_uint(X) ->
     piqirun:non_neg_integer_to_packed_varint(X).
 
 
--spec field_gen_int32/2 :: (Code :: piqirun_code(), X :: integer()) -> iolist().
+-spec field_gen_int32(Code :: piqirun_code(), X :: integer()) -> iolist().
 
 field_gen_int32(Code, X) ->
     piqirun:integer_to_zigzag_varint(Code, X).
@@ -125,7 +125,7 @@ packed_field_gen_int32(X) ->
     piqirun:integer_to_packed_zigzag_varint(X).
 
 
--spec field_gen_uint32/2 :: (Code :: piqirun_code(), X :: non_neg_integer()) -> iolist().
+-spec field_gen_uint32(Code :: piqirun_code(), X :: non_neg_integer()) -> iolist().
 
 field_gen_uint32(Code, X) ->
     piqirun:non_neg_integer_to_varint(Code, X).
@@ -135,7 +135,7 @@ packed_field_gen_uint32(X) ->
     piqirun:non_neg_integer_to_packed_varint(X).
 
 
--spec field_gen_int64/2 :: (Code :: piqirun_code(), X :: integer()) -> iolist().
+-spec field_gen_int64(Code :: piqirun_code(), X :: integer()) -> iolist().
 
 field_gen_int64(Code, X) ->
     piqirun:integer_to_zigzag_varint(Code, X).
@@ -145,7 +145,7 @@ packed_field_gen_int64(X) ->
     piqirun:integer_to_packed_zigzag_varint(X).
 
 
--spec field_gen_uint64/2 :: (Code :: piqirun_code(), X :: non_neg_integer()) -> iolist().
+-spec field_gen_uint64(Code :: piqirun_code(), X :: non_neg_integer()) -> iolist().
 
 field_gen_uint64(Code, X) ->
     piqirun:non_neg_integer_to_varint(Code, X).
@@ -155,7 +155,7 @@ packed_field_gen_uint64(X) ->
     piqirun:non_neg_integer_to_packed_varint(X).
 
 
--spec field_gen_float64/2 :: (Code :: piqirun_code(), X :: number()) -> iolist().
+-spec field_gen_float64(Code :: piqirun_code(), X :: number()) -> iolist().
 
 field_gen_float64(Code, X) ->
     piqirun:float_to_fixed64(Code, X).
@@ -165,7 +165,7 @@ packed_field_gen_float64(X) ->
     piqirun:float_to_packed_fixed64(X).
 
 
--spec field_gen_float32/2 :: (Code :: piqirun_code(), X :: number()) -> iolist().
+-spec field_gen_float32(Code :: piqirun_code(), X :: number()) -> iolist().
 
 field_gen_float32(Code, X) ->
     piqirun:float_to_fixed32(Code, X).
@@ -175,7 +175,7 @@ packed_field_gen_float32(X) ->
     piqirun:float_to_packed_fixed32(X).
 
 
--spec field_gen_int32_fixed/2 :: (Code :: piqirun_code(), X :: integer()) -> iolist().
+-spec field_gen_int32_fixed(Code :: piqirun_code(), X :: integer()) -> iolist().
 
 field_gen_int32_fixed(Code, X) ->
     piqirun:integer_to_signed_fixed32(Code, X).
@@ -185,7 +185,7 @@ packed_field_gen_int32_fixed(X) ->
     piqirun:integer_to_packed_signed_fixed32(X).
 
 
--spec field_gen_uint32_fixed/2 :: (Code :: piqirun_code(), X :: non_neg_integer()) -> iolist().
+-spec field_gen_uint32_fixed(Code :: piqirun_code(), X :: non_neg_integer()) -> iolist().
 
 field_gen_uint32_fixed(Code, X) ->
     piqirun:non_neg_integer_to_fixed32(Code, X).
@@ -195,7 +195,7 @@ packed_field_gen_uint32_fixed(X) ->
     piqirun:non_neg_integer_to_packed_fixed32(X).
 
 
--spec field_gen_int64_fixed/2 :: (Code :: piqirun_code(), X :: integer()) -> iolist().
+-spec field_gen_int64_fixed(Code :: piqirun_code(), X :: integer()) -> iolist().
 
 field_gen_int64_fixed(Code, X) ->
     piqirun:integer_to_signed_fixed64(Code, X).
@@ -205,7 +205,7 @@ packed_field_gen_int64_fixed(X) ->
     piqirun:integer_to_packed_signed_fixed64(X).
 
 
--spec field_gen_uint64_fixed/2 :: (Code :: piqirun_code(), X :: non_neg_integer()) -> iolist().
+-spec field_gen_uint64_fixed(Code :: piqirun_code(), X :: non_neg_integer()) -> iolist().
 
 field_gen_uint64_fixed(Code, X) ->
     piqirun:non_neg_integer_to_fixed64(Code, X).
@@ -215,7 +215,7 @@ packed_field_gen_uint64_fixed(X) ->
     piqirun:non_neg_integer_to_packed_fixed64(X).
 
 
--spec field_gen_float/2 :: (Code :: piqirun_code(), X :: number()) -> iolist().
+-spec field_gen_float(Code :: piqirun_code(), X :: number()) -> iolist().
 
 field_gen_float(Code, X) ->
     field_gen_float64(Code, X).
@@ -225,19 +225,19 @@ packed_field_gen_float(X) ->
     packed_field_gen_float64(X).
 
 
--spec field_gen_word/2 :: (Code :: piqirun_code(), X :: word()) -> iolist().
+-spec field_gen_word(Code :: piqirun_code(), X :: word()) -> iolist().
 
 field_gen_word(Code, X) ->
     field_gen_string(Code, X).
 
 
--spec field_gen_name/2 :: (Code :: piqirun_code(), X :: name()) -> iolist().
+-spec field_gen_name(Code :: piqirun_code(), X :: name()) -> iolist().
 
 field_gen_name(Code, X) ->
     field_gen_word(Code, X).
 
 
--spec field_gen_typedef/2 :: (Code :: piqirun_code(), X :: typedef()) -> iolist().
+-spec field_gen_typedef(Code :: piqirun_code(), X :: typedef()) -> iolist().
 
 field_gen_typedef(Code, X) ->
     piqirun:gen_variant(Code,
@@ -251,7 +251,7 @@ field_gen_typedef(Code, X) ->
     ).
 
 
--spec field_gen_piqi_type/2 :: (Code :: piqirun_code(), X :: piqi_type()) -> iolist().
+-spec field_gen_piqi_type(Code :: piqirun_code(), X :: piqi_type()) -> iolist().
 
 field_gen_piqi_type(Code, X) ->
     piqirun:integer_to_signed_varint(Code,
@@ -279,13 +279,13 @@ packed_field_gen_piqi_type(X) ->
     ).
 
 
--spec field_gen_type/2 :: (Code :: piqirun_code(), X :: type()) -> iolist().
+-spec field_gen_type(Code :: piqirun_code(), X :: type()) -> iolist().
 
 field_gen_type(Code, X) ->
     field_gen_name(Code, X).
 
 
--spec field_gen_piqi_record/2 :: (Code :: piqirun_code(), X :: piqi_record()) -> iolist().
+-spec field_gen_piqi_record(Code :: piqirun_code(), X :: piqi_record()) -> iolist().
 
 field_gen_piqi_record(Code, X) ->
     piqirun:gen_record(Code, [
@@ -299,7 +299,7 @@ field_gen_piqi_record(Code, X) ->
     ]).
 
 
--spec field_gen_field/2 :: (Code :: piqirun_code(), X :: field()) -> iolist().
+-spec field_gen_field(Code :: piqirun_code(), X :: field()) -> iolist().
 
 field_gen_field(Code, X) ->
     piqirun:gen_record(Code, [
@@ -322,7 +322,7 @@ field_gen_field(Code, X) ->
     ]).
 
 
--spec field_gen_field_mode/2 :: (Code :: piqirun_code(), X :: field_mode()) -> iolist().
+-spec field_gen_field_mode(Code :: piqirun_code(), X :: field_mode()) -> iolist().
 
 field_gen_field_mode(Code, X) ->
     piqirun:integer_to_signed_varint(Code,
@@ -344,7 +344,7 @@ packed_field_gen_field_mode(X) ->
     ).
 
 
--spec field_gen_variant/2 :: (Code :: piqirun_code(), X :: variant()) -> iolist().
+-spec field_gen_variant(Code :: piqirun_code(), X :: variant()) -> iolist().
 
 field_gen_variant(Code, X) ->
     piqirun:gen_record(Code, [
@@ -357,7 +357,7 @@ field_gen_variant(Code, X) ->
     ]).
 
 
--spec field_gen_option/2 :: (Code :: piqirun_code(), X :: option()) -> iolist().
+-spec field_gen_option(Code :: piqirun_code(), X :: option()) -> iolist().
 
 field_gen_option(Code, X) ->
     piqirun:gen_record(Code, [
@@ -375,7 +375,7 @@ field_gen_option(Code, X) ->
     ]).
 
 
--spec field_gen_enum/2 :: (Code :: piqirun_code(), X :: enum()) -> iolist().
+-spec field_gen_enum(Code :: piqirun_code(), X :: enum()) -> iolist().
 
 field_gen_enum(Code, X) ->
     piqirun:gen_record(Code, [
@@ -389,7 +389,7 @@ field_gen_enum(Code, X) ->
     ]).
 
 
--spec field_gen_alias/2 :: (Code :: piqirun_code(), X :: alias()) -> iolist().
+-spec field_gen_alias(Code :: piqirun_code(), X :: alias()) -> iolist().
 
 field_gen_alias(Code, X) ->
     piqirun:gen_record(Code, [
@@ -407,7 +407,7 @@ field_gen_alias(Code, X) ->
     ]).
 
 
--spec field_gen_piqi_list/2 :: (Code :: piqirun_code(), X :: piqi_list()) -> iolist().
+-spec field_gen_piqi_list(Code :: piqirun_code(), X :: piqi_list()) -> iolist().
 
 field_gen_piqi_list(Code, X) ->
     piqirun:gen_record(Code, [
@@ -422,7 +422,7 @@ field_gen_piqi_list(Code, X) ->
     ]).
 
 
--spec field_gen_piqi/2 :: (Code :: piqirun_code(), X :: piqi()) -> iolist().
+-spec field_gen_piqi(Code :: piqirun_code(), X :: piqi()) -> iolist().
 
 field_gen_piqi(Code, X) ->
     piqirun:gen_record(Code, [
@@ -440,7 +440,7 @@ field_gen_piqi(Code, X) ->
     ]).
 
 
--spec field_gen_import/2 :: (Code :: piqirun_code(), X :: import()) -> iolist().
+-spec field_gen_import(Code :: piqirun_code(), X :: import()) -> iolist().
 
 field_gen_import(Code, X) ->
     piqirun:gen_record(Code, [
@@ -449,7 +449,7 @@ field_gen_import(Code, X) ->
     ]).
 
 
--spec field_gen_piqi_any/2 :: (Code :: piqirun_code(), X :: piqi_any()) -> iolist().
+-spec field_gen_piqi_any(Code :: piqirun_code(), X :: piqi_any()) -> iolist().
 
 field_gen_piqi_any(Code, X) ->
     piqirun:gen_record(Code, [
@@ -460,7 +460,7 @@ field_gen_piqi_any(Code, X) ->
     ]).
 
 
--spec field_gen_func/2 :: (Code :: piqirun_code(), X :: func()) -> iolist().
+-spec field_gen_func(Code :: piqirun_code(), X :: func()) -> iolist().
 
 field_gen_func(Code, X) ->
     piqirun:gen_record(Code, [
@@ -472,7 +472,7 @@ field_gen_func(Code, X) ->
     ]).
 
 
--spec field_gen_piqi_bundle/2 :: (Code :: piqirun_code(), X :: piqi_bundle()) -> iolist().
+-spec field_gen_piqi_bundle(Code :: piqirun_code(), X :: piqi_bundle()) -> iolist().
 
 field_gen_piqi_bundle(Code, X) ->
     piqirun:gen_record(Code, [
@@ -480,7 +480,7 @@ field_gen_piqi_bundle(Code, X) ->
     ]).
 
 
--spec field_gen_erlang_string_type/2 :: (Code :: piqirun_code(), X :: erlang_string_type()) -> iolist().
+-spec field_gen_erlang_string_type(Code :: piqirun_code(), X :: erlang_string_type()) -> iolist().
 
 field_gen_erlang_string_type(Code, X) ->
     piqirun:integer_to_signed_varint(Code,
@@ -500,241 +500,241 @@ packed_field_gen_erlang_string_type(X) ->
     ).
 
 
--spec gen_piq_format/1 :: (X :: piq_format()) -> iolist().
+-spec gen_piq_format(X :: piq_format()) -> iolist().
 
 gen_piq_format(X) ->
     field_gen_piq_format('undefined', X).
 
 
--spec gen_protobuf_int32/1 :: (X :: integer()) -> iolist().
+-spec gen_protobuf_int32(X :: integer()) -> iolist().
 
 gen_protobuf_int32(X) ->
     field_gen_protobuf_int32('undefined', X).
 
 
--spec gen_protobuf_int64/1 :: (X :: integer()) -> iolist().
+-spec gen_protobuf_int64(X :: integer()) -> iolist().
 
 gen_protobuf_int64(X) ->
     field_gen_protobuf_int64('undefined', X).
 
 
--spec gen_protobuf_wire_type/1 :: (X :: protobuf_wire_type()) -> iolist().
+-spec gen_protobuf_wire_type(X :: protobuf_wire_type()) -> iolist().
 
 gen_protobuf_wire_type(X) ->
     field_gen_protobuf_wire_type('undefined', X).
 
 
--spec gen_bool/1 :: (X :: boolean()) -> iolist().
+-spec gen_bool(X :: boolean()) -> iolist().
 
 gen_bool(X) ->
     field_gen_bool('undefined', X).
 
 
--spec gen_string/1 :: (X :: string() | binary()) -> iolist().
+-spec gen_string(X :: string() | binary()) -> iolist().
 
 gen_string(X) ->
     field_gen_string('undefined', X).
 
 
--spec gen_binary/1 :: (X :: binary()) -> iolist().
+-spec gen_binary(X :: binary()) -> iolist().
 
 gen_binary(X) ->
     field_gen_binary('undefined', X).
 
 
--spec gen_piqi_piqi_any/1 :: (X :: piqi_any()) -> iolist().
+-spec gen_piqi_piqi_any(X :: piqi_any()) -> iolist().
 
 gen_piqi_piqi_any(X) ->
     field_gen_piqi_piqi_any('undefined', X).
 
 
--spec gen_int/1 :: (X :: integer()) -> iolist().
+-spec gen_int(X :: integer()) -> iolist().
 
 gen_int(X) ->
     field_gen_int('undefined', X).
 
 
--spec gen_uint/1 :: (X :: non_neg_integer()) -> iolist().
+-spec gen_uint(X :: non_neg_integer()) -> iolist().
 
 gen_uint(X) ->
     field_gen_uint('undefined', X).
 
 
--spec gen_int32/1 :: (X :: integer()) -> iolist().
+-spec gen_int32(X :: integer()) -> iolist().
 
 gen_int32(X) ->
     field_gen_int32('undefined', X).
 
 
--spec gen_uint32/1 :: (X :: non_neg_integer()) -> iolist().
+-spec gen_uint32(X :: non_neg_integer()) -> iolist().
 
 gen_uint32(X) ->
     field_gen_uint32('undefined', X).
 
 
--spec gen_int64/1 :: (X :: integer()) -> iolist().
+-spec gen_int64(X :: integer()) -> iolist().
 
 gen_int64(X) ->
     field_gen_int64('undefined', X).
 
 
--spec gen_uint64/1 :: (X :: non_neg_integer()) -> iolist().
+-spec gen_uint64(X :: non_neg_integer()) -> iolist().
 
 gen_uint64(X) ->
     field_gen_uint64('undefined', X).
 
 
--spec gen_float64/1 :: (X :: number()) -> iolist().
+-spec gen_float64(X :: number()) -> iolist().
 
 gen_float64(X) ->
     field_gen_float64('undefined', X).
 
 
--spec gen_float32/1 :: (X :: number()) -> iolist().
+-spec gen_float32(X :: number()) -> iolist().
 
 gen_float32(X) ->
     field_gen_float32('undefined', X).
 
 
--spec gen_int32_fixed/1 :: (X :: integer()) -> iolist().
+-spec gen_int32_fixed(X :: integer()) -> iolist().
 
 gen_int32_fixed(X) ->
     field_gen_int32_fixed('undefined', X).
 
 
--spec gen_uint32_fixed/1 :: (X :: non_neg_integer()) -> iolist().
+-spec gen_uint32_fixed(X :: non_neg_integer()) -> iolist().
 
 gen_uint32_fixed(X) ->
     field_gen_uint32_fixed('undefined', X).
 
 
--spec gen_int64_fixed/1 :: (X :: integer()) -> iolist().
+-spec gen_int64_fixed(X :: integer()) -> iolist().
 
 gen_int64_fixed(X) ->
     field_gen_int64_fixed('undefined', X).
 
 
--spec gen_uint64_fixed/1 :: (X :: non_neg_integer()) -> iolist().
+-spec gen_uint64_fixed(X :: non_neg_integer()) -> iolist().
 
 gen_uint64_fixed(X) ->
     field_gen_uint64_fixed('undefined', X).
 
 
--spec gen_float/1 :: (X :: number()) -> iolist().
+-spec gen_float(X :: number()) -> iolist().
 
 gen_float(X) ->
     field_gen_float('undefined', X).
 
 
--spec gen_word/1 :: (X :: word()) -> iolist().
+-spec gen_word(X :: word()) -> iolist().
 
 gen_word(X) ->
     field_gen_word('undefined', X).
 
 
--spec gen_name/1 :: (X :: name()) -> iolist().
+-spec gen_name(X :: name()) -> iolist().
 
 gen_name(X) ->
     field_gen_name('undefined', X).
 
 
--spec gen_typedef/1 :: (X :: typedef()) -> iolist().
+-spec gen_typedef(X :: typedef()) -> iolist().
 
 gen_typedef(X) ->
     field_gen_typedef('undefined', X).
 
 
--spec gen_piqi_type/1 :: (X :: piqi_type()) -> iolist().
+-spec gen_piqi_type(X :: piqi_type()) -> iolist().
 
 gen_piqi_type(X) ->
     field_gen_piqi_type('undefined', X).
 
 
--spec gen_type/1 :: (X :: type()) -> iolist().
+-spec gen_type(X :: type()) -> iolist().
 
 gen_type(X) ->
     field_gen_type('undefined', X).
 
 
--spec gen_piqi_record/1 :: (X :: piqi_record()) -> iolist().
+-spec gen_piqi_record(X :: piqi_record()) -> iolist().
 
 gen_piqi_record(X) ->
     field_gen_piqi_record('undefined', X).
 
 
--spec gen_field/1 :: (X :: field()) -> iolist().
+-spec gen_field(X :: field()) -> iolist().
 
 gen_field(X) ->
     field_gen_field('undefined', X).
 
 
--spec gen_field_mode/1 :: (X :: field_mode()) -> iolist().
+-spec gen_field_mode(X :: field_mode()) -> iolist().
 
 gen_field_mode(X) ->
     field_gen_field_mode('undefined', X).
 
 
--spec gen_variant/1 :: (X :: variant()) -> iolist().
+-spec gen_variant(X :: variant()) -> iolist().
 
 gen_variant(X) ->
     field_gen_variant('undefined', X).
 
 
--spec gen_option/1 :: (X :: option()) -> iolist().
+-spec gen_option(X :: option()) -> iolist().
 
 gen_option(X) ->
     field_gen_option('undefined', X).
 
 
--spec gen_enum/1 :: (X :: enum()) -> iolist().
+-spec gen_enum(X :: enum()) -> iolist().
 
 gen_enum(X) ->
     field_gen_enum('undefined', X).
 
 
--spec gen_alias/1 :: (X :: alias()) -> iolist().
+-spec gen_alias(X :: alias()) -> iolist().
 
 gen_alias(X) ->
     field_gen_alias('undefined', X).
 
 
--spec gen_piqi_list/1 :: (X :: piqi_list()) -> iolist().
+-spec gen_piqi_list(X :: piqi_list()) -> iolist().
 
 gen_piqi_list(X) ->
     field_gen_piqi_list('undefined', X).
 
 
--spec gen_piqi/1 :: (X :: piqi()) -> iolist().
+-spec gen_piqi(X :: piqi()) -> iolist().
 
 gen_piqi(X) ->
     field_gen_piqi('undefined', X).
 
 
--spec gen_import/1 :: (X :: import()) -> iolist().
+-spec gen_import(X :: import()) -> iolist().
 
 gen_import(X) ->
     field_gen_import('undefined', X).
 
 
--spec gen_piqi_any/1 :: (X :: piqi_any()) -> iolist().
+-spec gen_piqi_any(X :: piqi_any()) -> iolist().
 
 gen_piqi_any(X) ->
     field_gen_piqi_any('undefined', X).
 
 
--spec gen_func/1 :: (X :: func()) -> iolist().
+-spec gen_func(X :: func()) -> iolist().
 
 gen_func(X) ->
     field_gen_func('undefined', X).
 
 
--spec gen_piqi_bundle/1 :: (X :: piqi_bundle()) -> iolist().
+-spec gen_piqi_bundle(X :: piqi_bundle()) -> iolist().
 
 gen_piqi_bundle(X) ->
     field_gen_piqi_bundle('undefined', X).
 
 
--spec gen_erlang_string_type/1 :: (X :: erlang_string_type()) -> iolist().
+-spec gen_erlang_string_type(X :: erlang_string_type()) -> iolist().
 
 gen_erlang_string_type(X) ->
     field_gen_erlang_string_type('undefined', X).
@@ -1100,7 +1100,7 @@ gen_erlang_string_type(X, Format, Options) ->
     piqirun_ext:convert(?MODULE, <<"piqi/erlang-string-type">>, 'pb', Format, iolist_to_binary(Iolist), Options).
 
 
--spec parse_piq_format/1 :: (X :: piqirun_buffer()) -> piq_format().
+-spec parse_piq_format(X :: piqirun_buffer()) -> piq_format().
 
 parse_piq_format(X) ->
     {Code, Obj} = piqirun:parse_variant(X),
@@ -1111,7 +1111,7 @@ parse_piq_format(X) ->
     end.
 
 
--spec parse_protobuf_int32/1 :: (X :: piqirun_buffer()) -> integer().
+-spec parse_protobuf_int32(X :: piqirun_buffer()) -> integer().
 
 parse_protobuf_int32(X) ->
     piqirun:integer_of_signed_varint(X).
@@ -1122,7 +1122,7 @@ packed_parse_protobuf_int32(X) ->
     {Res, Rest}.
 
 
--spec parse_protobuf_int64/1 :: (X :: piqirun_buffer()) -> integer().
+-spec parse_protobuf_int64(X :: piqirun_buffer()) -> integer().
 
 parse_protobuf_int64(X) ->
     piqirun:integer_of_signed_varint(X).
@@ -1133,7 +1133,7 @@ packed_parse_protobuf_int64(X) ->
     {Res, Rest}.
 
 
--spec parse_protobuf_wire_type/1 :: (X :: piqirun_buffer()) -> protobuf_wire_type().
+-spec parse_protobuf_wire_type(X :: piqirun_buffer()) -> protobuf_wire_type().
 
 parse_protobuf_wire_type(X) ->
     case piqirun:integer_of_signed_varint(X) of
@@ -1164,7 +1164,7 @@ packed_parse_protobuf_wire_type(X) ->
     end, Rest}.
 
 
--spec parse_bool/1 :: (X :: piqirun_buffer()) -> boolean().
+-spec parse_bool(X :: piqirun_buffer()) -> boolean().
 
 parse_bool(X) ->
     piqirun:boolean_of_varint(X).
@@ -1175,25 +1175,25 @@ packed_parse_bool(X) ->
     {Res, Rest}.
 
 
--spec parse_string/1 :: (X :: piqirun_buffer()) -> binary().
+-spec parse_string(X :: piqirun_buffer()) -> binary().
 
 parse_string(X) ->
     piqirun:binary_string_of_block(X).
 
 
--spec parse_binary/1 :: (X :: piqirun_buffer()) -> binary().
+-spec parse_binary(X :: piqirun_buffer()) -> binary().
 
 parse_binary(X) ->
     piqirun:binary_of_block(X).
 
 
--spec parse_piqi_piqi_any/1 :: (X :: piqirun_buffer()) -> piqi_any().
+-spec parse_piqi_piqi_any(X :: piqirun_buffer()) -> piqi_any().
 
 parse_piqi_piqi_any(X) ->
     parse_piqi_any(X).
 
 
--spec parse_int/1 :: (X :: piqirun_buffer()) -> integer().
+-spec parse_int(X :: piqirun_buffer()) -> integer().
 
 parse_int(X) ->
     piqirun:integer_of_zigzag_varint(X).
@@ -1204,7 +1204,7 @@ packed_parse_int(X) ->
     {Res, Rest}.
 
 
--spec parse_uint/1 :: (X :: piqirun_buffer()) -> non_neg_integer().
+-spec parse_uint(X :: piqirun_buffer()) -> non_neg_integer().
 
 parse_uint(X) ->
     piqirun:non_neg_integer_of_varint(X).
@@ -1215,7 +1215,7 @@ packed_parse_uint(X) ->
     {Res, Rest}.
 
 
--spec parse_int32/1 :: (X :: piqirun_buffer()) -> integer().
+-spec parse_int32(X :: piqirun_buffer()) -> integer().
 
 parse_int32(X) ->
     piqirun:integer_of_zigzag_varint(X).
@@ -1226,7 +1226,7 @@ packed_parse_int32(X) ->
     {Res, Rest}.
 
 
--spec parse_uint32/1 :: (X :: piqirun_buffer()) -> non_neg_integer().
+-spec parse_uint32(X :: piqirun_buffer()) -> non_neg_integer().
 
 parse_uint32(X) ->
     piqirun:non_neg_integer_of_varint(X).
@@ -1237,7 +1237,7 @@ packed_parse_uint32(X) ->
     {Res, Rest}.
 
 
--spec parse_int64/1 :: (X :: piqirun_buffer()) -> integer().
+-spec parse_int64(X :: piqirun_buffer()) -> integer().
 
 parse_int64(X) ->
     piqirun:integer_of_zigzag_varint(X).
@@ -1248,7 +1248,7 @@ packed_parse_int64(X) ->
     {Res, Rest}.
 
 
--spec parse_uint64/1 :: (X :: piqirun_buffer()) -> non_neg_integer().
+-spec parse_uint64(X :: piqirun_buffer()) -> non_neg_integer().
 
 parse_uint64(X) ->
     piqirun:non_neg_integer_of_varint(X).
@@ -1259,7 +1259,7 @@ packed_parse_uint64(X) ->
     {Res, Rest}.
 
 
--spec parse_float64/1 :: (X :: piqirun_buffer()) -> float().
+-spec parse_float64(X :: piqirun_buffer()) -> float().
 
 parse_float64(X) ->
     piqirun:float_of_fixed64(X).
@@ -1270,7 +1270,7 @@ packed_parse_float64(X) ->
     {Res, Rest}.
 
 
--spec parse_float32/1 :: (X :: piqirun_buffer()) -> float().
+-spec parse_float32(X :: piqirun_buffer()) -> float().
 
 parse_float32(X) ->
     piqirun:float_of_fixed32(X).
@@ -1281,7 +1281,7 @@ packed_parse_float32(X) ->
     {Res, Rest}.
 
 
--spec parse_int32_fixed/1 :: (X :: piqirun_buffer()) -> integer().
+-spec parse_int32_fixed(X :: piqirun_buffer()) -> integer().
 
 parse_int32_fixed(X) ->
     piqirun:integer_of_signed_fixed32(X).
@@ -1292,7 +1292,7 @@ packed_parse_int32_fixed(X) ->
     {Res, Rest}.
 
 
--spec parse_uint32_fixed/1 :: (X :: piqirun_buffer()) -> non_neg_integer().
+-spec parse_uint32_fixed(X :: piqirun_buffer()) -> non_neg_integer().
 
 parse_uint32_fixed(X) ->
     piqirun:non_neg_integer_of_fixed32(X).
@@ -1303,7 +1303,7 @@ packed_parse_uint32_fixed(X) ->
     {Res, Rest}.
 
 
--spec parse_int64_fixed/1 :: (X :: piqirun_buffer()) -> integer().
+-spec parse_int64_fixed(X :: piqirun_buffer()) -> integer().
 
 parse_int64_fixed(X) ->
     piqirun:integer_of_signed_fixed64(X).
@@ -1314,7 +1314,7 @@ packed_parse_int64_fixed(X) ->
     {Res, Rest}.
 
 
--spec parse_uint64_fixed/1 :: (X :: piqirun_buffer()) -> non_neg_integer().
+-spec parse_uint64_fixed(X :: piqirun_buffer()) -> non_neg_integer().
 
 parse_uint64_fixed(X) ->
     piqirun:non_neg_integer_of_fixed64(X).
@@ -1325,7 +1325,7 @@ packed_parse_uint64_fixed(X) ->
     {Res, Rest}.
 
 
--spec parse_float/1 :: (X :: piqirun_buffer()) -> float().
+-spec parse_float(X :: piqirun_buffer()) -> float().
 
 parse_float(X) ->
     parse_float64(X).
@@ -1336,19 +1336,19 @@ packed_parse_float(X) ->
     {Res, Rest}.
 
 
--spec parse_word/1 :: (X :: piqirun_buffer()) -> binary().
+-spec parse_word(X :: piqirun_buffer()) -> binary().
 
 parse_word(X) ->
     parse_string(X).
 
 
--spec parse_name/1 :: (X :: piqirun_buffer()) -> binary().
+-spec parse_name(X :: piqirun_buffer()) -> binary().
 
 parse_name(X) ->
     parse_word(X).
 
 
--spec parse_typedef/1 :: (X :: piqirun_buffer()) -> typedef().
+-spec parse_typedef(X :: piqirun_buffer()) -> typedef().
 
 parse_typedef(X) ->
     {Code, Obj} = piqirun:parse_variant(X),
@@ -1362,7 +1362,7 @@ parse_typedef(X) ->
     end.
 
 
--spec parse_piqi_type/1 :: (X :: piqirun_buffer()) -> piqi_type().
+-spec parse_piqi_type(X :: piqirun_buffer()) -> piqi_type().
 
 parse_piqi_type(X) ->
     case piqirun:integer_of_signed_varint(X) of
@@ -1389,13 +1389,13 @@ packed_parse_piqi_type(X) ->
     end, Rest}.
 
 
--spec parse_type/1 :: (X :: piqirun_buffer()) -> binary().
+-spec parse_type(X :: piqirun_buffer()) -> binary().
 
 parse_type(X) ->
     parse_name(X).
 
 
--spec parse_piqi_record/1 :: (X :: piqirun_buffer()) -> piqi_record().
+-spec parse_piqi_record(X :: piqirun_buffer()) -> piqi_record().
 
 parse_piqi_record(X) ->
     R0 = piqirun:parse_record(X),
@@ -1418,7 +1418,7 @@ parse_piqi_record(X) ->
     }.
 
 
--spec parse_field/1 :: (X :: piqirun_buffer()) -> field().
+-spec parse_field(X :: piqirun_buffer()) -> field().
 
 parse_field(X) ->
     R0 = piqirun:parse_record(X),
@@ -1459,7 +1459,7 @@ parse_field(X) ->
     }.
 
 
--spec parse_field_mode/1 :: (X :: piqirun_buffer()) -> field_mode().
+-spec parse_field_mode(X :: piqirun_buffer()) -> field_mode().
 
 parse_field_mode(X) ->
     case piqirun:integer_of_signed_varint(X) of
@@ -1480,7 +1480,7 @@ packed_parse_field_mode(X) ->
     end, Rest}.
 
 
--spec parse_variant/1 :: (X :: piqirun_buffer()) -> variant().
+-spec parse_variant(X :: piqirun_buffer()) -> variant().
 
 parse_variant(X) ->
     R0 = piqirun:parse_record(X),
@@ -1501,7 +1501,7 @@ parse_variant(X) ->
     }.
 
 
--spec parse_option/1 :: (X :: piqirun_buffer()) -> option().
+-spec parse_option(X :: piqirun_buffer()) -> option().
 
 parse_option(X) ->
     R0 = piqirun:parse_record(X),
@@ -1532,7 +1532,7 @@ parse_option(X) ->
     }.
 
 
--spec parse_enum/1 :: (X :: piqirun_buffer()) -> enum().
+-spec parse_enum(X :: piqirun_buffer()) -> enum().
 
 parse_enum(X) ->
     R0 = piqirun:parse_record(X),
@@ -1555,7 +1555,7 @@ parse_enum(X) ->
     }.
 
 
--spec parse_alias/1 :: (X :: piqirun_buffer()) -> alias().
+-spec parse_alias(X :: piqirun_buffer()) -> alias().
 
 parse_alias(X) ->
     R0 = piqirun:parse_record(X),
@@ -1586,7 +1586,7 @@ parse_alias(X) ->
     }.
 
 
--spec parse_piqi_list/1 :: (X :: piqirun_buffer()) -> piqi_list().
+-spec parse_piqi_list(X :: piqirun_buffer()) -> piqi_list().
 
 parse_piqi_list(X) ->
     R0 = piqirun:parse_record(X),
@@ -1611,7 +1611,7 @@ parse_piqi_list(X) ->
     }.
 
 
--spec parse_piqi/1 :: (X :: piqirun_buffer()) -> piqi().
+-spec parse_piqi(X :: piqirun_buffer()) -> piqi().
 
 parse_piqi(X) ->
     R0 = piqirun:parse_record(X),
@@ -1642,7 +1642,7 @@ parse_piqi(X) ->
     }.
 
 
--spec parse_import/1 :: (X :: piqirun_buffer()) -> import().
+-spec parse_import(X :: piqirun_buffer()) -> import().
 
 parse_import(X) ->
     R0 = piqirun:parse_record(X),
@@ -1655,7 +1655,7 @@ parse_import(X) ->
     }.
 
 
--spec parse_piqi_any/1 :: (X :: piqirun_buffer()) -> piqi_any().
+-spec parse_piqi_any(X :: piqirun_buffer()) -> piqi_any().
 
 parse_piqi_any(X) ->
     R0 = piqirun:parse_record(X),
@@ -1672,7 +1672,7 @@ parse_piqi_any(X) ->
     }.
 
 
--spec parse_func/1 :: (X :: piqirun_buffer()) -> func().
+-spec parse_func(X :: piqirun_buffer()) -> func().
 
 parse_func(X) ->
     R0 = piqirun:parse_record(X),
@@ -1691,7 +1691,7 @@ parse_func(X) ->
     }.
 
 
--spec parse_piqi_bundle/1 :: (X :: piqirun_buffer()) -> piqi_bundle().
+-spec parse_piqi_bundle(X :: piqirun_buffer()) -> piqi_bundle().
 
 parse_piqi_bundle(X) ->
     R0 = piqirun:parse_record(X),
@@ -1702,7 +1702,7 @@ parse_piqi_bundle(X) ->
     }.
 
 
--spec parse_erlang_string_type/1 :: (X :: piqirun_buffer()) -> erlang_string_type().
+-spec parse_erlang_string_type(X :: piqirun_buffer()) -> erlang_string_type().
 
 parse_erlang_string_type(X) ->
     case piqirun:integer_of_signed_varint(X) of

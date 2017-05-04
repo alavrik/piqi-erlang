@@ -62,7 +62,7 @@
 %
 % NOTE: this function is no longer necessary, it remains here for backwards
 % compatibility with previous Piqi versions.
--spec init_from_binary/1 :: (Bytes :: binary()) ->
+-spec init_from_binary(Bytes :: binary()) ->
     % NOTE: in fact, the return type should be piqirun_buffer(). Using specific
     % buffer's variant here to avoid Dialyzer warning.
     TopBlock :: binary().
@@ -89,7 +89,7 @@ init_from_binary(Bytes) when is_binary(Bytes) -> Bytes.
 
 
 %% @hidden
--spec encode_field_tag/2 :: (
+-spec encode_field_tag(
     Code :: piqirun_code(),
     FieldType :: field_type()) -> binary().
 
@@ -104,7 +104,7 @@ encode_field_tag('undefined', FieldType) ->
 
 %% @hidden
 %% NOTE: `Integer` MUST be >= 0
--spec encode_varint_field/2 :: (
+-spec encode_varint_field(
     Code :: piqirun_code(),
     Integer :: non_neg_integer()) -> iolist().
 
@@ -117,7 +117,7 @@ encode_varint_field(Code, Integer) ->
 
 %% @hidden
 %% NOTE: `I` MUST be >= 0
--spec encode_varint_value/1 :: (
+-spec encode_varint_value(
     I :: non_neg_integer()) -> binary().
 
 encode_varint_value(I) when I >= 0 ->
@@ -196,14 +196,14 @@ decode_varint_1(Bin, {cont, Acc, X, Offset}) ->
             decode_varint_1(Bin, {cont, Acc1, X + 1, Offset + 1})
     end.
 
--spec gen_block/1 :: (Data :: iodata()) -> iolist().
+-spec gen_block(Data :: iodata()) -> iolist().
 
 % get length-delimited block, where length is encoded using varint encoding.
 gen_block(Data) ->
     [ encode_varint_value(iolist_size(Data)), Data ].
 
 
--spec parse_block/1 :: (Bytes :: binary()) ->
+-spec parse_block(Bytes :: binary()) ->
     {TopBlock :: binary(), Rest :: binary()}.
 
 % parse length-delimited block, rases 'not_enough_data' if there's less data in
@@ -214,20 +214,20 @@ parse_block(Bytes) ->
 
 
 -ifndef(EDOC).
--spec gen_record/2 :: (
+-spec gen_record(
     Code :: piqirun_code(),
     Fields :: [iolist()] ) -> iolist().
 
--spec gen_variant/2 :: (
+-spec gen_variant(
     Code :: piqirun_code(),
     X :: iolist() ) -> iolist().
 
--spec gen_list/3 :: (
+-spec gen_list(
     Code :: piqirun_code(),
     GenValue :: encode_fun(),
     L :: [any()] ) -> iolist().
 
--spec gen_packed_list/3 :: (
+-spec gen_packed_list(
     Code :: piqirun_code(),
     GenValue :: packed_encode_fun(),
     L :: [any()] ) -> iolist().
@@ -267,22 +267,22 @@ gen_packed_list(Code, GenValue, L) ->
      fun( (Value :: any()) -> iolist() ).
 
 -ifndef(EDOC).
--spec gen_required_field/3 :: (
+-spec gen_required_field(
     Code :: piqirun_code(),
     GenValue :: encode_fun(),
     X :: any() ) -> iolist().
 
--spec gen_optional_field/3 :: (
+-spec gen_optional_field(
     Code :: piqirun_code(),
     GenValue :: encode_fun(),
     X :: 'undefined' | any() ) -> iolist().
 
--spec gen_repeated_field/3 :: (
+-spec gen_repeated_field(
     Code :: piqirun_code(),
     GenValue :: encode_fun(),
     X :: [any()] ) -> iolist().
 
--spec gen_packed_repeated_field/3 :: (
+-spec gen_packed_repeated_field(
     Code :: pos_integer(),
     GenValue :: packed_encode_fun(),
     X :: [any()] ) -> iolist().
@@ -310,7 +310,7 @@ gen_packed_repeated_field(Code, GenValue, L) ->
     gen_record(Code, Contents).
 
 
--spec gen_flag/2 :: (
+-spec gen_flag(
     Code :: piqirun_code(),
     X :: boolean()) -> iolist().
 
@@ -319,51 +319,51 @@ gen_flag(Code, true) -> gen_bool_field(Code, true).
 
 
 -ifndef(EDOC).
--spec non_neg_integer_to_varint/2 :: (
+-spec non_neg_integer_to_varint(
     Code :: piqirun_code(),
     X :: non_neg_integer()) -> iolist().
 
--spec integer_to_signed_varint/2 :: (
+-spec integer_to_signed_varint(
     Code :: piqirun_code(),
     X :: integer()) -> iolist().
 
--spec integer_to_zigzag_varint/2 :: (
+-spec integer_to_zigzag_varint(
     Code :: piqirun_code(),
     X :: integer()) -> iolist().
 
--spec boolean_to_varint/2 :: (
+-spec boolean_to_varint(
     Code :: piqirun_code(),
     X :: boolean()) -> iolist().
 
--spec gen_bool_field/2 :: (
+-spec gen_bool_field(
     Code :: piqirun_code(),
     X :: boolean()) -> iolist().
 
--spec non_neg_integer_to_fixed32/2 :: (
+-spec non_neg_integer_to_fixed32(
     Code :: piqirun_code(),
     X :: non_neg_integer()) -> iolist().
 
--spec integer_to_signed_fixed32/2 :: (
+-spec integer_to_signed_fixed32(
     Code :: piqirun_code(),
     X :: integer()) -> iolist().
 
--spec non_neg_integer_to_fixed64/2 :: (
+-spec non_neg_integer_to_fixed64(
     Code :: piqirun_code(),
     X :: non_neg_integer()) -> iolist().
 
--spec integer_to_signed_fixed64/2 :: (
+-spec integer_to_signed_fixed64(
     Code :: piqirun_code(),
     X :: non_neg_integer()) -> iolist().
 
--spec float_to_fixed64/2 :: (
+-spec float_to_fixed64(
     Code :: piqirun_code(),
     X :: number() ) -> iolist().
 
--spec float_to_fixed32/2 :: (
+-spec float_to_fixed32(
     Code :: piqirun_code(),
     X :: number() ) -> iolist().
 
--spec binary_to_block/2 :: (
+-spec binary_to_block(
     Code :: piqirun_code(),
     X :: binary() ) -> iolist().
 
@@ -377,7 +377,7 @@ gen_flag(Code, true) -> gen_bool_field(Code, true).
 % chardata() = charlist() | unicode_binary()
 % charlist() = [unicode_char() | unicode_binary() | charlist()]
 %
--spec string_to_block/2 :: (
+-spec string_to_block(
     Code :: piqirun_code(),
     X :: string() | binary() ) -> iolist().
 -endif.
@@ -397,7 +397,7 @@ boolean_to_varint(Code, X) ->
 
 
 %% @hidden
--spec integer_to_non_neg_integer/1 :: (
+-spec integer_to_non_neg_integer(
     X :: integer()) -> non_neg_integer().
 
 integer_to_non_neg_integer(X) when X >= 0 ->
@@ -407,7 +407,7 @@ integer_to_non_neg_integer(X) ->  % when X < 0
 
 
 %% @hidden
--spec integer_to_zigzag_integer/1 :: (
+-spec integer_to_zigzag_integer(
     X :: integer()) -> non_neg_integer().
 
 integer_to_zigzag_integer(X) when X >= 0 ->
@@ -474,17 +474,17 @@ string_to_block(Code, X) when is_list(X); is_binary(X) ->
 %
 
 -ifndef(EDOC).
--spec non_neg_integer_to_packed_varint/1 :: (non_neg_integer()) -> binary().
--spec integer_to_packed_signed_varint/1 :: (integer()) -> binary().
--spec integer_to_packed_zigzag_varint/1 :: (integer()) -> binary().
--spec boolean_to_packed_varint/1 :: (boolean()) -> binary().
+-spec non_neg_integer_to_packed_varint(non_neg_integer()) -> binary().
+-spec integer_to_packed_signed_varint(integer()) -> binary().
+-spec integer_to_packed_zigzag_varint(integer()) -> binary().
+-spec boolean_to_packed_varint(boolean()) -> binary().
 
--spec non_neg_integer_to_packed_fixed32/1 :: (non_neg_integer()) -> binary().
--spec integer_to_packed_signed_fixed32/1 :: (integer()) -> binary().
--spec non_neg_integer_to_packed_fixed64/1 :: (non_neg_integer()) -> binary().
--spec integer_to_packed_signed_fixed64/1 :: (non_neg_integer()) -> binary().
--spec float_to_packed_fixed64/1 :: (number() ) -> binary().
--spec float_to_packed_fixed32/1 :: (number() ) -> binary().
+-spec non_neg_integer_to_packed_fixed32(non_neg_integer()) -> binary().
+-spec integer_to_packed_signed_fixed32(integer()) -> binary().
+-spec non_neg_integer_to_packed_fixed64(non_neg_integer()) -> binary().
+-spec integer_to_packed_signed_fixed64(non_neg_integer()) -> binary().
+-spec float_to_packed_fixed64(number() ) -> binary().
+-spec float_to_packed_fixed32(number() ) -> binary().
 -endif.
 
 
@@ -531,7 +531,7 @@ float_to_packed_fixed32(X) ->
 
 -type parsed_field() :: piqirun_parsed_field().
 
--spec parse_field_header/1 :: ( Bytes :: binary() ) ->
+-spec parse_field_header( Bytes :: binary() ) ->
     {Code :: pos_integer(), WireType :: field_type(), Rest :: binary()}.
 
 parse_field_header(Bytes) ->
@@ -541,7 +541,7 @@ parse_field_header(Bytes) ->
     {Code, WireType, Rest}.
 
 
--spec parse_field/1 :: (
+-spec parse_field(
     Bytes :: binary() ) -> {parsed_field(), Rest :: binary()}.
 
 parse_field(Bytes) ->
@@ -569,7 +569,7 @@ my_split_binary(_X, _Pos) ->
     throw_error('not_enough_data').
 
 
--spec parse_field_part/1 :: (
+-spec parse_field_part(
     Bytes :: binary() ) -> 'undefined' | {parsed_field(), Rest :: binary()}.
 
 % Similar to parse_field/1, but if there's not enough data, 'undefined' is
@@ -585,20 +585,20 @@ parse_field_part(Bytes) ->
 
 
 -ifndef(EDOC).
--spec parse_record/1 :: (
+-spec parse_record(
     piqirun_buffer() ) -> [ parsed_field() ].
 
--spec parse_record_buf/1 :: (
+-spec parse_record_buf(
     Bytes :: binary() ) -> [ parsed_field() ].
 
--spec parse_variant/1 :: (
+-spec parse_variant(
     piqirun_buffer() ) -> parsed_field().
 
--spec parse_list/2 :: (
+-spec parse_list(
     ParseValue :: decode_fun(),
     piqirun_buffer() ) -> [ any() ].
 
--spec parse_packed_list/3 :: (
+-spec parse_packed_list(
     ParsePackedValue :: packed_decode_fun(),
     ParseValue :: decode_fun(),
     piqirun_buffer() ) -> [ any() ].
@@ -663,7 +663,7 @@ parse_packed_list_elem(ParsePackedValue, ParseValue, {1, X}) ->
     parse_packed_field(ParsePackedValue, ParseValue, X).
 
 
--spec find_fields/2 :: (
+-spec find_fields(
         Code :: pos_integer(),
         L :: [ parsed_field() ] ) ->
     { Found ::[ piqirun_return_buffer() ], Rest :: [ parsed_field() ]}.
@@ -682,7 +682,7 @@ find_fields(_Code, Rest, Accu) ->
     {lists:reverse(Accu), Rest}.
 
 
--spec find_field/2 :: (
+-spec find_field(
         Code :: pos_integer(),
         L :: [ parsed_field() ] ) ->
     { Found :: 'undefined' | piqirun_return_buffer(), Rest :: [ parsed_field() ]}.
@@ -708,7 +708,7 @@ try_find_next_field(_Code, PrevValue, Rest) ->
     {PrevValue, Rest}.
 
 
--spec throw_error/1 :: (any()) -> no_return().
+-spec throw_error(any()) -> no_return().
 
 throw_error(X) ->
     throw({'piqirun_error', X}).
@@ -719,34 +719,34 @@ throw_error(X) ->
 -type packed_decode_fun() :: fun( (binary()) -> {any(), binary()} ).
 
 -ifndef(EDOC).
--spec parse_required_field/3 :: (
+-spec parse_required_field(
     Code :: pos_integer(),
     ParseValue :: decode_fun(),
     L :: [parsed_field()] ) -> { Res :: any(), Rest :: [parsed_field()] }.
 
--spec parse_optional_field/3 :: (
+-spec parse_optional_field(
     Code :: pos_integer(),
     ParseValue :: decode_fun(),
     L :: [parsed_field()] ) -> { Res :: 'undefined' | any(), Rest :: [parsed_field()] }.
 
--spec parse_optional_field/4 :: (
+-spec parse_optional_field(
     Code :: pos_integer(),
     ParseValue :: decode_fun(),
     L :: [parsed_field()],
     Default :: binary() ) -> { Res :: any(), Rest :: [parsed_field()] }.
 
--spec parse_repeated_field/3 :: (
+-spec parse_repeated_field(
     Code :: pos_integer(),
     ParseValue :: decode_fun(),
     L :: [parsed_field()] ) -> { Res :: [any()], Rest :: [parsed_field()] }.
 
--spec parse_packed_repeated_field/4 :: (
+-spec parse_packed_repeated_field(
     Code :: pos_integer(),
     ParsePackedValue :: packed_decode_fun(),
     ParseValue :: decode_fun(),
     L :: [parsed_field()] ) -> { Res :: [any()], Rest :: [parsed_field()] }.
 
--spec parse_flag/2 :: (
+-spec parse_flag(
     Code :: pos_integer(),
     L :: [parsed_field()] ) -> { Res :: boolean(), Rest :: [parsed_field()] }.
 -endif.
@@ -822,12 +822,12 @@ parse_packed_values(ParseValue, Bytes, Accu) ->
 check_unparsed_fields(_L) -> ok.
 
 
--spec error_enum_const/1 :: (X :: any()) -> no_return().
+-spec error_enum_const(X :: any()) -> no_return().
 
 error_enum_const(X) -> throw_error({'unknown_enum_const', X}).
 
 
--spec error_option/2 :: (
+-spec error_option(
     _X :: any(),
     Code :: piqirun_code()) -> no_return().
 
@@ -835,21 +835,21 @@ error_option(_X, Code) -> throw_error({'unknown_option', Code}).
 
 
 -ifndef(EDOC).
--spec non_neg_integer_of_varint/1 :: (piqirun_buffer()) -> non_neg_integer().
--spec integer_of_signed_varint/1 :: (piqirun_buffer()) -> integer().
--spec integer_of_zigzag_varint/1 :: (piqirun_buffer()) -> integer().
--spec boolean_of_varint/1 :: (piqirun_buffer()) -> boolean().
--spec parse_bool/1 :: (piqirun_buffer()) -> boolean().
+-spec non_neg_integer_of_varint(piqirun_buffer()) -> non_neg_integer().
+-spec integer_of_signed_varint(piqirun_buffer()) -> integer().
+-spec integer_of_zigzag_varint(piqirun_buffer()) -> integer().
+-spec boolean_of_varint(piqirun_buffer()) -> boolean().
+-spec parse_bool(piqirun_buffer()) -> boolean().
 
--spec non_neg_integer_of_fixed32/1 :: (piqirun_buffer()) -> non_neg_integer().
--spec integer_of_signed_fixed32/1 :: (piqirun_buffer()) -> integer().
--spec non_neg_integer_of_fixed64/1 :: (piqirun_buffer()) -> non_neg_integer().
--spec integer_of_signed_fixed64/1 :: (piqirun_buffer()) -> integer().
--spec float_of_fixed64/1 :: (piqirun_buffer()) -> float().
--spec float_of_fixed32/1 :: (piqirun_buffer()) -> float().
--spec binary_of_block/1 :: (piqirun_buffer()) -> binary().
--spec binary_string_of_block/1 :: (piqirun_buffer()) -> binary().
--spec list_string_of_block/1 :: (piqirun_buffer()) -> string().
+-spec non_neg_integer_of_fixed32(piqirun_buffer()) -> non_neg_integer().
+-spec integer_of_signed_fixed32(piqirun_buffer()) -> integer().
+-spec non_neg_integer_of_fixed64(piqirun_buffer()) -> non_neg_integer().
+-spec integer_of_signed_fixed64(piqirun_buffer()) -> integer().
+-spec float_of_fixed64(piqirun_buffer()) -> float().
+-spec float_of_fixed32(piqirun_buffer()) -> float().
+-spec binary_of_block(piqirun_buffer()) -> binary().
+-spec binary_string_of_block(piqirun_buffer()) -> binary().
+-spec list_string_of_block(piqirun_buffer()) -> string().
 -endif.
 
 
@@ -919,7 +919,7 @@ binary_of_block).
 
 % NOTE: this function is left for backward compatibility and will be removed in
 % future versions
--spec string_of_block/1 :: (piqirun_buffer()) -> binary().
+-spec string_of_block(piqirun_buffer()) -> binary().
 string_of_block(X) -> binary_of_block(X).
 
 
@@ -944,26 +944,26 @@ list_string_of_block(X) ->
 %
 
 -ifndef(EDOC).
--spec non_neg_integer_of_packed_varint/1 :: (binary()) ->
+-spec non_neg_integer_of_packed_varint(binary()) ->
     {non_neg_integer(), Rest :: binary()}.
--spec integer_of_packed_signed_varint/1 :: (binary()) ->
+-spec integer_of_packed_signed_varint(binary()) ->
     {integer(), Rest :: binary()}.
--spec integer_of_packed_zigzag_varint/1 :: ( binary()) ->
+-spec integer_of_packed_zigzag_varint( binary()) ->
     {integer(), Rest :: binary()}.
--spec boolean_of_packed_varint/1 :: (binary()) ->
+-spec boolean_of_packed_varint(binary()) ->
     {boolean(), Rest :: binary()}.
 
--spec non_neg_integer_of_packed_fixed32/1 :: (binary()) ->
+-spec non_neg_integer_of_packed_fixed32(binary()) ->
     {non_neg_integer(), Rest :: binary()}.
--spec integer_of_packed_signed_fixed32/1 :: (binary()) ->
+-spec integer_of_packed_signed_fixed32(binary()) ->
     {integer(), Rest :: binary()}.
--spec non_neg_integer_of_packed_fixed64/1 :: (binary()) ->
+-spec non_neg_integer_of_packed_fixed64(binary()) ->
     {non_neg_integer(), Rest :: binary()}.
--spec integer_of_packed_signed_fixed64/1 :: (binary()) ->
+-spec integer_of_packed_signed_fixed64(binary()) ->
     {integer(), Rest :: binary()}.
--spec float_of_packed_fixed64/1 :: (binary()) ->
+-spec float_of_packed_fixed64(binary()) ->
     {float(), Rest :: binary()}.
--spec float_of_packed_fixed32/1 :: (binary()) ->
+-spec float_of_packed_fixed32(binary()) ->
     {float(), Rest :: binary()}.
 -endif.
 
@@ -1028,15 +1028,15 @@ float_of_packed_fixed32(_) ->
 %       -type piqi_float() :: float() | '-infinity' | 'infinity' | 'nan'.
 %
 -ifndef(EDOC).
--spec parse_ieee754_64/1 :: (<<_:64>>) -> no_return().
--spec parse_ieee754_32/1 :: (<<_:32>>) -> no_return().
+-spec parse_ieee754_64(<<_:64>>) -> no_return().
+-spec parse_ieee754_32(<<_:32>>) -> no_return().
 -endif.
 
 parse_ieee754_64(_) -> throw_error('ieee754_infinities_NaN_not_supported_yet').
 parse_ieee754_32(_) -> throw_error('ieee754_infinities_NaN_not_supported_yet').
 
 
--spec gen_parsed_field/1 :: (parsed_field()) -> iolist().
+-spec gen_parsed_field(parsed_field()) -> iolist().
 
 gen_parsed_field({Code, Integer}) when is_integer(Integer) -> % XXX: check if Integer >= 0
     encode_varint_field(Code, Integer);
