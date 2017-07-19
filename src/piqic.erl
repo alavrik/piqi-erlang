@@ -352,7 +352,7 @@ erlname_piqi(Piqi) ->
 
     ErlTypePrefix = ?defined(
         Piqi#piqi.erlang_type_prefix,
-        ?defined(Piqi#piqi.erlang_module, DerivedMod) ++ "_"
+        to_string(?defined(Piqi#piqi.erlang_module, DerivedMod)) ++ "_"
     ),
     ErlMod = ?defined(Piqi#piqi.erlang_module, DerivedMod ++ "_piqi"),
 
