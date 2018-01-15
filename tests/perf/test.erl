@@ -1,5 +1,5 @@
 -module(test).
--compile(export_all).
+-compile([export_all, nowarn_export_all]).
 
 -include("addressbook_piqi.hrl").
 -include("piqi_obj_piqi.hrl").
@@ -167,16 +167,16 @@ repeat_spawned(Parent, Fun, N) ->
 repeat(_Fun, 0) -> ok;
 repeat(Fun, N) ->
 
-    T1 = now(),
+    T1 = os:timestamp(),
     Fun(),
-    T2 = now(),
+    T2 = os:timestamp(),
     update_time(T1, T2, N),
 
     repeat(Fun, N-1).
 
 
 init_time(N) ->
-    reset_time(N, now()).
+    reset_time(N, os:timestamp()).
 
 
 reset_time(N, Now) ->

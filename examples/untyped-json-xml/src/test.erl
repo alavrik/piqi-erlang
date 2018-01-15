@@ -1,5 +1,6 @@
 -module(test).
--compile(export_all).
+-compile([export_all, nowarn_export_all]).
+
 
 -include("person_piqi.hrl").
 

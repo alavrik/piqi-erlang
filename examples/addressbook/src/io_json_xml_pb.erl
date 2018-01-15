@@ -1,5 +1,5 @@
 -module(io_json_xml_pb).
--compile(export_all).
+-compile([export_all, nowarn_export_all]).
 
 -include("addressbook_piqi.hrl").
 

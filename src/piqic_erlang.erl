@@ -376,7 +376,7 @@ gen_erl(Context) ->
     Code = iod("\n\n", [
         [
             "-module(", ErlMod, ").\n",
-            "-compile(export_all).\n\n",
+            "-compile([export_all, nowarn_export_all]).\n\n",
             "-include(\"", ErlMod, ".hrl\").\n"
         ],
         piqic_erlang_out:gen_piqi(Context),

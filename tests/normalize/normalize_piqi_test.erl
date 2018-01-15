@@ -1,5 +1,5 @@
 -module(normalize_piqi_test).
--compile(export_all).
+-compile([export_all, nowarn_export_all]).
 -include("normalize_piqi.hrl").
 -include("nonormalize_piqi.hrl").
 get_pb() ->

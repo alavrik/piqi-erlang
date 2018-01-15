@@ -385,7 +385,7 @@ gen_default(X) ->
     Bin = X#piqi_any.protobuf,
     [
         ", ",  % separate Default from the previous parameter
-        io_lib:format("~p", [Bin])  % generate Erlang binary
+        io_lib:format("~w", [Bin])  % generate Erlang binary
     ].
 
 

@@ -1,5 +1,5 @@
 -module(piqi_piqi).
--compile(export_all).
+-compile([export_all, nowarn_export_all]).
 
 -include("piqi_piqi.hrl").
 
