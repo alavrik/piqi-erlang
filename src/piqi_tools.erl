@@ -193,29 +193,44 @@ port_receive_loop(State = #receiver_state{port = Port, parent = Parent}) ->
 % do the actual rpc call
 rpc_call(PiqiMod, Request, From, Port) ->
     % NOTE: using process dictionary as a fast SET container to check whether
-    % type information from this module has been added to the piqi server
+    % type information from this module has been added to the piqi server and
+    % if it is up-to-date
+    %
     % XXX: use 'sets' module's sets instead of process dictionary?
-    case PiqiMod =:= 'undefined' orelse get(PiqiMod) =:= 'add_piqi' of
-        false ->
-            % add type information to the Piqi server from the module before
-            % calling the actual server function
+    case PiqiMod of
+        'undefined' ->  % type information not required for this request
+            ok;
+        _ ->
+            % TODO, XXX: although calling module_info(md5) is rather cheap
+            % (takes < 0.1 microsecond), we can optimize it further by calling a
+            % generated function that returns a pre-generated phash2() integer
+            %
+            % Another optimization option would be to update the state once on
+            % module load using -on_load() compile option. Note that -on_load()
+            % call is blocking, so if done carefully it should be possible to
+            % update the state before the actual code change takes place on hot
+            % code load.
+            Md5 = PiqiMod:module_info(md5),
+            case get(PiqiMod) =:= Md5 of
+                true ->  % type information is up-to-date => no-op
+                    ok;
+                false ->
+                    % add type information to the Piqi server from the module
+                    % before calling the actual server function
+                    BinPiqiList = PiqiMod:piqi(),
 
-            % XXX: check if the function is exported?
-            BinPiqiList = PiqiMod:piqi(),
+                    % memorize that we've added type information for this module
+                    % (well, we haven't but it is better than implementing some
+                    % kind of blocking for subsequent rpc calls while this
+                    % request is executing). If there's any problem with
+                    % add_piqi, the gen_server will crash when it receives
+                    % unsuccessful response form the Port.
+                    erlang:put(PiqiMod, Md5),
 
-            % memorize that we've added type information for this module (well,
-            % we haven't but it is better than implementing some kind of
-            % blocking for subsequent rpc calls while this request is
-            % executing). If there's any problem with add_piqi, the gen_server
-            % will crash when it receives unsuccessful response form the Port.
-            erlang:put(PiqiMod, 'add_piqi'),
-
-            % add type information from the PiqiMod to the Piqi-tools server
-            send_add_piqi_request(Port, BinPiqiList);
-        true ->
-            % type information is either not required or has been added already
-            % => just make the rpc call
-            ok
+                    % add type information from the PiqiMod to the Piqi-tools
+                    % server
+                    send_add_piqi_request(Port, BinPiqiList)
+            end
     end,
     CallerRef = term_to_binary(From),
     send_rpc_request(Port, CallerRef, Request).
