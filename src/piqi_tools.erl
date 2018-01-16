@@ -201,17 +201,13 @@ rpc_call(PiqiMod, Request, From, Port) ->
         'undefined' ->  % type information not required for this request
             ok;
         _ ->
-            % TODO, XXX: although calling module_info(md5) is rather cheap
-            % (takes < 0.1 microsecond), we can optimize it further by calling a
-            % generated function that returns a pre-generated phash2() integer
-            %
-            % Another optimization option would be to update the state once on
-            % module load using -on_load() compile option. Note that -on_load()
-            % call is blocking, so if done carefully it should be possible to
-            % update the state before the actual code change takes place on hot
-            % code load.
-            Md5 = PiqiMod:module_info(md5),
-            case get(PiqiMod) =:= Md5 of
+            % TODO, XXX: although calling piqi_hash() is rather cheap, we can
+            % optimize it further by updating the state once on module load
+            % using -on_load() compile option. Note that -on_load() call is
+            % blocking, so if done carefully it should be possible to update the
+            % state before the actual code change takes place on hot code load.
+            PiqiHash = PiqiMod:piqi_hash(),
+            case get(PiqiMod) =:= PiqiHash of
                 true ->  % type information is up-to-date => no-op
                     ok;
                 false ->
@@ -225,7 +221,7 @@ rpc_call(PiqiMod, Request, From, Port) ->
                     % request is executing). If there's any problem with
                     % add_piqi, the gen_server will crash when it receives
                     % unsuccessful response form the Port.
-                    erlang:put(PiqiMod, Md5),
+                    erlang:put(PiqiMod, PiqiHash),
 
                     % add type information from the PiqiMod to the Piqi-tools
                     % server

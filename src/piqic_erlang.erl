@@ -392,7 +392,9 @@ gen_embedded_piqi(Context) ->
     % we should probably pass the whole piqi-bundle instead of a list of
     % pb-encoded piqi modules
     BinModules = [iolist_to_binary(piqi_piqi:gen_piqi(X)) || X <- Context#context.modules],
+    Hash = erlang:phash2(BinModules, 16#100000000),  % 32-bit hash of the piqi modules
     [
+        "piqi_hash() -> ", integer_to_list(Hash), ".\n",
         "piqi() ->\n",
         io_lib:format("~p", [BinModules]),
         ".\n"
