@@ -3,8 +3,9 @@ ifndef PIQI
 export PIQI = $(shell echo ../priv/piqi-binary/"`uname -s`-`uname -m`"/piqi)
 endif
 
-#PIQIC = ../piqic-erlang/piqic-erlang
-PIQIC = ERL_FLAGS="-pa ../piqic-erlang/ebin" ../priv/bin/piqic-erlang
+PIQIC_EXE = ../piqic-erlang/piqic-erlang
+PIQIC_ENV = ERL_FLAGS="-pa ../piqic-erlang/ebin"
+PIQIC = $(PIQIC_ENV) $(PIQIC_EXE)
 PIQIC_FLAGS = #--trace
 
 
@@ -58,9 +59,9 @@ PIQI_ERLANG_FILES = $(PIQI_ERL_FILES) $(PIQI_HRL_FILES)
 piqi: $(PIQI_ERLANG_FILES)
 
 
-$(PIQI_ERLANG_FILES): $(PIQI_FILES)
+$(PIQI_ERLANG_FILES): $(PIQI_FILES) $(PIQIC_EXE)
 	set -e; \
-	for i in $^; do \
+	for i in $(PIQI_FILES); do \
 		$(PIQIC) $(PIQIC_FLAGS) $$i; \
 	done
 
