@@ -26,9 +26,9 @@ PIQI_ERLANG_FILES = $(PIQI_ERL_FILES) $(PIQI_HRL_FILES)
 piqi: $(PIQI_ERLANG_FILES)
 
 
-$(PIQI_ERLANG_FILES): $(PIQI_FILES)
+$(PIQI_ERLANG_FILES): $(PIQI_FILES) $(PIQIC)
 	set -e; \
-	for i in $^; do \
+	for i in $(PIQI_FILES); do \
 		$(PIQIC) $(PIQIC_FLAGS) $$i; \
 	done
 
