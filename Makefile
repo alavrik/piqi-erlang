@@ -3,7 +3,6 @@ REBAR ?= rebar
 
 all:
 	$(REBAR) compile
-	$(MAKE) -C piqic-erlang
 
 
 deps:
@@ -28,4 +27,3 @@ distclean: clean
 
 
 .PHONY: deps
-
