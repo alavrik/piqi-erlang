@@ -338,39 +338,37 @@ gen_field_parsers(Context, Fields) ->
     [gen_field_parser(Context, P) || P <- FieldNumberPairs].
 
 
-gen_field_parser(Context, {X, I}) ->
+gen_field_parser(Context, {X0, I}) ->
+    % TODO: remove eventually -- keeping for backward compatibility with
+    % older piqi which expects flags to only be true if present, and
+    % never false
+    X = piqic:transform_flag(X0),
+
     Name = erlname_of_field(Context, X),
     Mode = piqic:gen_field_mode(X),
     Code = gen_code(X#field.code),
-    ParseExpr =
-        case X#field.type of
-            'undefined' ->  % flag, i.e. field w/o type
-                [ 
-                    "piqirun:parse_flag(", Code, ", ", record_variable(I), ")"
-                ];
-            TypeName ->
-                [
-                    % "parse_(req|opt|rep)_field" function invocation
-                    "piqirun:parse_", Mode, "_field(",
-                        Code, ", ",
-                        "fun ", gen_type(Context, TypeName, X#field.protobuf_packed), "/1, ",
-                        % when parsing packed repeated fields, we should also
-                        % accept fields in unpacked representation; therefore,
-                        % specifying an unpacked field parser as another
-                        % parameter
-                        case X#field.protobuf_packed of
-                            false ->
-                                "";
-                            true ->
-                                [
-                                    "fun ", gen_type(Context, TypeName, _IsPacked = false), "/1, "
-                                ]
-                        end,
-                        record_variable(I),
-                        gen_default(X#field.default),
-                    ")"
-                ]
-        end,
+    TypeName = X#field.type,
+    ParseExpr = [
+        % "parse_(req|opt|rep)_field" function invocation
+        "piqirun:parse_", Mode, "_field(",
+            Code, ", ",
+            "fun ", gen_type(Context, TypeName, X#field.protobuf_packed), "/1, ",
+            % when parsing packed repeated fields, we should also
+            % accept fields in unpacked representation; therefore,
+            % specifying an unpacked field parser as another
+            % parameter
+            case X#field.protobuf_packed of
+                false ->
+                    "";
+                true ->
+                    [
+                        "fun ", gen_type(Context, TypeName, _IsPacked = false), "/1, "
+                    ]
+            end,
+            record_variable(I),
+            gen_default(X#field.default),
+        ")"
+    ],
     [
         "{", field_variable(Name), ", ", record_variable(I+1), "} = ", ParseExpr
     ].

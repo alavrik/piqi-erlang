@@ -314,6 +314,10 @@ gen_packed_repeated_field(Code, GenValue, L) ->
     Code :: piqirun_code(),
     X :: boolean()) -> iolist().
 
+% TODO: remove eventually -- keeping for backward compatibility with older piqi
+% which expects flags to only be true if they are present; see
+% piqic:transform_flag() for details
+gen_flag(_Code, 'undefined') -> []; % no flag
 gen_flag(_Code, false) -> []; % no flag
 gen_flag(Code, true) -> gen_bool_field(Code, true).
 
@@ -781,9 +785,10 @@ parse_optional_field(Code, ParseValue, L) ->
     {Res, Rest}.
 
 
+% TODO: remove eventually -- keeping for backward compatibility with older piqi
 parse_flag(Code, L) ->
     % flags are represeted as booleans
-    case parse_optional_field(Code, fun parse_bool/1, L) of
+    case parse_optional_field(Code, fun boolean_of_varint/1, L) of
         {'undefined', Rest} -> {false, Rest};
         X = {true, _Rest} -> X;
         {false, _} -> throw_error({'invalid_flag_encoding', Code})
@@ -839,7 +844,6 @@ error_option(_X, Code) -> throw_error({'unknown_option', Code}).
 -spec integer_of_signed_varint(piqirun_buffer()) -> integer().
 -spec integer_of_zigzag_varint(piqirun_buffer()) -> integer().
 -spec boolean_of_varint(piqirun_buffer()) -> boolean().
--spec parse_bool(piqirun_buffer()) -> boolean().
 
 -spec non_neg_integer_of_fixed32(piqirun_buffer()) -> non_neg_integer().
 -spec integer_of_signed_fixed32(piqirun_buffer()) -> integer().
@@ -885,9 +889,6 @@ integer_of_zigzag_varint).
 boolean_of_varint(1) -> true;
 boolean_of_varint(0) -> false; ?top_block_parser(
 boolean_of_varint).
-
-
-parse_bool(X) -> boolean_of_varint(X).
 
 
 non_neg_integer_of_fixed32({'fixed32', <<X:32/little-unsigned-integer>>}) -> X; ?top_block_parser(

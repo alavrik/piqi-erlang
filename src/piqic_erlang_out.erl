@@ -361,6 +361,9 @@ gen_field(Context, RecordName, X) ->
     Code = gen_code(X#field.code),
     IsPacked = X#field.protobuf_packed,
     case X#field.type of
+        % TODO: remove eventually -- keeping for backward compatibility with
+        % older piqi which expects flags to only be true if present, and never
+        % false; see piqic:transform_flag(X) for details
         'undefined' ->  % flag, i.e. field w/o type
             [ 
                 "piqirun:gen_flag(", Code, ", ", ScopedName, ")"

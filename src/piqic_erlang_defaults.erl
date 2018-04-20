@@ -137,8 +137,6 @@ gen_field(Context, X) ->
         case X#field.mode of
             required ->
                 gen_type(Context, X#field.type);
-            optional when X#field.type =:= 'undefined' ->  % flag
-                "false";
             optional ->
                 "'undefined'";
             repeated ->

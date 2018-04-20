@@ -235,12 +235,14 @@ gen_field(Context, X) ->
     ].
 
 
-gen_field_default(Context, X) ->
+gen_field_default(Context, X0) ->
+    % TODO: remove eventually -- keeping for backward compatibility with older
+    % piqi which expects flags to only be true if present, and never false
+    X = piqic:transform_flag(X0),
+
     case X#field.mode of
         repeated ->
             {" = []", _CanBeUndefined = false};
-        optional when X#field.type =:= 'undefined' ->  % flag
-            {" = false", _CanBeUndefined = false};
         optional when X#field.default =/= 'undefined' ->
             Value = gen_field_default(Context, X#field.type, X#field.default, _WireType = 'undefined'),
             % NOTE: we need 'undefined' here, because otherwise Dialyzer won't

@@ -389,10 +389,30 @@ erlname_record(X) ->
     }.
 
 
-erlname_field(X) ->
+erlname_field(X0) ->
+    % TODO: turn this on by default eventually, instead of doing it at a
+    % granular level for recor definitions, parsing and generation code
+    %
+    %X = transform_flag(X0),
+    X = X0,
     X#field{
         erlang_name = erlname_undefined(X#field.erlang_name, X#field.name)
     }.
+
+
+% provide compatibility with the older spec in which flags were treated as
+% first-class citizens -- newer spec already have flags transformed as follows
+transform_flag(X) ->
+    case X#field.type of
+        'undefined' ->
+            ProtobufFalse = iolist_to_binary(piqirun:gen_bool_field('undefined', false)),
+            X#field{
+                type = <<"bool">>,
+                default = #piqi_any{protobuf = ProtobufFalse}
+            };
+        _ ->
+            X
+    end.
 
 
 erlname_variant(X) ->

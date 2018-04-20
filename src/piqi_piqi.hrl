@@ -54,13 +54,13 @@
     type :: type(),
     mode = required :: field_mode() | 'undefined',
     default :: piqi_any(),
-    deprecated = false :: boolean(),
+    deprecated = false :: boolean() | 'undefined',
     piq_format :: piq_format(),
     piq_positional :: boolean(),
     piq_alias :: name(),
     protobuf_name :: string() | binary(),
     code :: integer(),
-    protobuf_packed = false :: boolean(),
+    protobuf_packed = false :: boolean() | 'undefined',
     json_name :: string() | binary(),
     json_omit_missing :: boolean(),
     getopt_letter :: word(),
@@ -85,7 +85,7 @@
 -record(option, {
     name :: name(),
     type :: type(),
-    deprecated = false :: boolean(),
+    deprecated = false :: boolean() | 'undefined',
     piq_format :: piq_format(),
     piq_alias :: name(),
     protobuf_name :: string() | binary(),
@@ -126,7 +126,7 @@
     piq_format :: piq_format(),
     protobuf_name :: string() | binary(),
     protobuf_custom = [] :: [string() | binary()],
-    protobuf_packed = false :: boolean(),
+    protobuf_packed = false :: boolean() | 'undefined',
     json_name :: string() | binary(),
     erlang_name :: string() | binary()
 }).
