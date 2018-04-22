@@ -55,6 +55,7 @@ usage(IoDevice) ->
   -e <name> try including extension <name> for all loaded modules (can be used several times)
   --normalize-names true|false turn CamlCase-style names into \"camel-case\" (default = true)
   --gen-preserve-unknown-fields generate code that preserves unknown Protobuf fields when they are serialized back
+  --gen-embedded-runtime include serialization runtime in the generated .erl modules
   -h, --help  Display this list of options
 "
     ]).
@@ -83,6 +84,7 @@ args_error(Format, Args) ->
     other = [],          % arguments to be passed to "piqi compile"
     normalize_names = true,
     gen_preserve_unknown_fields = false,
+    gen_embedded_runtime = false,
 
     % search path, similar to -I but generate -include_lib instead of -include
     % for imported modules
@@ -130,6 +132,12 @@ parse_args(["--normalize-names" , Value |T], Args) ->
 parse_args(["--gen-preserve-unknown-fields" |T], Args) ->
     NewArgs = Args#args{
         gen_preserve_unknown_fields = true
+    },
+    parse_args(T, NewArgs);
+
+parse_args(["--gen-embedded-runtime" |T], Args) ->
+    NewArgs = Args#args{
+        gen_embedded_runtime = true
     },
     parse_args(T, NewArgs);
 
@@ -242,6 +250,7 @@ piqic_erlang(CallbackMod, Args) ->
         Options = [
             {normalize_names, ParsedArgs#args.normalize_names},
             {gen_preserve_unknown_fields, ParsedArgs#args.gen_preserve_unknown_fields},
+            {gen_embedded_runtime, ParsedArgs#args.gen_embedded_runtime},
             {include_lib, ParsedArgs#args.include_lib}
         ],
         Context = piqic:init_context(PiqiList, Options),
@@ -321,6 +330,10 @@ throw_return(X) -> throw({return, X}).
 throw_error(X) -> throw({error, X}).
 
 
+throw_error(Fmt, Args) ->
+    throw_error(lists:flatten(io_lib:format(Fmt, Args))).
+
+
 trace(Format, Args) ->
     case get(?FLAG_TRACE) of
         true ->
@@ -362,7 +375,6 @@ gen_hrl(Context) ->
     Code = [
         "-ifndef(", HeaderMacro, ").\n"
         "-define(", HeaderMacro, ", 1).\n\n\n",
-        "-include_lib(\"piqi/include/piqirun.hrl\").\n\n",
         piqic_erlang_types:gen_piqi(Context),
         "\n\n-endif.\n"
     ],
@@ -379,12 +391,61 @@ gen_erl(Context) ->
             "-compile([export_all, nowarn_export_all]).\n\n",
             "-include(\"", ErlMod, ".hrl\").\n"
         ],
+	gen_piqirun_hrl(Context),
         piqic_erlang_out:gen_piqi(Context),
         piqic_erlang_in:gen_piqi(Context),
         piqic_erlang_defaults:gen_piqi(Context),
-        gen_embedded_piqi(Context)
+        gen_embedded_piqi(Context),
+	gen_piqirun_erl(Context)
     ]),
     piqic:write_file(Filename, Code).
+
+
+gen_piqirun_hrl(Context) ->
+    case is_embedded_runtime(Context) of
+        false ->
+            "-include_lib(\"piqi/include/piqirun.hrl\").\n";
+        true ->
+            Contents = read_embedded_runtime_file("include/piqirun.hrl"),
+            [
+                "\n\n",
+                Contents,
+                "\n\n"
+            ]
+    end.
+
+
+gen_piqirun_erl(Context) ->
+    case is_embedded_runtime(Context) of
+        false ->
+            "";
+        true ->
+            Contents = read_embedded_runtime_file("src/piqirun_embedded.hrl"),
+            [
+                "\n\n",
+                Contents
+            ]
+    end.
+
+
+is_embedded_runtime(Context) ->
+    piqic:get_option(Context, gen_embedded_runtime).
+
+
+read_embedded_runtime_file(Filename) ->
+    Dir =
+        case code:lib_dir(piqi) of
+            {error, _} ->
+                throw_error("can't find \"piqi\" app directory when generating embedded runtime");
+            Dir_ ->
+                Dir_
+        end,
+
+    Path = filename:join(Dir, Filename),
+    filelib:is_regular(Path) orelse throw_error("can't find runtime file \"~s\" for embedding into generated .erl", [Path]),
+
+    {ok, Bytes} = file:read_file(Path),
+    Bytes.
 
 
 gen_embedded_piqi(Context) ->

@@ -10,7 +10,9 @@ all: piqi_obj.piqi ebin
 
 
 piqi_obj.piqi:
-	$(PIQI) cc | sed -e 's/\.module .*//;s/\.code .*//' >$@
+	$(PIQI) cc > piqi.piqi
+	cat ../../src/piqi.erlang.piqi | sed -e 's/\.erlang-type-prefix ""//' > piqi.erlang.piqi
+	$(PIQI) cc -e erlang piqi.piqi | sed -e 's/\.module .*//;s/\.code .*//' >$@
 
 
 test:

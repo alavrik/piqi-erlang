@@ -11,6 +11,7 @@ all: piqi.piqi ebin
 
 piqi.piqi:
 	$(PIQI) cc > piqi.piqi
+	ln -s ../../src/piqi.erlang.piqi
 
 
 test:
@@ -20,7 +21,7 @@ test:
 
 
 clean::
-	rm -f piqi.piqi piqi.piqi.* t.*
+	rm -f piqi.piqi piqi.erlang.piqi piqi.piqi.* t.*
 
 
 .PHONY: test

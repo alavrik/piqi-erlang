@@ -13,5 +13,5 @@ ERL_PATH="-pa ../piqi/ebin"
 
 
 erl $ERL_PATH -noshell $BOOT -s piqi start -run $RUN -s erlang halt
-#rlwrap erl -oldshell $ERL_PATH -s piqi_tools start -run $RUN #-s erlang halt
+#rlwrap erl -oldshell $ERL_PATH -s piqi start -run $RUN #-s erlang halt
 

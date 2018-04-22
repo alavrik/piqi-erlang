@@ -52,7 +52,7 @@ gen_typedef(Context, Typedef = {Type, X}) ->
             piqi_list ->
                 gen_list(Context, X);
             enum ->
-                gen_enum(X);
+                gen_enum(Context, X);
             alias ->
                 gen_alias(Context, X)
         end,
@@ -178,36 +178,36 @@ gen_list(Context, X) ->
     TypeName = X#piqi_list.type,
     [
         "field_gen_", X#piqi_list.erlang_name, "(Code, X) ->\n",
-        "    ", "piqirun:gen_", PackedPrefix, "list(Code, ",
+        "    ", ?PIQIRUN, "gen_", PackedPrefix, "list(Code, ",
             "fun ", gen_type(Context, TypeName, IsPacked), "/", ?if_true(IsPacked, "1", "2"),  % arity
             ", X).\n"
     ].
 
 
-gen_enum(X) ->
+gen_enum(Context, X) ->
     % generate two functions: one for parsing normal value; another one -- for
     % packed value
     iod("\n\n", [
-        gen_unpacked_enum(X),
-        gen_packed_enum(X)
+        gen_unpacked_enum(Context, X),
+        gen_packed_enum(Context, X)
     ]).
 
 
-gen_unpacked_enum(X) ->
+gen_unpacked_enum(Context, X) ->
     Consts = gen_consts(X#enum.option),
     [
         "field_gen_", X#enum.erlang_name, "(Code, X) ->\n",
-        "    ", "piqirun:integer_to_signed_varint(Code,\n",
+        "    ", ?PIQIRUN, "integer_to_signed_varint(Code,\n",
         Consts,
         "    ).\n"
     ].
 
 
-gen_packed_enum(X) ->
+gen_packed_enum(Context, X) ->
     Consts = gen_consts(X#enum.option),
     [
         "packed_field_gen_", X#enum.erlang_name, "(X) ->\n",
-        "    ",  "piqirun:integer_to_packed_signed_varint(\n",
+        "    ",  ?PIQIRUN, "integer_to_packed_signed_varint(\n",
         Consts,
         "    ).\n"
     ].
@@ -233,7 +233,7 @@ gen_variant(Context, X) ->
     Options = lists:append(L),  % flatten
     [
         "field_gen_", X#variant.erlang_name, "(Code, X) ->\n",
-        "    ", "piqirun:gen_variant(Code,\n",
+        "    ", ?PIQIRUN, "gen_variant(Code,\n",
         "        ", "case X of\n",
         "            ", iod(";\n            ", Options), "\n"
         "        ", "end\n"
@@ -255,7 +255,7 @@ gen_option(Context, X, OuterOption) ->
                     gen_inner_option(Name, OuterOption);
                 false ->
                     Clause = [
-                        Name, " -> ", "piqirun:gen_bool_field(", Code, ", true)"
+                        Name, " -> ", ?PIQIRUN, "gen_bool_field(", Code, ", true)"
                     ],
                     [Clause]
             end;
@@ -313,7 +313,7 @@ gen_record(Context, X) ->
         case piqic:get_option(Context, gen_preserve_unknown_fields) of
             false -> [];
             true ->
-                ["[piqirun:gen_parsed_field(F) || F <- X#", ScopedName, ".piqi_unknown_pb]"]
+                ["[", ?PIQIRUN, "gen_parsed_field(F) || F <- X#", ScopedName, ".piqi_unknown_pb]"]
         end,
     GeneratorsCode =
         case Fields of
@@ -348,7 +348,7 @@ gen_record(Context, X) ->
         end,
     [
         "field_gen_", Name, "(Code, ", ArgVariable, ") ->\n",
-        "    ", "piqirun:gen_record(Code, ", GeneratorsCode, ").\n"
+        "    ", ?PIQIRUN, "gen_record(Code, ", GeneratorsCode, ").\n"
     ].
 
 
@@ -366,11 +366,11 @@ gen_field(Context, RecordName, X) ->
         % false; see piqic:transform_flag(X) for details
         'undefined' ->  % flag, i.e. field w/o type
             [ 
-                "piqirun:gen_flag(", Code, ", ", ScopedName, ")"
+                ?PIQIRUN, "gen_flag(", Code, ", ", ScopedName, ")"
             ];
         TypeName ->
             [ 
-                "piqirun:gen_", Mode, "_field(", Code, ", ",
+                ?PIQIRUN, "gen_", Mode, "_field(", Code, ", ",
                     "fun ", gen_type(Context, TypeName, IsPacked), "/", ?if_true(IsPacked, "1", "2"),  % arity
                     ", ",
                     ScopedName,
@@ -429,7 +429,7 @@ gen_builtin_type(Context, PiqiType, ErlType, WireType, IsPacked) ->
             TypeName = piqic:gen_builtin_type_name(PiqiType, ErlType),
             WireTypeName = piqic:gen_wire_type_name(PiqiType, WireType),
             [
-                "piqirun:", TypeName, "_to_", PackedPrefix, WireTypeName
+                ?PIQIRUN, TypeName, "_to_", PackedPrefix, WireTypeName
             ]
     end.
 

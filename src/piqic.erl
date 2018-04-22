@@ -145,7 +145,11 @@ init_context(PiqiList, Options) ->
 
 
 get_option(Context, Name) ->
-    proplists:get_value(Name, Context#context.options).
+    get_option(Context, Name, _Default = undefined).
+
+
+get_option(Context, Name, Default) ->
+    proplists:get_value(Name, Context#context.options, Default).
 
 
 switch_context(Context, Piqi) ->

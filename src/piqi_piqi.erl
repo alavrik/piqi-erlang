@@ -4,6 +4,9 @@
 -include("piqi_piqi.hrl").
 
 
+-include_lib("piqi/include/piqirun.hrl").
+
+
 -spec field_gen_piq_format(Code :: piqirun_code(), X :: piq_format()) -> iolist().
 
 field_gen_piq_format(Code, X) ->

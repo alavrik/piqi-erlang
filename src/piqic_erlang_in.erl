@@ -50,7 +50,7 @@ gen_typedef(Context, Typedef = {Type, X}) ->
             piqi_list ->
                 gen_list(Context, X);
             enum ->
-                gen_enum(X);
+                gen_enum(Context, X);
             alias ->
                 gen_alias(Context, X)
         end,
@@ -177,7 +177,7 @@ gen_list(Context, X) ->
     TypeName = X#piqi_list.type,
     [
         "parse_", X#piqi_list.erlang_name, "(X) ->\n",
-        "    ", "piqirun:parse_", PackedPrefix, "list(",
+        "    ", ?PIQIRUN, "parse_", PackedPrefix, "list(",
             "fun ", gen_type(Context, TypeName, IsPacked), "/1, ",
             % when parsing packed repeated fields, we should also accept fields
             % in unpacked representation; therefore, specifying an unpacked
@@ -194,32 +194,32 @@ gen_list(Context, X) ->
     ].
 
 
-gen_enum(X) ->
+gen_enum(Context, X) ->
     % generate two functions: one for parsing normal value; another one -- for
     % packed value
     iod("\n\n", [
-        gen_unpacked_enum(X),
-        gen_packed_enum(X)
+        gen_unpacked_enum(Context, X),
+        gen_packed_enum(Context, X)
     ]).
 
 
-gen_unpacked_enum(X) ->
+gen_unpacked_enum(Context, X) ->
     Consts = [gen_const(C) || C <- X#enum.option],
-    Clauses = Consts ++ [ "Y -> piqirun:error_enum_const(Y)" ],
+    Clauses = Consts ++ [ ["Y -> ", ?PIQIRUN, "error_enum_const(Y)"] ],
     [
         "parse_", X#enum.erlang_name, "(X) ->\n",
-        "    ", "case piqirun:integer_of_signed_varint(X) of\n",
+        "    ", "case ", ?PIQIRUN, "integer_of_signed_varint(X) of\n",
         "        ", iod(";\n        ", Clauses),
         "\n    end.\n"
     ].
 
 
-gen_packed_enum(X) ->
+gen_packed_enum(Context, X) ->
     Consts = [gen_const(C) || C <- X#enum.option],
-    Clauses = Consts ++ [ "Y -> piqirun:error_enum_const(Y)" ],
+    Clauses = Consts ++ [ ["Y -> ", ?PIQIRUN, "error_enum_const(Y)"] ],
     [
         "packed_parse_", X#enum.erlang_name, "(X) ->\n",
-        "    ", "{Code, Rest} = piqirun:integer_of_packed_signed_varint(X),\n",
+        "    ", "{Code, Rest} = ", ?PIQIRUN, "integer_of_packed_signed_varint(X),\n",
         "    ", "{case Code of\n",
         "        ", iod(";\n        ", Clauses),
         "\n    end, Rest}.\n"
@@ -234,10 +234,10 @@ gen_const(X) ->
 
 gen_variant(Context, X) ->
     Options = [gen_option(Context, O) || O <- X#variant.option],
-    Clauses = Options ++ [ "_ -> piqirun:error_option(Obj, Code)" ],
+    Clauses = Options ++ [ ["_ -> ", ?PIQIRUN, "error_option(Obj, Code)"] ],
     [
         "parse_", X#variant.erlang_name, "(X) ->\n",
-        "    ", "{Code, Obj} = piqirun:parse_variant(X),\n",
+        "    ", "{Code, Obj} = ", ?PIQIRUN, "parse_variant(X),\n",
         "    ", "case Code of\n",
         "        ", iod(";\n        ", Clauses),
         "\n    end.\n"
@@ -307,7 +307,7 @@ gen_record(Context, X) ->
     Name = X#piqi_record.erlang_name,
     [
         "parse_", Name, "(X) ->\n",
-        "    ", "R0 = piqirun:parse_record(X),\n",
+        "    ", "R0 = ", ?PIQIRUN, "parse_record(X),\n",
         ParsersCode,
         % prevent "variable XXX is unused" warning
         "    _ = ", record_variable(length(Fields)), ",\n",
@@ -350,7 +350,7 @@ gen_field_parser(Context, {X0, I}) ->
     TypeName = X#field.type,
     ParseExpr = [
         % "parse_(req|opt|rep)_field" function invocation
-        "piqirun:parse_", Mode, "_field(",
+        ?PIQIRUN, "parse_", Mode, "_field(",
             Code, ", ",
             "fun ", gen_type(Context, TypeName, X#field.protobuf_packed), "/1, ",
             % when parsing packed repeated fields, we should also
@@ -438,7 +438,7 @@ gen_builtin_type(Context, PiqiType, ErlType, WireType, IsPacked) ->
             TypeName = gen_builtin_type_name(Context, PiqiType, ErlType),
             WireTypeName = piqic:gen_wire_type_name(PiqiType, WireType),
             [
-                "piqirun:", TypeName, "_of_", PackedPrefix, WireTypeName
+                ?PIQIRUN, TypeName, "_of_", PackedPrefix, WireTypeName
             ]
     end.
 

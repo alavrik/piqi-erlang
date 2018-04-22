@@ -1,10 +1,6 @@
 -module(test).
 -compile([export_all, nowarn_export_all]).
 
--include("addressbook_piqi.hrl").
--include("piqi_obj_piqi.hrl").
-
-
 main() ->
     run(1, 'undefined').
 

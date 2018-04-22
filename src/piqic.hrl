@@ -99,4 +99,7 @@
 ).
 
 
+-define(PIQIRUN, ?if_true(piqic:get_option(Context, gen_embedded_runtime), "piqirun_", "piqirun:")).
+
+
 -endif.
