@@ -310,7 +310,7 @@ get_used_typenames(_Typedef = {Type, X}) ->
     L =
         case Type of
             piqi_record ->
-                [F#field.type || F <- X#piqi_record.field];
+                [get_field_typename(F#field.type) || F <- X#piqi_record.field];
             variant ->
                 [O#option.type || O <- X#variant.option];
             alias ->
@@ -321,6 +321,11 @@ get_used_typenames(_Typedef = {Type, X}) ->
                 []
         end,
     lists:usort([N || N <- L, N =/= 'undefined']).
+
+
+% for backward compatibility with older flags behavior -- see transform_flag() for details
+get_field_typename('undefined') -> <<"bool">>;
+get_field_typename(X) -> X.
 
 
 load_self_spec() ->
