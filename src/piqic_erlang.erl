@@ -85,6 +85,7 @@ args_error(Format, Args) ->
     normalize_names = true,
     gen_preserve_unknown_fields = false,
     gen_embedded_runtime = false,
+    cc = false,        % compile spec for the piqic-erlang compiler
 
     % search path, similar to -I but generate -include_lib instead of -include
     % for imported modules
@@ -138,6 +139,12 @@ parse_args(["--gen-preserve-unknown-fields" |T], Args) ->
 parse_args(["--gen-embedded-runtime" |T], Args) ->
     NewArgs = Args#args{
         gen_embedded_runtime = true
+    },
+    parse_args(T, NewArgs);
+
+parse_args(["--cc" |T], Args) ->
+    NewArgs = Args#args{
+        cc = true
     },
     parse_args(T, NewArgs);
 
@@ -251,6 +258,7 @@ piqic_erlang(CallbackMod, Args) ->
             {normalize_names, ParsedArgs#args.normalize_names},
             {gen_preserve_unknown_fields, ParsedArgs#args.gen_preserve_unknown_fields},
             {gen_embedded_runtime, ParsedArgs#args.gen_embedded_runtime},
+            {cc, ParsedArgs#args.cc},
             {include_lib, ParsedArgs#args.include_lib}
         ],
         Context = piqic:init_context(PiqiList, Options),
@@ -364,7 +372,42 @@ read_piqi_bundle(Filename) ->
 generate(Context) ->
     gen_hrl(Context),
     gen_erl(Context),
+
+    % only when compiling piqi.piqi for this library
+    piqic:get_option(Context, cc) andalso gen_piqi_any_piqi_hrl(Context),
     ok.
+
+
+gen_piqi_any_piqi_hrl(Context) ->
+    ErlMod = "piqi_any_piqi",
+    Filename = ErlMod ++ ".hrl",
+    HeaderMacro = ["__", string:to_upper(ErlMod), "_HRL__"],
+    Code = [
+        "-ifndef(", HeaderMacro, ").\n"
+        "-define(", HeaderMacro, ", 1).\n\n\n",
+        piqic_erlang_types:gen_piqi_any(Context),
+        "\n\n-endif.\n"
+    ],
+    piqic:write_file(Filename, Code).
+
+
+gen_include_piqi_any_piqi_hrl(Context, Piqi) ->
+    % decide if we need to include piqi_any() type definition or not
+    case piqic:piqi_depends_on_piqi_any(Piqi) of
+        false -> [];
+        true ->
+            % include #piqi_any{} and piqi_any() definitions
+            case is_embedded_runtime(Context) of
+                false ->
+                    ["\n-include_lib(\"piqi/include/piqi_any_piqi.hrl\").\n"];
+                true ->
+                    Contents = read_embedded_runtime_file("include/piqi_any_piqi.hrl"),
+                    [
+                        "\n\n",
+                        Contents
+                    ]
+            end
+    end.
 
 
 gen_hrl(Context) ->
@@ -374,7 +417,9 @@ gen_hrl(Context) ->
     HeaderMacro = ["__", string:to_upper(ErlMod), "_HRL__"],
     Code = [
         "-ifndef(", HeaderMacro, ").\n"
-        "-define(", HeaderMacro, ", 1).\n\n\n",
+        "-define(", HeaderMacro, ", 1).\n",
+        gen_include_piqi_any_piqi_hrl(Context, Piqi),
+        "\n\n",
         piqic_erlang_types:gen_piqi(Context),
         "\n\n-endif.\n"
     ],
@@ -391,7 +436,7 @@ gen_erl(Context) ->
             "-compile([export_all, nowarn_export_all]).\n\n",
             "-include(\"", ErlMod, ".hrl\").\n"
         ],
-	gen_piqirun_hrl(Context),
+	gen_include_piqirun_hrl(Context),
         piqic_erlang_out:gen_piqi(Context),
         piqic_erlang_in:gen_piqi(Context),
         piqic_erlang_defaults:gen_piqi(Context),
@@ -401,7 +446,7 @@ gen_erl(Context) ->
     piqic:write_file(Filename, Code).
 
 
-gen_piqirun_hrl(Context) ->
+gen_include_piqirun_hrl(Context) ->
     case is_embedded_runtime(Context) of
         false ->
             "-include_lib(\"piqi/include/piqirun.hrl\").\n";

@@ -39,7 +39,7 @@ proper:
 # recompile piqi self-spec into piqi_piqi.{erl,hrl}
 reboot:
 	$(PIQI) cc -o piqi.piqi
-	$(PIQIC) $(PIQIC_FLAGS) -e piqic-erlang piqi.piqi
+	$(PIQIC) $(PIQIC_FLAGS) --cc -e piqic-erlang piqi.piqi
 
 
 #

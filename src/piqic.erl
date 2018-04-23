@@ -73,20 +73,26 @@ piqi_depends_on_piqi_any(Piqi) ->
 typedef_depends_on_piqi_any(_Typedef = {Type, X}) ->
     case Type of
         piqi_record ->
-            lists:any(fun (F) -> is_piqi_any(F#field.type) end, X#piqi_record.field);
+            lists:any(fun (F) -> is_piqi_any_type(F#field.type) end, X#piqi_record.field);
         variant ->
-            lists:any(fun (O) -> is_piqi_any(O#option.type) end, X#variant.option);
+            lists:any(fun (O) -> is_piqi_any_type(O#option.type) end, X#variant.option);
         alias ->
-            is_piqi_any(X#alias.type);
+            is_piqi_any_type(X#alias.type);
         piqi_list ->
-            is_piqi_any(X#piqi_list.type);
+            is_piqi_any_type(X#piqi_list.type);
         enum ->
             false
     end.
 
 
-is_piqi_any(Name) ->
+is_piqi_any_type(Name) ->
     Name =:= <<"piqi-any">>.
+
+
+is_piqi_any_record_typedef({piqi_record, X}) when X#piqi_record.erlang_name =:= <<"piqi_any">> ->
+    true;
+is_piqi_any_record_typedef(_) ->
+    false.
 
 
 % initialize piqic context from the list of Piqi modules; the module being
@@ -99,6 +105,7 @@ init_context(PiqiList, Options) ->
     % identifier
 
     PiqiList2 = [erlname_piqi(X) || X <- PiqiList],
+    [check_piqi(X) || X <- PiqiList2],
 
     {Imports, [Piqi]} = lists:split(length(PiqiList2) - 1, PiqiList2),
 
@@ -122,26 +129,76 @@ init_context(PiqiList, Options) ->
         end,
     BuiltinsIndex = index_typedefs(BuiltinTypedefs),
 
-    Piqi2 = add_builtin_typedefs(Piqi, BuiltinsIndex),
+    Piqi2 =
+        case IsSelfSpec of
+            true ->
+                Piqi;
+            false ->
+                add_piqi_any_record_typedef(Piqi, SelfSpec)
+        end,
+    Piqi3 = add_builtin_typedefs(Piqi2, BuiltinsIndex),
+
     Imports2 = [add_builtin_typedefs(X, BuiltinsIndex) || X <- Imports],
 
     % index the compiled module's contents
-    Index = index_module(Piqi2),
+    Index = index_module(Piqi3),
 
     % index imported modules
     ModIndex = make_module_index(Imports2),
 
     #context{
-        piqi = Piqi2,
+        piqi = Piqi3,
         index = Index,
-
-        is_self_spec = IsSelfSpec,
 
         modules = PiqiList,
         module_index = ModIndex,
 
         options = Options
     }.
+
+
+check_piqi(Piqi) ->
+    is_self_spec(Piqi) orelse [check_typedef(Piqi, X) || X <- Piqi#piqi.typedef],
+    ok.
+
+
+% TODO: check clashes with other Erlang built-in types and keywords
+check_typedef(Piqi, X) ->
+    ErlName = typedef_erlname(X),
+    case to_binary(ErlName) of
+        <<"piqi_any">> ->
+            erlang:error({"module '" ++ to_string(Piqi#piqi.module) ++ "' overrides 'piqi_any' built-in definition", X});
+        _ ->
+            ok
+    end.
+
+
+% include 'piqi_any' record definition to the modules if it depends on it, this allows us to decouple generated code
+% from any other runtime but piqirun.erl; Note that definition for the 'any' type is still going to be included from a
+% shared piqi_any_piqi.hrl file -- this is to avoid name conflict when imports also use the built-in 'any' type
+add_piqi_any_record_typedef(Piqi, SelfSpec) ->
+    case piqi_depends_on_piqi_any(Piqi) of
+        false ->
+            Piqi;
+        true ->
+            PiqiAnyTypedef = find_piqi_any_record_typedef(SelfSpec),
+            Piqi#piqi{typedef = [PiqiAnyTypedef | Piqi#piqi.typedef]}
+    end.
+
+
+find_piqi_any_record_typedef(Piqi) ->
+    lists_find_first(fun is_piqi_any_record_typedef/1, Piqi#piqi.typedef).
+
+
+lists_find_first(_Fun, []) ->
+    'undefined';
+lists_find_first(Fun, [H|T]) ->
+    case Fun(H) of
+        true ->
+            H;
+        false ->
+            lists_find_first(Fun, T)
+    end.
 
 
 get_option(Context, Name) ->
@@ -178,9 +235,14 @@ gen_parent_mod(Context, ParentPiqi) ->
     end.
 
 
-scoped_name(Context, Name) ->
+scoped_erlname(_Context, ErlName = <<"piqi_any">>) ->
+    % this is a special case, as this name is reserved for the built-in #piqi_any{} -- see add_piqi_any_record_typedef()
+    % for details
+    to_string(ErlName);
+
+scoped_erlname(Context, ErlName) ->
     Piqi = Context#context.piqi,
-    Piqi#piqi.erlang_type_prefix ++ to_string(Name).
+    Piqi#piqi.erlang_type_prefix ++ to_string(ErlName).
 
 
 typedef_scoped_name(Context, Typedef) ->
@@ -189,9 +251,14 @@ typedef_scoped_name(Context, Typedef) ->
         true ->
             Name;
         false ->
-            Piqi = Context#context.piqi,
-            Mod = Piqi#piqi.module,
-            [Mod, "/", Name]
+            case is_piqi_any_record_typedef(Typedef) of
+                true ->
+                    "piqi/any";
+                false ->
+                    Piqi = Context#context.piqi,
+                    Mod = Piqi#piqi.module,
+                    [Mod, "/", Name]
+            end
     end.
 
 
@@ -620,7 +687,8 @@ gen_builtin_type_name(PiqiType) ->
         float -> "float";
         bool -> "boolean";
         string -> "string";
-        binary -> "binary"
+        binary -> "binary";
+        any -> "piqi_any"
     end.
 
 

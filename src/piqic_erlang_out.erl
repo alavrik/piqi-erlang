@@ -90,7 +90,7 @@ gen_spec_1(Context, Typedef) ->
 
 
 gen_output_type_name(Context, Typedef) ->
-    piqic_erlang_types:gen_out_type(Context, typedef_name(Typedef)).
+    piqic_erlang_types:gen_out_typedef_type(Context, Typedef).
 
 
 % mutliformat serializers: gen_*/2, gen_*/3
@@ -308,7 +308,7 @@ gen_record(Context, X) ->
         X#piqi_record.field
     ),
     Name = X#piqi_record.erlang_name,
-    ScopedName = scoped_name(Context, Name),
+    ScopedName = piqic:scoped_erlname(Context, Name),
     UnknownFields =
         case piqic:get_option(Context, gen_preserve_unknown_fields) of
             false -> [];
@@ -416,14 +416,7 @@ gen_alias_type(Context, Alias, WireType, IsPacked) ->
 gen_builtin_type(Context, PiqiType, ErlType, WireType, IsPacked) ->
     case PiqiType of
         any ->
-            case Context#context.is_self_spec of
-                true when ErlType =/= 'undefined' ->
-                    ["field_gen_", ErlType];
-                true ->
-                    "field_gen_any";
-                false ->
-                    "piqi_piqi:field_gen_piqi_any"
-            end;
+            "field_gen_piqi_any";
         _ ->
             PackedPrefix = ?if_true(IsPacked, "packed_", ""),
             TypeName = piqic:gen_builtin_type_name(PiqiType, ErlType),
@@ -432,4 +425,3 @@ gen_builtin_type(Context, PiqiType, ErlType, WireType, IsPacked) ->
                 ?PIQIRUN, TypeName, "_to_", PackedPrefix, WireTypeName
             ]
     end.
-

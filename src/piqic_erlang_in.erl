@@ -100,12 +100,12 @@ gen_spec(Context, Typedef) ->
 gen_input_type_name(Context, Typedef) ->
     % un-alias to avoid Dialyzer complaints like this one: "... states that the
     % function might also return string() but the inferred return is binary()"
-    {Context2, AliasedTypeName} = unalias_input_typedef(Context, Typedef),
-    T = piqic_erlang_types:gen_type(Context2, AliasedTypeName),
+    {ParentContext, AliasedTypedef} = unalias_input_typedef(Context, Typedef),
+    T = piqic_erlang_types:gen_typedef_type(ParentContext, AliasedTypedef),
 
     % strings can be parsed either as lists or as binaries depending on the
     % "erlang-string-type" per-module setting
-    Piqi = Context2#context.piqi,
+    Piqi = ParentContext#context.piqi,
     case to_string(T) of
         "string" ->
             case Piqi#piqi.erlang_string_type of
@@ -126,7 +126,7 @@ unalias_input_typedef(Context, {alias, A})
     unalias_input_typedef(ParentContext, Typedef);
 
 unalias_input_typedef(Context, Typedef) ->
-    {Context, typedef_name(Typedef)}.
+    {Context, Typedef}.
 
 
 gen_alias(Context, X) ->
@@ -311,7 +311,7 @@ gen_record(Context, X) ->
         ParsersCode,
         % prevent "variable XXX is unused" warning
         "    _ = ", record_variable(length(Fields)), ",\n",
-        "    ", "#", scoped_name(Context, Name), "{\n",
+        "    ", "#", piqic:scoped_erlname(Context, Name), "{\n",
         ConstructorsCode,
         "    ", "}.\n"
     ].
@@ -425,14 +425,7 @@ gen_alias_type(Context, Alias, WireType, IsPacked) ->
 gen_builtin_type(Context, PiqiType, ErlType, WireType, IsPacked) ->
     case PiqiType of
         any ->
-            case Context#context.is_self_spec of
-                true when ErlType =/= 'undefined' ->
-                    ["parse_", ErlType];
-                true ->
-                    "parse_any";
-                false ->
-                    "piqi_piqi:parse_piqi_any"
-            end;
+            "parse_piqi_any";
         _ ->
             PackedPrefix = ?if_true(IsPacked, "packed_", ""),
             TypeName = gen_builtin_type_name(Context, PiqiType, ErlType),

@@ -26,38 +26,30 @@
 
 gen_piqi(Context) ->
     Piqi = Context#context.piqi,
+    % excluding #piqi_any{}, because its definition will be included from piqi_any_piqi.hrl --- see
+    % piqic_erlang:gen_include_piqi_any_piqi_hrl() for details
+    Typedefs = [X || X <- Piqi#piqi.typedef, not piqic:is_piqi_any_record_typedef(X)],
     iod("\n\n", [
         gen_imports(Context, Piqi#piqi.import),
-        gen_typedefs(Context, Piqi#piqi.typedef)
+        gen_typedefs(Context, Typedefs)
+    ]).
+
+
+% generate #piqi_any{} typedef, used only in with --cc when compiling self-spec as a part of the piqi application -- see
+% piqic_erlang:gen_piqi_any_piqi_hrl() for details
+gen_piqi_any(Context) ->
+    Piqi = Context#context.piqi,
+    PiqiAnyTypedef = piqic:find_piqi_any_record_typedef(Piqi),
+    true = PiqiAnyTypedef =/= 'undefined',
+    iod("\n\n", [
+        gen_typedefs(Context, [PiqiAnyTypedef])
     ]).
 
 
 gen_imports(Context, Imports) ->
-    % generate the list of Erlang includes of .hrl files of imported modules 
+    % generate the list of Erlang includes of .hrl files of imported modules
     Includes = [gen_import(Context, X) || X <- Imports],
-
-    % decide if we need to include piqi_any() type definition or not
-    Piqi = Context#context.piqi,
-    PiqiAny =
-        case not Context#context.is_self_spec andalso piqic:piqi_depends_on_piqi_any(Piqi) of
-            true ->
-                % NOTE: we do not want to include the whole "piqi_piqi.hrl",
-                % because definitions from it can conflict with the compiled
-                % module's local definitions; just copy-pasting the piqi_any()
-                % definition here
-                iod("\n", [
-                    "-record(piqi_any, {",
-                    "    type :: string() | binary(),",
-                    "    protobuf :: binary(),",
-                    "    json :: string() | binary(),",
-                    "    xml :: string() | binary()",
-                    "}).",
-                    "-type(piqi_any() :: #piqi_any{})."
-                ]);
-            false ->
-                []
-        end,
-    iod("\n", Includes ++ [PiqiAny]).
+    iod("\n", Includes).
 
 
 gen_import(Context, Import) ->
@@ -178,16 +170,16 @@ gen_option(Context, X) ->
                     ]
             end
     end.
-    
+
 
 gen_record_type(Context, X) ->
     Name = X#piqi_record.erlang_name,
-    make_typedef_1(Context, Name, ["#", scoped_name(Context, Name), "{}"]).
+    make_typedef_1(Context, Name, ["#", piqic:scoped_erlname(Context, Name), "{}"]).
 
 
 make_typedef(Context, Name, TypeExpr) ->
     [
-        "-type ", scoped_name(Context, Name), "() ::", TypeExpr, ".\n"
+        "-type ", piqic:scoped_erlname(Context, Name), "() ::", TypeExpr, ".\n"
     ].
 
 
@@ -215,7 +207,7 @@ gen_record(Context, X) ->
                 ]
         end,
     [
-        "-record(", scoped_name(Context, Name), ", {",
+        "-record(", piqic:scoped_erlname(Context, Name), ", {",
         FieldsCode,
         "}).\n"
     ].
@@ -333,6 +325,11 @@ gen_out_type(Context, TypeName) ->
     output_type(T).
 
 
+gen_out_typedef_type(Context, Typedef) ->
+    T = gen_typedef_type(Context, Typedef),
+    output_type(T).
+
+
 gen_out_alias_type(Context, Alias) ->
     T = gen_alias_type(Context, Alias),
     output_type(T).
@@ -353,27 +350,31 @@ output_type(T) ->
 gen_type(Context, TypeName) ->
     {ParentPiqi, Typedef} = resolve_type_name(Context, TypeName),
     ParentContext = piqic:switch_context(Context, ParentPiqi),
+    gen_typedef_type(ParentContext, Typedef).
+
+
+gen_typedef_type(Context, Typedef) ->
     case Typedef of
         {alias, Alias} ->
             case piqic:is_builtin_alias(Alias) of
                 true ->
                     % we need to recurse, because we don't generate -type
                     % definitions for built-in types (see below)
-                    gen_alias_type(ParentContext, Alias);
+                    gen_alias_type(Context, Alias);
                 false ->
-                    gen_typedef_type(ParentContext, Typedef)
+                    gen_non_builtin_typedef_type(Context, Typedef)
             end;
         _ -> % piqi_record | variant | list | enum
-            gen_typedef_type(ParentContext, Typedef)
+            gen_non_builtin_typedef_type(Context, Typedef)
     end.
 
 
-gen_typedef_type(Context, Typedef) ->
+gen_non_builtin_typedef_type(Context, Typedef) ->
     % make scoped name based on the parent module's type prefix
     Name = typedef_erlname(Typedef),
-    scoped_name(Context, Name).
+    piqic:scoped_erlname(Context, Name).
 
-        
+
 gen_alias_type(Context, Alias) ->
     case {Alias#alias.erlang_type, Alias#alias.type} of
         {ErlType, _} when ErlType =/= 'undefined' ->
@@ -381,26 +382,11 @@ gen_alias_type(Context, Alias) ->
         {'undefined', 'undefined'} ->
             % this is an alias for a built-in type (piqi_type field must be
             % defined when neither of type and erlang_type fields are present)
-            gen_builtin_type(Context, Alias#alias.piqi_type);
+            gen_builtin_type(Alias#alias.piqi_type);
         {'undefined', TypeName} ->
             gen_type(Context, TypeName)
     end.
 
 
-gen_builtin_type(Context, PiqiType) ->
-    case PiqiType of
-        any ->
-            Piqi = Context#context.piqi,
-            case Context#context.is_self_spec of
-                true ->
-                    _ScopedName = Piqi#piqi.erlang_type_prefix ++ "any";
-                false ->
-                    % but the default piqi_piqi.erl definitely doesn't have type
-                    % prefixes, therefore we can use the standard Erlang name
-                    % for "piqi-any" type
-                    "piqi_any"
-            end;
-        _ ->
-            piqic:gen_builtin_type_name(PiqiType)
-    end.
-
+gen_builtin_type(PiqiType) ->
+    piqic:gen_builtin_type_name(PiqiType).

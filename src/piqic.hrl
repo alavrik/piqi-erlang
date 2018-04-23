@@ -32,7 +32,6 @@
     erlname_of_option/2,
 
     resolve_type_name/2,
-    scoped_name/2,
     gen_code/1
 ]).
 
@@ -52,9 +51,6 @@
     piqi :: #piqi{},
     % index of the piqi module being compiled
     index :: #index{},
-
-    % whether the module being processes is a self-spec
-    is_self_spec :: boolean(),
 
     % original modules being compiled (imported modules ++ [piqi])
     modules :: [#piqi{}],

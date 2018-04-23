@@ -125,7 +125,7 @@ gen_record(Context, X) ->
         end,
     [
         "default_", Name, "() ->\n",
-        "    ", "#", scoped_name(Context, Name), "{\n",
+        "    ", "#", piqic:scoped_erlname(Context, Name), "{\n",
         ConstructorsCode,
         "    ", "}.\n"
     ].
@@ -165,12 +165,7 @@ gen_alias_type(Context, Alias) ->
 gen_builtin_type(Context, PiqiType) ->
     case PiqiType of
         any ->
-            case Context#context.is_self_spec of
-                true ->
-                    "default_piqi_any()";
-                false ->
-                    "piqi_piqi:default_piqi_any()"
-            end;
+            "default_piqi_any()";
         % there is only one way to represent values of these types in Erlang
         int ->
             "0";

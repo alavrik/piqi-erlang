@@ -1,6 +1,8 @@
 -ifndef(__PIQI_PIQI_HRL__).
 -define(__PIQI_PIQI_HRL__, 1).
 
+-include_lib("piqi/include/piqi_any_piqi.hrl").
+
 
 -type piq_format() ::
       word
@@ -148,13 +150,6 @@
     name :: name()
 }).
 
--record(piqi_any, {
-    type :: string() | binary(),
-    protobuf :: binary(),
-    json :: string() | binary(),
-    xml :: string() | binary()
-}).
-
 -record(func, {
     name :: name(),
     input :: type(),
@@ -188,8 +183,6 @@
 -type piqi() :: #piqi{}.
 
 -type import() :: #import{}.
-
--type piqi_any() :: #piqi_any{}.
 
 -type func() :: #func{}.
 

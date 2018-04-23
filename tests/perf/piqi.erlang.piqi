@@ -4,7 +4,7 @@
 
 
 % remove the "piqi" prefix from generated Erlang type and record names
-.erlang-type-prefix ""
+
 
 
 %
@@ -22,42 +22,6 @@
 
     .with.erlang-type "non_neg_integer"
 ]
-
-
-% with module prefix being removed, we need to define custom Erlang names for
-% some types
-
-.extend [
-    .typedef record
-
-    .with.erlang-name "piqi_record"
-]
-
-.extend [
-    .typedef list
-
-    .with.erlang-name "piqi_list"
-]
-
-.extend [
-    .typedef piqi-list
-
-    % erlang-name "piqi-list" is already defined for record "list"
-    .with.erlang-name "piqi_bundle"
-]
-
-
-.extend [
-    .typedef function
-    .with.erlang-name "func"
-]
-
-
-.extend [
-    .typedef any
-    .with.erlang-name "piqi_any"
-]
-
 
 .extend [
     .typedef piqi-any

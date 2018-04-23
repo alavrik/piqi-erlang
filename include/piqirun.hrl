@@ -25,12 +25,12 @@
 %
 % {fixed32, binary()} with a binary of size 4 holds a value for fixed32 -encoded
 % types:
-%    
+%
 %    int32-fixed, uint32-fixed, float32
 %
 % {fixed64, binary()} with a binary of size 8 holds a value for fixed64 -encoded
 % types:
-%    
+%
 %    int64-fixed, uint64-fixed, float64
 %
 % {block, binary()} represents a variable-length block which is used for

@@ -18,7 +18,7 @@
 %%
 %% Below is the original copyright notice and the license:
 %%
-%% Copyright (c) 2009 
+%% Copyright (c) 2009
 %% Nick Gerakines <nick@gerakines.net>
 %% Jacob Vorreuter <jacob.vorreuter@gmail.com>
 %%
@@ -768,7 +768,7 @@ piqirun_parse_optional_field(Code, ParseValue, L, Default) ->
 
 piqirun_parse_optional_field(Code, ParseValue, L) ->
     {Field, Rest} = find_field(Code, L),
-    Res = 
+    Res =
         case Field of
             'undefined' -> 'undefined';
             X ->
