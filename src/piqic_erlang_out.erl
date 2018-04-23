@@ -36,7 +36,11 @@ gen_typedefs(Context, Typedefs) ->
         ++
         [gen_typedef_1(Context, X) || X <- Typedefs]
         ++
-        [gen_typedef_multiformat(Context, X) || X <- Typedefs]
+        case piqic:is_protobuf_only(Context) of
+            true -> [];
+            false ->
+                [gen_typedef_multiformat(Context, X) || X <- Typedefs]
+        end
     ).
 
 

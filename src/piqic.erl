@@ -209,6 +209,10 @@ get_option(Context, Name, Default) ->
     proplists:get_value(Name, Context#context.options, Default).
 
 
+is_protobuf_only(Context) ->
+    piqic:get_option(Context, gen_protobuf_serializers).
+
+
 switch_context(Context, Piqi) ->
     CurrentPiqi = Context#context.piqi,
     % efficient way to check whether we are dealing with the current module

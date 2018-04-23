@@ -56,6 +56,8 @@ usage(IoDevice) ->
   --normalize-names true|false turn CamlCase-style names into \"camel-case\" (default = true)
   --gen-preserve-unknown-fields generate code that preserves unknown Protobuf fields when they are serialized back
   --gen-embedded-runtime include serialization runtime in the generated .erl modules
+  --gen-protobuf generate Protobuf serializers (overrides generating all multi-format serializers by default)
+  --gen-defaults generate functions returning valid records with required fields
   -h, --help  Display this list of options
 "
     ]).
@@ -85,6 +87,8 @@ args_error(Format, Args) ->
     normalize_names = true,
     gen_preserve_unknown_fields = false,
     gen_embedded_runtime = false,
+    gen_protobuf_serializers = false,
+    gen_defaults = false,
     cc = false,        % compile spec for the piqic-erlang compiler
 
     % search path, similar to -I but generate -include_lib instead of -include
@@ -139,6 +143,18 @@ parse_args(["--gen-preserve-unknown-fields" |T], Args) ->
 parse_args(["--gen-embedded-runtime" |T], Args) ->
     NewArgs = Args#args{
         gen_embedded_runtime = true
+    },
+    parse_args(T, NewArgs);
+
+parse_args(["--gen-protobuf" |T], Args) ->
+    NewArgs = Args#args{
+        gen_protobuf_serializers = true
+    },
+    parse_args(T, NewArgs);
+
+parse_args(["--gen-defaults" |T], Args) ->
+    NewArgs = Args#args{
+        gen_defaults = true
     },
     parse_args(T, NewArgs);
 
@@ -258,6 +274,8 @@ piqic_erlang(CallbackMod, Args) ->
             {normalize_names, ParsedArgs#args.normalize_names},
             {gen_preserve_unknown_fields, ParsedArgs#args.gen_preserve_unknown_fields},
             {gen_embedded_runtime, ParsedArgs#args.gen_embedded_runtime},
+            {gen_protobuf_serializers, ParsedArgs#args.gen_protobuf_serializers},
+            {gen_defaults, ParsedArgs#args.gen_defaults},
             {cc, ParsedArgs#args.cc},
             {include_lib, ParsedArgs#args.include_lib}
         ],
@@ -439,8 +457,18 @@ gen_erl(Context) ->
 	gen_include_piqirun_hrl(Context),
         piqic_erlang_out:gen_piqi(Context),
         piqic_erlang_in:gen_piqi(Context),
-        piqic_erlang_defaults:gen_piqi(Context),
-        gen_embedded_piqi(Context),
+
+        case piqic:get_option(Context, gen_defaults) of
+            false -> "";
+            true -> piqic_erlang_defaults:gen_piqi(Context)
+        end,
+
+        case piqic:is_protobuf_only(Context) of
+            true -> "";
+            false ->
+                gen_embedded_piqi(Context)
+        end,
+
 	gen_piqirun_erl(Context)
     ]),
     piqic:write_file(Filename, Code).
@@ -505,4 +533,3 @@ gen_embedded_piqi(Context) ->
         io_lib:format("~p", [BinModules]),
         ".\n"
     ].
-
