@@ -24,9 +24,7 @@
 
 % Escript entry point
 main(Args) ->
-    % call piqic_erlang with command-line arguments and ?MODULE as the callback
-    % module
-    case piqic_erlang(?MODULE, Args) of
+    case piqic_erlang(Args) of
         ok ->
             ok;
         {error, ErrorStr} ->
@@ -57,7 +55,8 @@ usage(IoDevice) ->
   --gen-preserve-unknown-fields generate code that preserves unknown Protobuf fields when they are serialized back
   --gen-embedded-runtime include serialization runtime in the generated .erl modules
   --gen-protobuf generate Protobuf serializers (overrides generating all multi-format serializers by default)
-  --gen-defaults generate functions returning valid records with required fields
+  --gen-defaults generate functions returning valid records with required fields & default implementations for piqi-rpc callback functions
+  --gen-rpc generate piqi-rpc stubs
   -h, --help  Display this list of options
 "
     ]).
@@ -87,8 +86,9 @@ args_error(Format, Args) ->
     normalize_names = true,
     gen_preserve_unknown_fields = false,
     gen_embedded_runtime = false,
-    gen_protobuf_serializers = false,
+    gen_protobuf = false,
     gen_defaults = false,
+    gen_rpc = false,
     cc = false,        % compile spec for the piqic-erlang compiler
 
     % search path, similar to -I but generate -include_lib instead of -include
@@ -148,13 +148,19 @@ parse_args(["--gen-embedded-runtime" |T], Args) ->
 
 parse_args(["--gen-protobuf" |T], Args) ->
     NewArgs = Args#args{
-        gen_protobuf_serializers = true
+        gen_protobuf = true
     },
     parse_args(T, NewArgs);
 
 parse_args(["--gen-defaults" |T], Args) ->
     NewArgs = Args#args{
         gen_defaults = true
+    },
+    parse_args(T, NewArgs);
+
+parse_args(["--gen-rpc" |T], Args) ->
+    NewArgs = Args#args{
+        gen_rpc = true
     },
     parse_args(T, NewArgs);
 
@@ -215,12 +221,7 @@ escape_arg(X) ->
     end.
 
 
-% `CallbackMod` parameter is the name of the Erlang module that exports the
-% following callback functions:
-%
-%       generate(Context = #context{})
-%
-piqic_erlang(CallbackMod, Args) ->
+piqic_erlang(Args) ->
     ParsedArgs = parse_args(Args),
     #args{
         input_file = Filename,
@@ -274,13 +275,14 @@ piqic_erlang(CallbackMod, Args) ->
             {normalize_names, ParsedArgs#args.normalize_names},
             {gen_preserve_unknown_fields, ParsedArgs#args.gen_preserve_unknown_fields},
             {gen_embedded_runtime, ParsedArgs#args.gen_embedded_runtime},
-            {gen_protobuf_serializers, ParsedArgs#args.gen_protobuf_serializers},
+            {gen_protobuf, ParsedArgs#args.gen_protobuf},
             {gen_defaults, ParsedArgs#args.gen_defaults},
+            {gen_rpc, ParsedArgs#args.gen_rpc},
             {cc, ParsedArgs#args.cc},
             {include_lib, ParsedArgs#args.include_lib}
         ],
         Context = piqic:init_context(PiqiList, Options),
-        CallbackMod:generate(Context),
+        generate(Context),
         ok
     catch
         {error, _} = Error -> Error
@@ -455,6 +457,12 @@ gen_erl(Context) ->
             "-include(\"", ErlMod, ".hrl\").\n"
         ],
 	gen_include_piqirun_hrl(Context),
+
+        case piqic:get_option(Context, gen_rpc) of
+            false -> "";
+            true -> piqic_erlang_rpc:gen_callbacks(Context)
+        end,
+
         piqic_erlang_out:gen_piqi(Context),
         piqic_erlang_in:gen_piqi(Context),
 
@@ -467,6 +475,19 @@ gen_erl(Context) ->
             true -> "";
             false ->
                 gen_embedded_piqi(Context)
+        end,
+
+        case piqic:get_option(Context, gen_rpc) of
+            false -> "";
+            true ->
+                iod("\n\n", [
+                    piqic_erlang_rpc:gen_piqi(Context),
+                    case piqic:get_option(Context, gen_defaults) of
+                        false -> "";
+                        true ->
+                            piqic_erlang_rpc:gen_defaults(Context)
+                    end
+                ])
         end,
 
 	gen_piqirun_erl(Context)

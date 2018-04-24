@@ -210,7 +210,8 @@ get_option(Context, Name, Default) ->
 
 
 is_protobuf_only(Context) ->
-    piqic:get_option(Context, gen_protobuf_serializers).
+    piqic:get_option(Context, gen_protobuf)
+    andalso not piqic:get_option(Context, gen_rpc).
 
 
 switch_context(Context, Piqi) ->
