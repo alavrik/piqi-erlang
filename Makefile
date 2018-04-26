@@ -9,18 +9,9 @@ deps:
 	$(REBAR) get-deps
 
 
-# build piqic-erlang executable -- called from rebar.config as a pre-compile step
-piqic-erlang:
-	$(MAKE) -C piqic-erlang
-	$(MAKE) priv/bin/piqic-erlang
-
-
-piqic-erlang-clean:
-	$(MAKE) -C piqic-erlang clean
-
-
-# we need this so that stubs get rebuilt on compiler changes
-priv/bin/piqic-erlang: $(wildcard piqic-erlang/ebin/*.beam)
+# called from rebar.config post_compile hook -- we need this so that stubs get
+# rebuilt on compiler changes
+priv/bin/piqic-erlang: ebin/*.beam
 	touch $@
 
 
@@ -33,7 +24,7 @@ dialyzer: all
 
 
 clean:
-	$(REBAR) clean
+	$(REBAR) -r clean
 
 
 distclean: clean
@@ -41,4 +32,4 @@ distclean: clean
 	rm -rf ebin deps
 
 
-.PHONY: deps piqic-erlang
+.PHONY: deps

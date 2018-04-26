@@ -1,12 +1,7 @@
 
-ifndef PIQI
-PIQI = ../../priv/bin/piqi
-endif
+PIQI ?= ../../priv/bin/piqi
 
-#PIQIC = $(REBAR_DEPS_DIR)/piqi/priv/bin/piqic-erlang
-#PIQIC = ../../piqic-erlang/piqic-erlang
-PIQIC = ERL_FLAGS="-pa ../../piqic-erlang/ebin" ../../priv/bin/piqic-erlang
-
+PIQIC = ../../priv/bin/piqic-erlang
 PIQIC_FLAGS ?= #--trace
 
 
@@ -19,9 +14,9 @@ PIQI_HRL_FILES = $(PIQI_NOPROTO_FILES:%.piqi=%_piqi.hrl)
 PIQI_ERLANG_FILES = $(PIQI_ERL_FILES) $(PIQI_HRL_FILES)
 
 
-$(PIQI_ERLANG_FILES): $(PIQI_FILES)
+$(PIQI_ERLANG_FILES): $(PIQI_FILES) $(PIQIC)
 	set -e; \
-	for i in $^; do \
+	for i in $(PIQI_FILES); do \
 		$(PIQIC) $(PIQIC_FLAGS) $$i; \
 	done
 

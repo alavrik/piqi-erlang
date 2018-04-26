@@ -1,22 +1,15 @@
-
-ifndef PIQI
-export PIQI = $(shell echo ../priv/piqi-binary/"`uname -s`-`uname -m`"/piqi)
-endif
-
-PIQIC_EXE = ../priv/bin/piqic-erlang
-PIQIC = ERL_FLAGS="-pa ../piqic-erlang/ebin" $(PIQIC_EXE)
-PIQIC_FLAGS = #--trace
+REBAR ?= rebar
 
 
-.PHONY: all clean test proper reboot piqi piqi-clean
+.PHONY: all clean test proper piqi
 
 
 all:
-	cd ..; rebar compile skip_deps=true
+	cd .. && $(REBAR) compile skip_deps=true
 
 
 clean:
-	cd ..; rebar clean skip_deps=true
+	cd .. && $(REBAR) clean skip_deps=true
 	rm -f piqi.piqi
 
 
@@ -26,44 +19,31 @@ clean:
 
 test:
 	touch piqirun_tests.erl
-	cd ..; rebar -D TEST compile skip_deps=true
+	cd ..; $(REBAR) -D TEST compile skip_deps=true
 	erl -pa ../ebin -noshell -s eunit test piqirun -s init stop
 
 
 proper:
 	touch piqirun_props.erl
-	cd ..; rebar -D PROPER compile skip_deps=true
+	cd ..; $(REBAR) -D PROPER compile skip_deps=true
 	erl -pa ../ebin -noshell -eval 'proper:module(piqirun_props, 10000)' -s init stop
 
 
-# recompile piqi self-spec into piqi_piqi.{erl,hrl}
-reboot:
-	$(PIQI) cc -o piqi.piqi
-	$(PIQIC) $(PIQIC_FLAGS) --cc -e piqic-erlang piqi.piqi
 
+export PIQI ?= $(shell echo ../priv/piqi-binary/"`uname -s`-`uname -m`"/piqi)
 
-#
-# make piqi & piqi-clean
-#
+PIQIC = ERL_FLAGS="-pa ../ebin" ../priv/bin/piqic-erlang
+PIQIC_FLAGS = #--trace
+
 
 PIQI_FILES = piqi_rpc.piqi piqi_tools.piqi
 
 
-PIQI_ERL_FILES = $(PIQI_FILES:%.piqi=%_piqi.erl)
-PIQI_HRL_FILES = $(PIQI_FILES:%.piqi=%_piqi.hrl)
-
-PIQI_ERLANG_FILES = $(PIQI_ERL_FILES) $(PIQI_HRL_FILES)
-
-
-piqi: $(PIQI_ERLANG_FILES)
-
-
-$(PIQI_ERLANG_FILES): $(PIQI_FILES) $(PIQIC_EXE)
+# recompile piqi self-spec into piqi_piqi.{erl,hrl}, same for other PIQI_FILES
+piqi:
+	$(PIQI) cc -o piqi.piqi
+	$(PIQIC) $(PIQIC_FLAGS) --cc -e piqic-erlang piqi.piqi
 	set -e; \
 	for i in $(PIQI_FILES); do \
-		$(PIQIC) $(PIQIC_FLAGS) $$i; \
+		$(PIQIC) $(PIQIC_FLAGS) --gen-protobuf $$i; \
 	done
-
-
-piqi-clean:
-	rm -f $(PIQI_ERLANG_FILES)
