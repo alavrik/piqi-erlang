@@ -25,6 +25,7 @@ Packaging
 - drop piqi-binary as a dependency and rely having a compatible version of piqi
   in path (after piqi-0.7.0 is release)
 - add piqic-erlang --version and --piqi-version options
+- add compile-time check for a match between runtime and generated .erl stubs
 
 
 Miscellaneous

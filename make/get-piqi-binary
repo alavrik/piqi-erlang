@@ -1,0 +1,44 @@
+#!/bin/sh
+#
+# downloads and copies pre-built piqi binaries under ./priv, or copies the piqi
+# binary pointed to by $PIQI
+
+set -ex
+
+
+piqi_dir="priv/piqi-binary/`uname -s`-`uname -m`"
+
+
+# check if the PIQI environment variable is defined; when defined it points to
+# the "piqi" binary executable
+if [ -n "$PIQI" ]
+then
+	dst=$piqi_dir/piqi
+	if [ ! -f $dst ] || [ "$PIQI" -nt $dst ]
+	then
+		mkdir -p $piqi_dir
+		cp -a "$PIQI" $dst
+	fi
+else
+	PIQI=$piqi_dir/piqi
+	PIQI_VERSION=0.6.13
+
+	if [ -e $PIQI ] && [ $PIQI_VERSION = `$PIQI --version` ]
+	then
+	    true
+	else
+	    PIQI_TARBALL=v$PIQI_VERSION.tar.gz
+	    PIQI_TARBALL_URL=https://github.com/alavrik/piqi-binary/archive/$PIQI_TARBALL
+	    PIQI_TARBALL_MD5=4e913afa8a13275e2285517163444953
+
+	    rm -rf priv/piqi-binary
+	    ./make/http-download $PIQI_TARBALL_URL
+	    test $PIQI_TARBALL_MD5 = `./make/md5sum $PIQI_TARBALL`
+
+	    mkdir -p priv/piqi-binary
+	    tar -xzf $PIQI_TARBALL -C priv/piqi-binary --strip-components=1
+
+	    test $PIQI_VERSION = `$PIQI --version`
+	    rm $PIQI_TARBALL
+	fi
+fi
