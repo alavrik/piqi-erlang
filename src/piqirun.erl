@@ -1,7 +1,7 @@
 % non-embedded version of the piqi runtime
 
 -module(piqirun).
--compile(export_all).
+-compile([export_all, nowarn_export_all]).
 
 -include("piqirun.hrl").
 -include("piqirun_embedded.hrl").

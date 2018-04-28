@@ -15,7 +15,7 @@
 % generation of gen_*/1,2,3 functions for Protocol Buffers, JSON, XML and Piq
 % deserialization
 -module(piqic_erlang_out).
--compile(export_all).
+-compile([export_all, nowarn_export_all]).
 
 
 -include("piqic.hrl").

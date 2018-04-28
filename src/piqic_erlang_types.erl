@@ -14,7 +14,7 @@
 
 % generation of -type ... and -record(...) Erlang forms
 -module(piqic_erlang_types).
--compile(export_all).
+-compile([export_all, nowarn_export_all]).
 
 
 -include("piqic.hrl").

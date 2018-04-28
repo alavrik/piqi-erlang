@@ -19,7 +19,7 @@
 % variant values are finite
 
 -module(piqic_erlang_defaults).
--compile(export_all).
+-compile([export_all, nowarn_export_all]).
 
 
 -include("piqic.hrl").

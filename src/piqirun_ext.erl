@@ -20,7 +20,7 @@
 %% tool.
 %%
 -module(piqirun_ext).
--compile(export_all).
+-compile([export_all, nowarn_export_all]).
 
 -include("piqi_tools.hrl").
 

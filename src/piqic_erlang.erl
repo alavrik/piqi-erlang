@@ -16,7 +16,7 @@
 %% main/1)
 
 -module(piqic_erlang).
--compile(export_all).
+-compile([export_all, nowarn_export_all]).
 
 
 -include("piqic.hrl").

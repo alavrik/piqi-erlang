@@ -16,7 +16,7 @@
 %% potentially, other piqi compilers)
 
 -module(piqic).
--compile(export_all).
+-compile([export_all, nowarn_export_all]).
 
 
 -define(__PIQIC_ERL__, 1).  % prevent -import'ing our own functions
