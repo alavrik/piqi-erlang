@@ -17,22 +17,26 @@ clean:
 #
 # TODO: move them to piqriun.erl or to ../test/
 
+
+export ERL_FLAGS = -pa ../ebin -pa ../_build/default/lib/piqi/ebin
+
+
 test:
 	touch piqirun_tests.erl
 	cd ..; $(REBAR) -D TEST compile skip_deps=true
-	erl -pa ../ebin -noshell -s eunit test piqirun -s init stop
+	erl -noshell -s eunit test piqirun -s init stop
 
 
 proper:
 	touch piqirun_props.erl
 	cd ..; $(REBAR) -D PROPER compile skip_deps=true
-	erl -pa ../ebin -noshell -eval 'proper:module(piqirun_props, 10000)' -s init stop
+	erl -noshell -eval 'proper:module(piqirun_props, 10000)' -s init stop
 
 
 
 export PIQI ?= $(shell echo ../priv/piqi-binary/"`uname -s`-`uname -m`"/piqi)
 
-PIQIC = ERL_FLAGS="-pa ../ebin" ../priv/bin/piqic-erlang
+PIQIC = ../priv/bin/piqic-erlang
 PIQIC_FLAGS = #--trace
 
 

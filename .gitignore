@@ -3,6 +3,10 @@
 /deps
 .rebar
 
+.rebar3
+rebar.lock
+_build
+
 # created by get-deps
 /priv/piqi-binary
 

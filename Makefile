@@ -21,9 +21,8 @@ clean:
 	$(REBAR) clean
 
 
-distclean: clean
-	$(REBAR) delete-deps
-	rm -rf ebin deps
+distclean: clean piqi-binary-clean
+	rm -rf ebin deps _build rebar.lock
 
 
 .PHONY: deps
@@ -31,15 +30,17 @@ distclean: clean
 
 # called from rebar.config compile post_hook -- we need this so that stubs get
 # rebuilt on compiler changes
-priv/bin/piqic-erlang: ebin/*.beam
+priv/bin/piqic-erlang: src/*
 	touch $@
 
 
-# called from rebar.config get-deps pre_hook to download the pre-built piqi
+# called from rebar.config compile pre_hook to download the pre-built piqi
 # executable
 piqi-binary:
 	./make/get-piqi-binary
 
 
+# called from 'delete-deps' rebar2 hook, in case of rebar3 triggered only by
+# "make distclean", because rebar3 doesn't support 'delete-deps'
 piqi-binary-clean:
 	rm -rf priv/piqi-binary

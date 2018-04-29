@@ -3,9 +3,11 @@
 set -ex
 
 
-ERL_PATH="-pa ebin -pa deps/piqi/ebin"
+ERL_FLAGS="-pa ../../ebin -pa ../../_build/default/lib/piqi/ebin"
+ERL_FLAGS="$ERL_FLAGS -pa ebin -pa _build/default/lib/untyped_json_xml/ebin"
+export ERL_FLAGS
 
-erl $ERL_PATH -noshell -s piqi start -run test run person.piq -s erlang halt
-erl $ERL_PATH -noshell -s piqi start -run test run person-xml.piq -s erlang halt
-erl $ERL_PATH -s piqi start < test.escript
+erl -noshell -s piqi start -run test run person.piq -s erlang halt
+erl -noshell -s piqi start -run test run person-xml.piq -s erlang halt
+erl -s piqi start < test.escript
 

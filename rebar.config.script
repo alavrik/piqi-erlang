@@ -1,0 +1,11 @@
+case erlang:function_exported(rebar3, main, 1) of
+    true -> % rebar3
+        CONFIG;
+    false -> % rebar 2.x or older
+        {post_hooks, PostHooks} = lists:keyfind(post_hooks, 1, CONFIG),
+        NewPostHooks = [{'delete-deps', "make piqi-binary-clean"} | PostHooks],
+        lists:keyreplace(post_hooks, 1, CONFIG, {post_hooks, NewPostHooks})
+end.
+
+
+% ex: ft=erlang

@@ -3,7 +3,7 @@
 # downloads and copies pre-built piqi binaries under ./priv, or copies the piqi
 # binary pointed to by $PIQI
 
-set -ex
+set -e
 
 
 piqi_dir="priv/piqi-binary/`uname -s`-`uname -m`"

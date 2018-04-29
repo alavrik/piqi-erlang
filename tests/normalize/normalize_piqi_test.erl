@@ -41,8 +41,6 @@ json() ->
 %{"fieldOne":"value1","fieldTWO":"value2","Field-Three":"value3","field-four":"value4"}
 
 main([Fun|_Args]) ->	
-	true = code:add_pathz(filename:dirname(escript:script_name())++ "/../piqi/ebin"),
-	true = code:add_pathz(filename:dirname(escript:script_name())),
 	piqi:start(),
 	Res = case Fun of
 		"get_pb" -> get_pb();

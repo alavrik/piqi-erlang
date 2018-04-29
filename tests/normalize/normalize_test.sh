@@ -19,5 +19,6 @@ cmp normalize-piqi-typenames normalize-piqi-typenames-test
 cmp nonormalize-piqi-typenames nonormalize-piqi-typenames-test
 
 # Check conversions
+export ERL_LIBS=..:../../_build/default/lib/
 escript normalize_piqi_test.beam test_convert_normalize
 escript normalize_piqi_test.beam test_convert_nonormalize

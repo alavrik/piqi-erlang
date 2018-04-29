@@ -11,6 +11,12 @@ PIQIC = $(REBAR_DEPS_DIR)/piqi/priv/bin/piqic-erlang
 PIQIC_FLAGS = #--trace
 
 
+# only needed for running tests inside the piqi-erlang project
+ifeq ($(wildcard $(PIQIC)),)
+PIQIC = ../../../priv/bin/piqic-erlang
+endif
+
+
 PIQI_FILES = example.piqi
 
 

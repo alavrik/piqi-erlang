@@ -1,7 +1,8 @@
 REBAR ?= rebar
 
-# workaround for a rebar bug
-unexport ERL_LIBS
+
+# only needed for running tests inside the piqi-erlang project
+export ERL_FLAGS = -pa $(realpath ../../ebin) -pa $(realpath ../../_build/default/lib/piqi/ebin)
 
 
 all:
@@ -29,7 +30,7 @@ clean:
 
 
 distclean: clean
-	rm -rf ebin
+	rm -rf ebin _build rebar.lock
 
 
 .PHONY: test
