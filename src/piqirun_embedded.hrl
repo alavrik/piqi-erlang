@@ -668,16 +668,16 @@ piqirun_parse_packed_list_elem(ParsePackedValue, ParseValue, {1, X}) ->
 
 % find all fields with the given code in the list of fields sorted by codes
 find_fields(Code, L) ->
-    find_fields(Code, L, _Accu = []).
+    find_fields(Code, L, _Accu = [], _RestAccu = []).
 
 
-find_fields(Code, [{Code, Value} | T], Accu) ->
-    find_fields(Code, T, [Value | Accu]);
-find_fields(Code, [{NextCode, _} | T], Accu) when NextCode < Code ->
+find_fields(Code, [{Code, Value} | T], Accu, RestAccu) ->
+    find_fields(Code, T, [Value | Accu], RestAccu);
+find_fields(Code, [H = {NextCode, _} | T], Accu, RestAccu) when NextCode < Code ->
     % skipping the field which code is less than the requested one
-    find_fields(Code, T, Accu);
-find_fields(_Code, Rest, Accu) ->
-    {lists:reverse(Accu), Rest}.
+    find_fields(Code, T, Accu, [H|RestAccu]);
+find_fields(_Code, Rest, Accu, RestAccu) ->
+    {lists:reverse(Accu), lists:reverse(RestAccu) ++ Rest}.
 
 
 -spec find_field(
@@ -687,15 +687,25 @@ find_fields(_Code, Rest, Accu) ->
 
 % find the last instance of a field given its code in the list of fields sorted
 % by codes
-find_field(Code, [{Code, Value} | T]) ->
+find_field(Code, L) ->
+    case find_field(Code, L, _RestAccu = []) of
+        'undefined' ->
+            {'undefined', L};
+        Res ->
+            Res
+    end.
+
+
+find_field(Code, [{Code, Value} | T], RestAccu) ->
     % check if this is the last instance of it, if not, continue iterating
     % through the list
-    try_find_next_field(Code, Value, T);
-find_field(Code, [{NextCode, _Value} | T]) when NextCode < Code ->
+    {Res, Rest} = try_find_next_field(Code, Value, T),
+    {Res, lists:reverse(RestAccu) ++ Rest};
+find_field(Code, [H = {NextCode, _Value} | T], RestAccu) when NextCode < Code ->
     % skipping the field which code is less than the requested one
-    find_field(Code, T);
-find_field(_Code, Rest) -> % not found
-    {'undefined', Rest}.
+    find_field(Code, T, [H|RestAccu]);
+find_field(_Code, _Rest, _RestAccu) -> % not found
+    'undefined'.
 
 
 try_find_next_field(Code, _PrevValue, [{Code, Value} | T]) ->
