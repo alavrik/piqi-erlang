@@ -3,9 +3,8 @@
 set -ex
 
 
-ERL_FLAGS="-pa ../../ebin -pa ../../_build/default/lib/piqi/ebin"
-ERL_FLAGS="$ERL_FLAGS -pa ebin -pa _build/default/lib/untyped_json_xml/ebin"
-export ERL_FLAGS
+export ERL_LIBS="../lib:../../_build/default/lib"
+export ERL_FLAGS="-pa ebin -pa _build/default/lib/untyped_json_xml/ebin"
 
 erl -noshell -s piqi start -run test run person.piq -s erlang halt
 erl -noshell -s piqi start -run test run person-xml.piq -s erlang halt

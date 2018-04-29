@@ -2,7 +2,7 @@ REBAR ?= rebar
 
 
 # only needed for running tests inside the piqi-erlang project
-export ERL_FLAGS = -pa $(realpath ../../ebin) -pa $(realpath ../../_build/default/lib/piqi/ebin)
+export ERL_LIBS = $(realpath ../lib):$(realpath ../../_build/default/lib)
 
 
 all:

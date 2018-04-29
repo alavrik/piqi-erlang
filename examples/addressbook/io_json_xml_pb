@@ -7,9 +7,8 @@ then
 fi
 
 
-ERL_FLAGS="-pa ../../ebin -pa ../../_build/default/lib/piqi/ebin"
-ERL_FLAGS="$ERL_FLAGS -pa ebin -pa _build/default/lib/addressbook/ebin"
-export ERL_FLAGS
+export ERL_LIBS="../lib:../../_build/default/lib"
+export ERL_FLAGS="-pa ebin -pa _build/default/lib/addressbook/ebin"
 
 RUN="io_json_xml_pb run"
 

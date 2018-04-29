@@ -9,6 +9,7 @@ test: dirs
 dirs: $(DIRS)
 	set -e; \
 	for dir in $(DIRS); do \
+		echo "entering directory $$dir"; \
 		$(MAKE) -C $$dir $(MAKECMDGOALS); \
 	done
 

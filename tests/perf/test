@@ -8,10 +8,10 @@ fi
 
 
 #BOOT="-boot start_sasl"
+export ERL_LIBS=../lib:../../_build/default/lib/
+
+
 RUN="test main $1 $2"
-ERL_PATH="-pa ../piqi/ebin"
-
-
-erl $ERL_PATH -noshell $BOOT -s piqi start -run $RUN -s erlang halt
-#rlwrap erl -oldshell $ERL_PATH -s piqi start -run $RUN #-s erlang halt
+erl -noshell $BOOT -s piqi start -run $RUN -s erlang halt
+#rlwrap erl -oldshell -s piqi start -run $RUN #-s erlang halt
 
