@@ -217,10 +217,10 @@ gen_field(Context, X) ->
     Name = erlname_of_field(Context, X),
     % initialize repeated fields with [] & populate default values if they are
     % defined in Piqi
-    {Default, CanBeUndefined} = gen_field_default(Context, X),
+    Default = gen_field_default(Context, X),
     [
         Name, Default, " :: ", gen_field_type(Context, X#field.mode, X#field.type),
-            case CanBeUndefined of
+            case _CanBeUndefined = (X#field.mode =:= optional) of
                 true -> " | 'undefined'";
                 false -> ""
             end
@@ -234,14 +234,14 @@ gen_field_default(Context, X0) ->
 
     case X#field.mode of
         repeated ->
-            {" = []", _CanBeUndefined = false};
+            " = []";
         optional when X#field.default =/= 'undefined' ->
             Value = gen_field_default(Context, X#field.type, X#field.default, _WireType = 'undefined'),
             % NOTE: we need 'undefined' here, because otherwise Dialyzer won't
             % treat it as a valid field value
-            {[" = ", Value], _CanBeUndefined = true};
+            [" = ", Value];
         _ ->
-            {"", _CanBeUndefined = false}
+            ""
     end.
 
 

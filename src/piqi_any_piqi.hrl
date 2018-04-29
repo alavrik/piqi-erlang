@@ -3,10 +3,10 @@
 
 
 -record(piqi_any, {
-    type :: string() | binary(),
-    protobuf :: binary(),
-    json :: string() | binary(),
-    xml :: string() | binary()
+    type :: string() | binary() | 'undefined',
+    protobuf :: binary() | 'undefined',
+    json :: string() | binary() | 'undefined',
+    xml :: string() | binary() | 'undefined'
 }).
 
 -type piqi_any() :: #piqi_any{}.

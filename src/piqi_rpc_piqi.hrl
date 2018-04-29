@@ -4,7 +4,7 @@
 
 -record(piqi_rpc_request, {
     name :: string() | binary(),
-    data :: binary()
+    data :: binary() | 'undefined'
 }).
 
 -type piqi_rpc_response() ::
