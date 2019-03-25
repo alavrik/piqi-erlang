@@ -1,12 +1,16 @@
 #!/bin/sh
 #
-# downloads and copies pre-built piqi binaries under ./priv, or copies the piqi
-# binary pointed to by $PIQI
+# copies pre-built piqi binary from the piqi_binary rebar dependency to
+# ./priv/piqi-binary/$os_version
+#
+# alternatively, when $PIQI environment variable is defined, it is used as
+# source path for copying piqi binary
 
 set -e
 
 
-piqi_dir="priv/piqi-binary/`uname -s`-`uname -m`"
+os_version=`uname -s`-`uname -m`
+piqi_dir="priv/piqi-binary/$os_version"
 
 
 # check if the PIQI environment variable is defined; when defined it points to
@@ -21,24 +25,12 @@ then
 	fi
 else
 	PIQI=$piqi_dir/piqi
-	PIQI_VERSION=0.6.13
 
-	if [ -e $PIQI ] && [ $PIQI_VERSION = `$PIQI --version` ]
+	if [ ! -e $PIQI ]
 	then
-	    true
-	else
-	    PIQI_TARBALL=v$PIQI_VERSION.tar.gz
-	    PIQI_TARBALL_URL=https://github.com/alavrik/piqi-binary/archive/$PIQI_TARBALL
-	    PIQI_TARBALL_MD5=4e913afa8a13275e2285517163444953
-
-	    rm -rf priv/piqi-binary
-	    ./make/http-download $PIQI_TARBALL_URL
-	    test $PIQI_TARBALL_MD5 = `./make/md5sum $PIQI_TARBALL`
-
-	    mkdir -p priv/piqi-binary
-	    tar -xzf $PIQI_TARBALL -C priv/piqi-binary --strip-components=1
-
-	    test $PIQI_VERSION = `$PIQI --version`
-	    rm $PIQI_TARBALL
+	    mkdir -p $piqi_dir
+	    cp -a $REBAR_DEPS_DIR/piqi_binary/$os_version/piqi $PIQI
 	fi
+
+	test -e $PIQI
 fi
