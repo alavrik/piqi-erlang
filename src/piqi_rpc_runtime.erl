@@ -88,14 +88,14 @@ encode_common(RpcMod, Encoder, TypeName, OutputFormat, Output, Options) ->
     IolistOutput =
         try Encoder(Output)
         catch
-            Class:Reason ->
+            Class:Reason:Stacktrace ->
                 OutputStr = lists:flatten(format_term(Output)),
                 Error = io_lib:format(
                     "error encoding output:~n"
                     "~s,~n"
                     "exception: ~w:~P,~n"
                     "stacktrace: ~P",
-                    [OutputStr, Class, Reason, 30, erlang:get_stacktrace(), 30]),
+                    [OutputStr, Class, Reason, 30, Stacktrace, 30]),
                 throw_rpc_error(
                     {'invalid_output', iolist_to_binary(Error)})
         end,
@@ -160,8 +160,8 @@ handle_invalid_result(Name, Result) ->
     throw_rpc_error({'internal_error', iolist_to_binary(Error)}).
 
 
-handle_runtime_exception(Class, Reason, Options) ->
-    {'rpc_error', RealError} = do_handle_runtime_exception(Class, Reason),
+handle_runtime_exception(Class, Reason, Stacktrace, Options) ->
+    {'rpc_error', RealError} = do_handle_runtime_exception(Class, Reason, Stacktrace),
     log_error(RealError),
     Error =
         case proplists:get_bool('omit_internal_error_details', Options) of
@@ -171,14 +171,14 @@ handle_runtime_exception(Class, Reason, Options) ->
     {'rpc_error', Error}.
 
 
-do_handle_runtime_exception(throw, {'rpc_error', _} = X) ->
+do_handle_runtime_exception(throw, {'rpc_error', _} = X, _Stacktrace) ->
     % already got the error formatted properly by one of the above handlers
     X;
-do_handle_runtime_exception(Class, Reason) ->
+do_handle_runtime_exception(Class, Reason, Stacktrace) ->
     Error = io_lib:format(
         "exception: ~w:~P,~n"
         "stacktrace: ~P",
-        [Class, Reason, 30, erlang:get_stacktrace(), 30]),
+        [Class, Reason, 30, Stacktrace, 30]),
     {'rpc_error', {'internal_error', iolist_to_binary(Error)}}.
 
 

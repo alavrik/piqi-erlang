@@ -39,7 +39,7 @@ gen_piqi(Context) ->
         "            piqi_rpc_runtime:handle_unknown_function()\n"
         "    end\n",
         "    catch\n",
-        "        Class:Reason -> piqi_rpc_runtime:handle_runtime_exception(Class, Reason, Options)\n",
+        "        Class:Reason:Stacktrace -> piqi_rpc_runtime:handle_runtime_exception(Class, Reason, Stacktrace, Options)\n",
         "    end.\n"
     ].
 
