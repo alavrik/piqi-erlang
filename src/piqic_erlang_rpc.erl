@@ -31,6 +31,10 @@ gen_piqi(Context) ->
         "get_piqi(OutputFormat, Options) ->\n",
         "    piqi_rpc_runtime:get_piqi(piqi(), OutputFormat, Options).\n",
         "\n\n",
+        "-ifdef(OTP_RELEASE).  % >= R21?\n"
+        "-compile({nowarn_deprecated_function, {erlang,get_stacktrace,0}}).\n"
+        "-endif.\n"
+        "\n\n",
         "rpc(Mod, Name, InputData, _InputFormat, _OutputFormat, Options) ->\n",
         "    try\n",
         "    case Name of\n",
@@ -39,7 +43,7 @@ gen_piqi(Context) ->
         "            piqi_rpc_runtime:handle_unknown_function()\n"
         "    end\n",
         "    catch\n",
-        "        Class:Reason:Stacktrace -> piqi_rpc_runtime:handle_runtime_exception(Class, Reason, Stacktrace, Options)\n",
+        "        Class:Reason -> Stacktrace = erlang:get_stacktrace(), piqi_rpc_runtime:handle_runtime_exception(Class, Reason, Stacktrace, Options)\n",
         "    end.\n"
     ].
 

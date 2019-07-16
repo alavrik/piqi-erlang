@@ -84,11 +84,17 @@ decode_input(RpcMod, Decoder, TypeName, InputFormat, InputData, Options) ->
     Decoder(BinInput).
 
 
+-ifdef(OTP_RELEASE).  % >= R21?
+-compile({nowarn_deprecated_function, {erlang,get_stacktrace,0}}).
+-endif.
+
+
 encode_common(RpcMod, Encoder, TypeName, OutputFormat, Output, Options) ->
     IolistOutput =
         try Encoder(Output)
         catch
-            Class:Reason:Stacktrace ->
+            Class:Reason ->
+                Stacktrace = erlang:get_stacktrace(),
                 OutputStr = lists:flatten(format_term(Output)),
                 Error = io_lib:format(
                     "error encoding output:~n"
