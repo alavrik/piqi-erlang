@@ -99,7 +99,7 @@ gen_spec_2(Context, Typedef) ->
             "X :: ", gen_output_type_name(Context, Typedef), ", Format :: piqi_convert_input_format()) -> iolist().\n"
     ].
 
-% generate gen_<name>/2 spec
+% generate gen_<name>/3 spec
 gen_spec_3(Context, Typedef) ->
     [
         "-spec gen_", typedef_erlname(Typedef), "(",

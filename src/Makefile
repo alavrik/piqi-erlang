@@ -1,4 +1,4 @@
-REBAR ?= rebar3
+REBAR ?= rebar
 
 
 .PHONY: all clean test proper piqi
