@@ -70,8 +70,10 @@ gen_typedef_multiformat(Context, Typedef) ->
     ScopedName = piqic:typedef_scoped_name(Context, Typedef),
     ErlName = typedef_erlname(Typedef),
     [
+        gen_spec_2(Context, Typedef),
         gen_typedef_2(ScopedName, ErlName),
         "\n\n",
+        gen_spec_3(Context, Typedef),
         gen_typedef_3(ScopedName, ErlName)
     ].
 
@@ -96,6 +98,21 @@ gen_typedef_3(Name, ErlName) ->
 gen_spec(Context, Typedef) ->
     [
         "-spec parse_", typedef_erlname(Typedef), "(X :: piqirun_buffer()) -> ",
+        gen_input_type_name(Context, Typedef),
+        ".\n"
+    ].
+
+gen_spec_2(Context, Typedef) ->
+    [
+        "-spec parse_", typedef_erlname(Typedef), "(X :: piqirun_buffer(), Format :: piqi_convert_input_format()) -> ",
+        gen_input_type_name(Context, Typedef),
+        ".\n"
+    ].
+
+
+gen_spec_3(Context, Typedef) ->
+    [
+        "-spec parse_", typedef_erlname(Typedef), "(X :: piqirun_buffer(), Format :: piqi_convert_input_format(), Options :: piqi_convert_options()) -> ",
         gen_input_type_name(Context, Typedef),
         ".\n"
     ].
@@ -454,4 +471,3 @@ gen_builtin_type_name(Context, PiqiType, ErlType) ->
         X ->
             X
     end.
-
