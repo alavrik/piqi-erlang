@@ -498,7 +498,7 @@ gen_erl(Context) ->
 gen_include_piqirun_hrl(Context) ->
     case is_embedded_runtime(Context) of
         false ->
-            "-include_lib(\"piqi/include/piqirun.hrl\").\n";
+            "-include_lib(\"piqi/include/piqirun.hrl\").\n-include_lib(\"piqi/include/piqi_tools.hrl\").";
         true ->
             Contents = read_embedded_runtime_file("include/piqirun.hrl"),
             [

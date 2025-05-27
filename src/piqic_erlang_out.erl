@@ -92,6 +92,20 @@ gen_spec_1(Context, Typedef) ->
             "X :: ", gen_output_type_name(Context, Typedef), ") -> iolist().\n"
     ].
 
+% generate gen_<name>/2 spec
+gen_spec_2(Context, Typedef) ->
+    [
+        "-spec gen_", typedef_erlname(Typedef), "(",
+            "X :: ", gen_output_type_name(Context, Typedef), ", Format :: piqi_convert_input_format()) -> iolist().\n"
+    ].
+
+% generate gen_<name>/3 spec
+gen_spec_3(Context, Typedef) ->
+    [
+        "-spec gen_", typedef_erlname(Typedef), "(",
+            "X :: ", gen_output_type_name(Context, Typedef), ", Format :: piqi_convert_input_format(), Options :: piqi_convert_options()) -> iolist().\n"
+    ].
+
 
 gen_output_type_name(Context, Typedef) ->
     piqic_erlang_types:gen_out_typedef_type(Context, Typedef).
@@ -103,8 +117,10 @@ gen_typedef_multiformat(Context, Typedef) ->
     ScopedName = piqic:typedef_scoped_name(Context, Typedef),
     ErlName = typedef_erlname(Typedef),
     [
+        gen_spec_2(Context, Typedef),
         gen_typedef_2(ScopedName, ErlName),
         "\n\n",
+        gen_spec_3(Context, Typedef),
         gen_typedef_3(ScopedName, ErlName)
     ].
 
@@ -369,11 +385,11 @@ gen_field(Context, RecordName, X) ->
         % older piqi which expects flags to only be true if present, and never
         % false; see piqic:transform_flag(X) for details
         'undefined' ->  % flag, i.e. field w/o type
-            [ 
+            [
                 ?PIQIRUN, "gen_flag(", Code, ", ", ScopedName, ")"
             ];
         TypeName ->
-            [ 
+            [
                 ?PIQIRUN, "gen_", Mode, "_field(", Code, ", ",
                     "fun ", gen_type(Context, TypeName, IsPacked), "/", ?if_true(IsPacked, "1", "2"),  % arity
                     ", ",
